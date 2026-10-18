@@ -82,8 +82,8 @@ async function submitInquiry(){
   function openMailtoFallback(reason){
     const subject = encodeURIComponent(subjectText);
     const body = encodeURIComponent(bodyText);
-    window.location.href = 'mailto:rnk2588@naver.com?subject=' + subject + '&body=' + body;
-    doneEl.textContent = (reason || '자동 전송에 실패해') + ' 이메일 작성 화면을 열었습니다. 내용을 확인하고 그대로 전송해 주세요. 화면이 열리지 않으면 02-6368-9989로 전화 주시거나 rnk2588@naver.com으로 직접 보내주세요.';
+    window.location.href = 'mailto:rnk2588@gmail.com?subject=' + subject + '&body=' + body;
+    doneEl.textContent = (reason || '자동 전송에 실패해') + ' 이메일 작성 화면을 열었습니다. 내용을 확인하고 그대로 전송해 주세요. 화면이 열리지 않으면 02-6368-9989로 전화 주시거나 rnk2588@gmail.com으로 직접 보내주세요.';
     doneEl.classList.add('show');
     btn.disabled = false;
     btn.textContent = originalBtnText;
@@ -92,7 +92,7 @@ async function submitInquiry(){
   try{
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
-    const res = await fetch('https://formsubmit.co/ajax/rnk2588@naver.com', {
+    const res = await fetch('https://formsubmit.co/ajax/rnk2588@gmail.com', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({
