@@ -1,0 +1,6 @@
+RewriteEngine On
+
+# http → https, ecolever.co.kr → www.ecolever.co.kr
+RewriteCond %{HTTPS} off [OR]
+RewriteCond %{HTTP_HOST} !^www\. [NC]
+RewriteRule ^ https://www.ecolever.co.kr%{REQUEST_URI} [L,R=301]
