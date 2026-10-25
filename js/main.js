@@ -144,6 +144,17 @@ document.querySelectorAll('[data-sample]').forEach(function(a){
   });
 })();
 
+/* ---- analytics (GA4) ---- */
+function track(name, params){
+  if(typeof window.gtag === 'function') window.gtag('event', name, params || {});
+}
+document.addEventListener('click', function(e){
+  const a = e.target.closest('a[href^="tel:"], a[href^="mailto:"]');
+  if(!a) return;
+  const isTel = a.getAttribute('href').indexOf('tel:') === 0;
+  track(isTel ? 'click_phone' : 'click_email', { link_class: a.className || '(none)' });
+});
+
 /* ---- inquiry form ---- */
 (function(){
   const form = document.getElementById('inquiryForm');
@@ -230,6 +241,7 @@ document.querySelectorAll('[data-sample]').forEach(function(a){
       clearTimeout(timeout);
       if(!res.ok) throw new Error('formsubmit non-ok response');
 
+      track('generate_lead', { form_name: 'inquiry', lineup: d.lineup, sample_request: d.sample });
       form.reset();
       qtyHint.hidden = true;
       doneEl.textContent = '문의가 정상적으로 접수되었습니다. 담당자 확인 후 빠르게 연락드리겠습니다. (급하신 경우 02-6368-9989로 전화 주세요)';
