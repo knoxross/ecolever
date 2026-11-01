@@ -9,7 +9,7 @@ HOST="ftp://ecolever.co.kr"
 
 [ -f "$NETRC" ] || { echo "FTP 정보 파일이 없습니다: $NETRC" >&2; exit 1; }
 
-files=(index.html .htaccess css/* js/* imgs/* video-maker/*)
+files=(index.html .htaccess css/* js/* imgs/*)
 for f in "${files[@]}"; do
   [ -f "$f" ] || continue
   curl -s -S --netrc-file "$NETRC" --ftp-create-dirs -m 60 -T "$f" "$HOST/$f"

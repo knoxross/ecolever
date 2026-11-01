@@ -1,0 +1,10 @@
+node_modules/
+dist/
+www/vendor/
+www/fonts/
+android/app/build/
+android/build/
+android/.gradle/
+android/app/src/main/assets/public/
+android/capacitor-cordova-android-plugins/
+android/local.properties

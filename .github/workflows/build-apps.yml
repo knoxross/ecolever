@@ -1,0 +1,83 @@
+# 영상뚝딱 앱 만들기 — 윈도우(.exe 설치 파일) · 맥(.dmg) · 안드로이드(.apk)
+# 실행 방법: GitHub 저장소 → Actions → "영상뚝딱 앱 빌드" → Run workflow
+#           또는 ttuk-v1.0.0 같은 태그를 올리면 Releases 에 세 파일이 자동으로 올라갑니다.
+name: 영상뚝딱 앱 빌드
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['ttuk-v*']
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    name: 윈도우 설치 파일
+    runs-on: windows-latest
+    defaults: { run: { working-directory: studio } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: studio/package-lock.json }
+      - run: npm ci
+      - run: npm run dist:win -- --publish never
+      - uses: actions/upload-artifact@v4
+        with: { name: 영상뚝딱-윈도우, path: studio/dist/*.exe, if-no-files-found: error }
+
+  mac:
+    name: 맥 앱 (Intel + Apple 실리콘)
+    runs-on: macos-latest
+    defaults: { run: { working-directory: studio } }
+    env: { CSC_IDENTITY_AUTO_DISCOVERY: 'false' }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: studio/package-lock.json }
+      - run: npm ci
+      - run: npm run dist:mac -- --publish never
+      - name: 서명(ad-hoc) 후 dmg 만들기
+        run: |
+          APP="$(ls -d dist/mac-universal/*.app | head -1)"
+          codesign --force --deep --sign - "$APP"
+          mkdir -p dmgroot && cp -R "$APP" dmgroot/ && ln -s /Applications dmgroot/Applications
+          VER=$(node -p "require('./package.json').version")
+          hdiutil create -volname "영상뚝딱" -srcfolder dmgroot -ov -format UDZO "dist/YeongsangTtukttak-$VER-mac-universal.dmg"
+      - uses: actions/upload-artifact@v4
+        with: { name: 영상뚝딱-맥, path: studio/dist/*.dmg, if-no-files-found: error }
+
+  android:
+    name: 안드로이드 앱
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: studio } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: studio/package-lock.json }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '21' }
+      - uses: android-actions/setup-android@v3
+      - run: npm ci
+      - run: npm run android:sync
+      - name: APK 만들기
+        working-directory: studio/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+          VER=$(node -p "require('../package.json').version")
+          cp app/build/outputs/apk/debug/app-debug.apk "../dist-YeongsangTtukttak-$VER-android.apk"
+      - uses: actions/upload-artifact@v4
+        with: { name: 영상뚝딱-안드로이드, path: studio/dist-*.apk, if-no-files-found: error }
+
+  release:
+    name: 릴리스에 올리기
+    if: startsWith(github.ref, 'refs/tags/ttuk-v')
+    needs: [windows, mac, android]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: out }
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: 영상뚝딱 ${{ github.ref_name }}
+          files: out/**/*

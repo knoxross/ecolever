@@ -1,0 +1,81 @@
+{
+  "name": "yeongsang-ttukttak",
+  "productName": "영상뚝딱",
+  "version": "1.0.0",
+  "description": "사진 넣고 명령어 한 줄이면 완성되는 동영상 제작기",
+  "author": "R&K GREENWORLD",
+  "license": "UNLICENSED",
+  "private": true,
+  "main": "electron/main.js",
+  "scripts": {
+    "vendor": "node scripts/build-vendor.mjs",
+    "start": "npm run vendor && electron .",
+    "dist:win": "npm run vendor && electron-builder --win nsis --x64",
+    "dist:mac": "npm run vendor && electron-builder --mac dir --universal",
+    "android:sync": "npm run vendor && cap sync android",
+    "android:apk": "npm run android:sync && cd android && ./gradlew assembleDebug"
+  },
+  "build": {
+    "appId": "kr.co.ecolever.ttukttak",
+    "productName": "영상뚝딱",
+    "executableName": "YeongsangTtukttak",
+    "artifactName": "YeongsangTtukttak-${version}-${os}-${arch}.${ext}",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "electron/**",
+      "www/**",
+      "package.json"
+    ],
+    "win": {
+      "icon": "build/icon.png",
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "영상뚝딱",
+      "installerLanguages": [
+        "ko_KR"
+      ],
+      "language": "1042"
+    },
+    "mac": {
+      "icon": "build/icon.png",
+      "category": "public.app-category.video",
+      "identity": null,
+      "target": [
+        "dir"
+      ],
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "직접 녹음한 목소리를 영상에 넣기 위해 마이크를 사용합니다."
+      }
+    }
+  },
+  "devDependencies": {
+    "@anthropic-ai/sdk": "^1.3.0",
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/cli": "^8.6.0",
+    "@capacitor/core": "^8.6.0",
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/share": "^8.0.3",
+    "@fontsource/black-han-sans": "^5.3.0",
+    "@fontsource/gowun-batang": "^5.3.0",
+    "@fontsource/jua": "^5.3.0",
+    "@fontsource/noto-sans-kr": "^5.3.1",
+    "electron": "^45.2.1",
+    "electron-builder": "^26.18.0",
+    "esbuild": "^0.28.2",
+    "mp4-muxer": "^5.2.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/knoxross/ecolever.git"
+  }
+}

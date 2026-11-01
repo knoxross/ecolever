@@ -1,0 +1,7 @@
+{
+  "appId": "kr.co.ecolever.ttukttak",
+  "appName": "영상뚝딱",
+  "webDir": "www",
+  "android": { "allowMixedContent": false, "captureInput": true, "webContentsDebuggingEnabled": false },
+  "plugins": { "CapacitorHttp": { "enabled": false } }
+}
