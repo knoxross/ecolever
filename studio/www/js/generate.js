@@ -68,7 +68,8 @@ async function testGoogleKey(key) {
     const image = pick(m => /imagen/i.test(m.name) && has(m, 'predict'));
     const video = pick(m => /veo/i.test(m.name) && has(m, 'predictLongRunning'));
     const tts = pick(m => /tts/i.test(m.name) && has(m, 'generateContent'));
-    const found = { image, video, tts };
+    const text = pick(m => /gemini/i.test(m.name) && /flash/i.test(m.name) && !/tts|image|live|embedding|audio|thinking/i.test(m.name) && has(m, 'generateContent'));
+    const found = { image, video, tts, text };
     const parts = [image ? `사진(${image})` : '사진 ✕', video ? `영상(${video})` : '영상 ✕', tts ? `목소리(${tts})` : '목소리 ✕'];
     return { ok: true, found, message: '연결 성공 — ' + parts.join(' · ') };
   } catch (e) {

@@ -25,6 +25,7 @@ function busy(title, note = '', { cancellable = true } = {}) {
   $('#resultSaveBtn').hidden = true;
   $('#resultShowBtn').hidden = true;
   $('#resultPubBtn').hidden = true;
+  $('#resultSrtBtn').hidden = true;
   const btn = $('#busyCancel');
   btn.hidden = !cancellable;
   btn.textContent = '취소';
@@ -52,7 +53,7 @@ function changed(debounce = 0) {
 }
 function refreshAll() {
   setCanvasSize();
-  renderLibrary(); renderTimeline(); renderClipPanel(); syncProjectForm(); updateEmpty();
+  renderLibrary(); renderTimeline(); renderClipPanel(); syncProjectForm(); renderSubsPanel(); updateEmpty();
   preloadText().then(requestRender);
   requestRender();
 }
@@ -183,6 +184,7 @@ function renderTimeline() {
   if (bgm && total > 0) aud += `<div class="bgm" style="left:0;width:${total * pps}px" title="배경음악">🎵 ${esc(bgm.name)}</div>`;
   for (const sg of voiceSegments()) aud += `<div class="bgm voice" style="left:${sg.start * pps}px;width:${Math.max(6, (sg.end - sg.start) * pps)}px" title="목소리">🎙</div>`;
   $('#audioTrack').innerHTML = aud;
+  $('#subTrack').innerHTML = state.subs.map(x => `<div class="sb${x.id === selSubId ? ' sel' : ''}" data-sub="${x.id}" style="left:${x.start * pps}px;width:${Math.max(6, (x.end - x.start) * pps)}px" title="${esc(plain(x.text))}">💬 ${esc(plain(x.text))}</div>`).join('');
   $('#tlInner').style.width = (end * pps + 60) + 'px';
   updateTimeUI();
 }
@@ -613,6 +615,9 @@ async function doExport() {
       }
     } catch (e) { $('#resultInfo').textContent = '저장 실패: ' + e.message; }
   };
+  const srtBtn = $('#resultSrtBtn');
+  srtBtn.hidden = !state.subs.length;
+  srtBtn.onclick = () => saveSrt(name.replace(/\.[^.]+$/, '.srt'));
   const pubBtn = $('#resultPubBtn');
   pubBtn.hidden = !FEATURES.publish;
   pubBtn.onclick = () => { cancel.onclick(); openPublish(); };
@@ -662,7 +667,7 @@ function newProject() {
   pause();
   state.clips.forEach(disposeClip);
   state.media.forEach(m => URL.revokeObjectURL(m.url));
-  state.clips = []; state.media = []; state.selectedId = null; state.time = 0;
+  state.clips = []; state.media = []; state.subs = []; state.selectedId = null; state.time = 0;
   Object.assign(S, { bgmId: '', logoId: '', bgmOffset: 0, filter: 'none' });
   $('#cmdInput').value = '';
   hist.undo = []; hist.redo = []; hist.last = null; commit();
@@ -701,6 +706,7 @@ async function testAi() {
       if (r.found.image) { GEN.imageModel = r.found.image; Platform.setPref('gen_image_model', GEN.imageModel); }
       if (r.found.video) { GEN.videoModel = r.found.video; Platform.setPref('gen_video_model', GEN.videoModel); }
       if (r.found.tts) { GEN.ttsModel = r.found.tts; Platform.setPref('gen_tts_model', GEN.ttsModel); }
+      if (r.found.text) Platform.setPref('gen_text_model', r.found.text);
     }
   } else r2.textContent = 'Google 키 없음 — AI 생성·AI 성우를 쓸 수 없습니다 (직접 녹음은 가능).';
 }
@@ -901,8 +907,9 @@ function syncProjectForm() {
 function showTab(name) {
   $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
   $('#clipTab').hidden = name !== 'clip';
+  $('#subsTab').hidden = name !== 'subs';
   $('#projectTab').hidden = name !== 'project';
-  if (window.matchMedia('(max-width:1000px)').matches) setMobile(name === 'project' ? 'project' : name === 'clip' ? 'clip' : 'library', false);
+  if (window.matchMedia('(max-width:1000px)').matches) setMobile(['project', 'clip', 'subs'].includes(name) ? name : 'library', false);
 }
 function setMobile(m, alsoTab = true) {
   document.body.dataset.m = m;
@@ -953,6 +960,7 @@ function bind() {
   $('#scheduleBtn').addEventListener('click', ACTIONS.schedule);
   $$('#steps .step[data-step="2"]').forEach(el => el.addEventListener('click', () => $('#cmdInput').focus()));
   bindAutomation();
+  bindSubs();
   $('#aiMode').addEventListener('click', openAiSettings);
   $('#exportBtn').addEventListener('click', doExport);
   $('#autoBtn').addEventListener('click', autoMake);
@@ -1109,6 +1117,7 @@ function bind() {
     else if (e.key === 'ArrowLeft') seekTo(state.time - (e.shiftKey ? 1 : 0.1));
     else if (e.key === 'ArrowRight') seekTo(state.time + (e.shiftKey ? 1 : 0.1));
     else if (e.key === 'Home') seekTo(0);
+    else if (e.key === 's' || e.key === 'S' || e.key === 'ㄴ') { e.preventDefault(); addSubHere(); }
     else if (e.key === 'Escape') $$('.modal').forEach(m => { if (m.id !== 'busyModal') m.hidden = true; });
   });
   Platform.onMenu(action => { if (ACTIONS[action] && $('#busyModal').hidden) ACTIONS[action](); });
@@ -1387,3 +1396,146 @@ function openAbout() {
   openModal('#aboutModal');
 }
 function bindAutomation() { bindSeries(); bindCompress(); bindSchedule(); }
+
+
+/* ================================================================== 자막 화면 */
+let selSubId = null;
+function addSubHere() {
+  const total = totalDuration();
+  if (!total) { toast('먼저 장면을 만들어 주세요.', true); return; }
+  let start = state.time;
+  const cur = subAt(start);
+  if (cur) start = cur.end;
+  if (start >= total - 0.2) start = Math.max(0, total - 2);
+  const next = state.subs.find(x => x.start > start);
+  const end = Math.min(total, start + 2.5, next ? next.start : Infinity);
+  const sb = addSub(start, Math.max(end, start + 0.3), '');
+  selSubId = sb.id;
+  changed();
+  showTab('subs');
+  renderSubsPanel(); renderTimeline();
+  setTimeout(() => { const ta = $(`#subList [data-sub="${sb.id}"] textarea`); if (ta) { ta.focus(); ta.scrollIntoView({ block: 'nearest' }); } }, 30);
+}
+function renderSubsPanel() {
+  const list = $('#subList');
+  if (!list) return;
+  if (!state.subs.length) {
+    list.innerHTML = '<p class="empty">아직 자막이 없습니다.<br>재생 위치를 옮기고 <b>＋ 지금 위치에 자막</b>을 누르거나<br>자동으로 만들어 보세요. (단축키 S)</p>';
+  } else {
+    list.innerHTML = state.subs.map((x, i) => `<div class="sub-row${x.id === selSubId ? ' sel' : ''}" data-sub="${x.id}">
+      <div class="times">${i + 1}.
+        <input type="number" step="0.1" min="0" data-f="start" value="${x.start.toFixed(2)}" title="시작(초)"> ~
+        <input type="number" step="0.1" min="0" data-f="end" value="${x.end.toFixed(2)}" title="끝(초)">
+        <span class="sp"></span>
+        <button class="btn btn-sm" data-a="go" title="이 자막 위치로 이동">▶</button>
+        <button class="btn btn-sm" data-a="setStart" title="시작을 지금 재생 위치로">⇤</button>
+        <button class="btn btn-sm" data-a="setEnd" title="끝을 지금 재생 위치로">⇥</button>
+        <button class="btn btn-sm btn-danger" data-a="del" title="삭제">✕</button>
+      </div>
+      <textarea data-f="text" rows="2" placeholder="자막 문장">${esc(x.text)}</textarea>
+    </div>`).join('');
+  }
+  const st = subStyle();
+  $('#subFont').innerHTML = opt(FONTS, st.font);
+  $('#subPos').innerHTML = opt(SUB_POS, st.pos);
+  $('#subAnim').innerHTML = opt(SUB_ANIMS, st.anim);
+  $('#subSize').value = st.size; $('#subSizeOut').textContent = st.size;
+  $('#subColor').value = st.color; $('#subHl').value = st.hl;
+  $('#subOutline').checked = !!st.outline; $('#subBox').checked = !!st.box;
+}
+async function saveSrt(name) {
+  if (!state.subs.length) { toast('저장할 자막이 없습니다.', true); return; }
+  const text = '﻿' + toSRT();
+  const fname = name || `자막-${Date.now().toString(36)}.srt`;
+  try {
+    if (Platform.kind === 'desktop') {
+      const r = await window.native.saveFile(new TextEncoder().encode(text), fname, '자막 파일', 'srt');
+      if (r && r.path) toast('자막 파일을 저장했습니다: ' + r.path);
+    } else {
+      const r = await Platform.saveVideo(new Blob([text], { type: 'application/x-subrip' }), fname);
+      toast(r.message);
+    }
+  } catch (e) { toast('저장 실패: ' + e.message, true); }
+}
+function bindSubs() {
+  $('#subAddBtn').addEventListener('click', addSubHere);
+  $('#subFromVoiceBtn').addEventListener('click', () => {
+    const n = subsFromNarration();
+    if (!n) { toast('목소리가 붙은 장면이 없습니다. 장면 편집 → 🎙 목소리에서 내레이션을 먼저 만들어 주세요.', true); return; }
+    changed(); renderSubsPanel(); renderTimeline(); requestRender();
+    toast(`내레이션에 맞춰 자막 ${n}줄을 만들었습니다`);
+  });
+  $('#subAiBtn').addEventListener('click', async () => {
+    if (!genReady()) { toast('AI 받아쓰기를 하려면 ⚙ AI 설정에서 Google AI 키를 넣어 주세요.', true); openAiSettings(); return; }
+    pause();
+    const b = busy('🤖 말소리 받아쓰는 중…', '영상·녹음 속 말을 듣고 시간에 맞춰 자막을 만듭니다.');
+    try {
+      const n = await transcribeToSubs({ signal: b.signal, onStatus: t => b.set(null, t) });
+      b.close(); changed(); renderSubsPanel(); renderTimeline(); requestRender();
+      toast(`받아쓰기로 자막 ${n}줄을 만들었습니다. 틀린 글자는 목록에서 고쳐 주세요.`, false, 5000);
+    } catch (e) { b.close(); if (!b.flag.cancelled) toast(e.message, true); }
+  });
+  $('#subImportBtn').addEventListener('click', () => $('#subFileInput').click());
+  $('#subFileInput').addEventListener('change', async e => {
+    const f = e.target.files[0]; e.target.value = '';
+    if (!f) return;
+    const items = parseSubtitleFile(await f.text());
+    if (!items.length) { toast('자막을 읽을 수 없는 파일입니다. (SRT·VTT 형식)', true); return; }
+    if (state.subs.length && !confirm(`지금 자막 ${state.subs.length}줄을 지우고 불러올까요? (취소하면 뒤에 덧붙입니다)`)) { /* 덧붙이기 */ } else state.subs = [];
+    items.forEach(x => addSub(x.start, x.end, x.text));
+    changed(); renderSubsPanel(); renderTimeline(); requestRender();
+    const over = items.filter(x => x.start >= totalDuration()).length;
+    toast(`자막 ${items.length}줄을 불러왔습니다${over ? ` (영상 길이를 넘는 ${over}줄은 보이지 않아요)` : ''}`);
+  });
+  $('#subExportBtn').addEventListener('click', () => saveSrt());
+  $('#subClearBtn').addEventListener('click', () => { if (state.subs.length && confirm('자막을 모두 지울까요?')) { state.subs = []; changed(); renderSubsPanel(); renderTimeline(); requestRender(); } });
+  const list = $('#subList');
+  const subOf = el => state.subs.find(x => x.id === el.closest('.sub-row')?.dataset.sub);
+  list.addEventListener('input', e => {
+    const x = subOf(e.target); if (!x) return;
+    const f = e.target.dataset.f;
+    if (f === 'text') x.text = e.target.value;
+    else { const v = parseFloat(e.target.value); if (!isFinite(v)) return; x[f] = Math.max(0, round2(v)); if (x.end <= x.start) x.end = round2(x.start + 0.3); }
+    changed(500); renderTimelineSoon(); requestRender();
+    if (f === 'text' && document.fonts) document.fonts.load(`${fontWeight(subStyle().font)} 40px ${subStyle().font}`, x.text).catch(() => {}).finally(requestRender);
+  });
+  list.addEventListener('change', e => { if (e.target.dataset.f && e.target.dataset.f !== 'text') { sortSubs(); renderSubsPanel(); } });
+  list.addEventListener('focusin', e => {
+    const x = subOf(e.target); if (!x || selSubId === x.id) return;
+    selSubId = x.id;
+    $$('#subList .sub-row').forEach(r => r.classList.toggle('sel', r.dataset.sub === x.id));
+    renderTimelineSoon();
+    if (state.time < x.start || state.time >= x.end) seekTo(x.start + Math.min(0.4, (x.end - x.start) / 2));
+  });
+  list.addEventListener('click', e => {
+    const b = e.target.closest('[data-a]'); if (!b) return;
+    const x = subOf(b); if (!x) return;
+    const a = b.dataset.a;
+    if (a === 'go') seekTo(x.start + 0.05);
+    else if (a === 'setStart') { x.start = round2(Math.min(state.time, x.end - 0.2)); }
+    else if (a === 'setEnd') { x.end = round2(Math.max(state.time, x.start + 0.2)); }
+    else if (a === 'del') { state.subs = state.subs.filter(y => y !== x); }
+    if (a !== 'go') { sortSubs(); changed(); renderSubsPanel(); renderTimeline(); requestRender(); }
+  });
+  $('#subTrack').addEventListener('click', e => {
+    const el = e.target.closest('[data-sub]'); if (!el) return;
+    const x = state.subs.find(y => y.id === el.dataset.sub); if (!x) return;
+    selSubId = x.id; showTab('subs'); renderSubsPanel(); renderTimeline();
+    seekTo(x.start + 0.05);
+    const ta = $(`#subList [data-sub="${x.id}"] textarea`); if (ta) { ta.focus(); ta.scrollIntoView({ block: 'nearest' }); }
+  });
+  const setSt = (k, v) => { S.sub = Object.assign(subStyle(), { [k]: v }); changed(400); requestRender(); };
+  $('#subFont').addEventListener('change', e => { setSt('font', e.target.value); preloadSubs(); });
+  $('#subPos').addEventListener('change', e => setSt('pos', e.target.value));
+  $('#subAnim').addEventListener('change', e => setSt('anim', e.target.value));
+  $('#subSize').addEventListener('input', e => { $('#subSizeOut').textContent = e.target.value; setSt('size', +e.target.value); });
+  $('#subColor').addEventListener('input', e => setSt('color', e.target.value));
+  $('#subHl').addEventListener('input', e => setSt('hl', e.target.value));
+  $('#subOutline').addEventListener('change', e => setSt('outline', e.target.checked));
+  $('#subBox').addEventListener('change', e => setSt('box', e.target.checked));
+}
+function preloadSubs() {
+  if (!document.fonts || !state.subs.length) return Promise.resolve();
+  const st = subStyle();
+  return document.fonts.load(`${fontWeight(st.font)} 40px ${st.font}`, state.subs.map(x => x.text).join('')).catch(() => {}).finally(requestRender);
+}

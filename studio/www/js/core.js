@@ -62,6 +62,7 @@ const filterCss = v => FILTERS.find(f => f.v === v)?.css || 'none';
 const state = {
   media: [],
   clips: [],
+  subs: [],       // 자막 줄: { id, start, end, text }
   selectedId: null,
   time: 0,
   playing: false,
@@ -75,6 +76,7 @@ const state = {
     loopEnd: false,      // 끝 → 처음으로 자연스럽게 이어지는 반복 재생 마무리
     beatPunch: false,    // 박자마다 살짝 튕기는 줌
     maxSizeMB: 0,        // 저장 용량 제한 (0 = 제한 없음)
+    sub: { font: "'Noto Sans KR'", size: 58, color: '#ffffff', hl: '#ffe14d', box: false, outline: true, pos: 'bottom', anim: 'fade' },
   },
 };
 const S = state.settings;
@@ -405,8 +407,10 @@ function setCanvasSize(quality = S.quality) {
   canvas.style.aspectRatio = `${a} / ${b}`;
 }
 
+let captionTop = null; // 이번 프레임 아래쪽 장면 자막의 윗선 (자막 줄이 겹치지 않게)
 function render(t) {
   const W = canvas.width, H = canvas.height;
+  captionTop = null;
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.globalAlpha = 1; ctx.filter = 'none';
   ctx.fillStyle = S.bg; ctx.fillRect(0, 0, W, H);
@@ -444,6 +448,7 @@ function render(t) {
   }
   ctx.restore();
   drawLogo();
+  if (window.drawSubtitles) drawSubtitles(t);
   if (S.progressBar && total > 0) {
     const h = Math.max(4, Math.round(H * 0.006));
     ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.fillRect(0, 0, W, h);
@@ -648,6 +653,7 @@ function drawText(clip, local) {
   // 세로 영상은 아래쪽이 앱 버튼·설명에 가려지므로 자막을 조금 올림 (안전 영역)
   const margin = clip.textPos === 'bottom' && H > W * 1.4 ? H * 0.2 : H * 0.08;
   let y0 = clip.textPos === 'top' ? margin : clip.textPos === 'center' ? (H - blockH) / 2 : H - margin - blockH;
+  if (clip.kind === 'media' && clip.textPos === 'bottom' && blockH > 0) captionTop = captionTop == null ? y0 : Math.min(captionTop, y0);
 
   if (anim === 'fade') ctx.globalAlpha *= easeOut(a);
   else if (anim === 'up') { ctx.globalAlpha *= easeOut(a); ctx.translate(0, (1 - easeOut(a)) * fs * 0.6); }
@@ -735,6 +741,7 @@ function drawLogo() {
 function preloadText() {
   if (!document.fonts) return Promise.resolve();
   const jobs = [];
+  if (state.subs.length) { const st = Object.assign({ font: "'Noto Sans KR'" }, S.sub || {}); jobs.push(document.fonts.load(`${fontWeight(st.font)} 40px ${st.font}`, state.subs.map(x => x.text).join(''))); }
   for (const c of state.clips) {
     const s = (c.text || '') + (c.sub || '');
     if (!s.trim()) continue;
@@ -836,7 +843,7 @@ function seekTo(t) {
 /* ------------------------------------------------------------------ 실행 취소 / 다시 실행 */
 const hist = { undo: [], redo: [], last: null, timer: 0 };
 function snapshot() {
-  return JSON.stringify({ clips: state.clips.map(stripClip), settings: S, selectedId: state.selectedId });
+  return JSON.stringify({ clips: state.clips.map(stripClip), subs: state.subs, settings: S, selectedId: state.selectedId });
 }
 function commit(debounceMs = 0) {
   clearTimeout(hist.timer);
@@ -865,6 +872,7 @@ function restore(json) {
   const keepBgm = mediaById(data.settings.bgmId) ? data.settings.bgmId : '';
   const keepLogo = mediaById(data.settings.logoId) ? data.settings.logoId : '';
   Object.assign(S, data.settings, { bgmId: keepBgm, logoId: keepLogo });
+  state.subs = data.subs || [];
   state.selectedId = clipById(data.selectedId) ? data.selectedId : null;
   state.time = Math.min(state.time, totalDuration());
 }

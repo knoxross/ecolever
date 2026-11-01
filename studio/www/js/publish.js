@@ -33,7 +33,8 @@ function algorithmChecklist(platform) {
     const m1 = state.clips.find(c => c.kind === 'media');
     if (m1 && !(m1.text || '').trim()) { m1.text = first.text; m1.textPos = 'top'; m1.textAnim = 'pop'; m1.fontSize = Math.max(m1.fontSize, 80); state.clips.shift(); state.clips[0].transition = 'none'; }
   }, hookOk ? '좋습니다' : '처음 1~2초에 넘겨지면 추천이 끊깁니다. 제목 화면을 줄이거나 첫 장면 위에 제목을 얹으세요');
-  const captioned = media.filter(c => (c.text || '').trim() || c.voiceId).length;
+  const lay0 = layout();
+  const captioned = media.filter(c => { const L = lay0.find(l => l.clip === c); return (c.text || '').trim() || c.voiceId || (L && state.subs.some(x => x.start < L.end && x.end > L.start)); }).length;
   const capOk = media.length && captioned / media.length >= 0.5;
   add(capOk, `자막·목소리 있는 장면 ${captioned}/${media.length}`, null, capOk ? '소리 끄고 보는 사람도 이해합니다' : '대부분 소리를 끄고 봅니다. 장면에 자막을 넣으세요 (✨ AI 편집이 자동으로 써 줍니다)');
   const avg = media.length ? media.reduce((a, c) => a + c.duration, 0) / media.length : 0;

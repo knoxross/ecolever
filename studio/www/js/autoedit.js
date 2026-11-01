@@ -223,6 +223,7 @@ function applyPlan(plan) {
   const shortForm = S.aspect === '9:16' || S.aspect === '4:5' || S.aspect === '1:1';
 
   state.clips.forEach(disposeClip);
+  state.subs = state.subs.filter(x => !x.auto); // 장면이 새로 짜이면 자동 자막은 다시 만듦
   const clips = [];
   const textClip = (txt, sub, dur, extra = {}) => newClip('text', Object.assign({
     text: txt, sub: sub || '', font, fontSize: portrait ? 118 : 128, textColor: card.textColor,
