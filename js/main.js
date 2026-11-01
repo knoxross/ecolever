@@ -96,7 +96,15 @@ function parseYouTubeId(url){
   return m ? m[1] : '';
 }
 (function(){
-  document.querySelectorAll('.yt').forEach(function(box){
+  // 등록된 영상이 하나도 없으면 '준비 중' 빈 칸 대신 영상 섹션과 메뉴를 숨깁니다 (미완성 인상 방지).
+  const boxes = Array.prototype.slice.call(document.querySelectorAll('.yt'));
+  if(boxes.length && !boxes.some(function(b){ return parseYouTubeId(b.dataset.youtube); })){
+    const sec = document.getElementById('videos');
+    if(sec) sec.hidden = true;
+    document.querySelectorAll('a[href="#videos"]').forEach(function(a){ a.hidden = true; });
+    return;
+  }
+  boxes.forEach(function(box){
     const id = parseYouTubeId(box.dataset.youtube);
     const title = box.dataset.title || '에코레버 영상';
     if(!id){

@@ -371,3 +371,6 @@ footer a{text-decoration:underline;}
   .aside-call{font-size:13px;}
   footer{font-size:13px;}
 }
+
+/* hidden 속성이 display 지정에 덮이지 않도록 */
+[hidden]{display:none !important;}
