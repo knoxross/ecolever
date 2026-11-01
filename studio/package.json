@@ -1,10 +1,10 @@
 {
   "name": "yeongsang-ttukttak",
   "productName": "영상뚝딱",
-  "version": "1.0.0",
-  "description": "사진 넣고 명령어 한 줄이면 완성되는 동영상 제작기",
-  "author": "R&K GREENWORLD",
-  "license": "UNLICENSED",
+  "version": "1.1.0",
+  "description": "사진 넣고 명령어 한 줄이면 완성되는 홍보 영상 제작기 — (주)알앤케이그린월드",
+  "author": "(주)알앤케이그린월드 <rnk2588@gmail.com>",
+  "license": "SEE LICENSE IN LICENSE.txt",
   "private": true,
   "main": "electron/main.js",
   "scripts": {
@@ -27,7 +27,8 @@
     "files": [
       "electron/**",
       "www/**",
-      "package.json"
+      "package.json",
+      "LICENSE.txt"
     ],
     "win": {
       "icon": "build/icon.png",
@@ -44,7 +45,10 @@
       "installerLanguages": [
         "ko_KR"
       ],
-      "language": "1042"
+      "language": "1042",
+      "license": "build/license_ko.txt",
+      "uninstallDisplayName": "영상뚝딱 ((주)알앤케이그린월드)",
+      "deleteAppDataOnUninstall": false
     },
     "mac": {
       "icon": "build/icon.png",
@@ -56,7 +60,14 @@
       "extendInfo": {
         "NSMicrophoneUsageDescription": "직접 녹음한 목소리를 영상에 넣기 위해 마이크를 사용합니다."
       }
-    }
+    },
+    "copyright": "Copyright © 2026 (주)알앤케이그린월드. All rights reserved.",
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "https://www.ecolever.co.kr/app/ttukttak/"
+      }
+    ]
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^1.3.0",
@@ -72,10 +83,14 @@
     "electron": "^45.2.1",
     "electron-builder": "^26.18.0",
     "esbuild": "^0.28.2",
-    "mp4-muxer": "^5.2.2"
+    "mp4-muxer": "^5.2.2",
+    "mp4box": "^2.5.0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/knoxross/ecolever.git"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.11"
   }
 }

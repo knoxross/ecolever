@@ -56,7 +56,17 @@ function refreshAll() {
   preloadText().then(requestRender);
   requestRender();
 }
-function updateEmpty() { $('#stageEmpty').hidden = state.clips.length > 0; }
+function updateEmpty() { $('#stageEmpty').hidden = state.clips.length > 0; updateSteps(); }
+const stepDone = { exported: false };
+function updateSteps() {
+  const has = [state.media.length > 0 || state.clips.length > 0, state.clips.length > 0, state.clips.length > 0 && dirty, stepDone.exported];
+  const now = !has[0] ? 1 : !has[1] ? 2 : !stepDone.exported ? (has[2] ? 4 : 3) : 4;
+  $$('#steps .step[data-step]').forEach(el => {
+    const n = +el.dataset.step;
+    el.classList.toggle('done', !!has[n - 1] && n !== now);
+    el.classList.toggle('now', n === now);
+  });
+}
 
 /* ================================================================== 가져오기 */
 async function importFiles(files, { toTimeline = true } = {}) {
@@ -275,10 +285,14 @@ function renderClipPanel() {
           <select data-k="fit">${opt([{ v: 'cover', label: '꽉 채우기' }, { v: 'contain', label: '전체 보이기' }, { v: 'blur', label: '전체 + 흐린 배경' }], c.fit)}</select></div>
         <div class="field"><label>움직임</label><select data-k="motion">${opt(MOTIONS, c.motion)}</select></div>
       </div>
-      <div class="field"><label>✨ 화질 향상 (밝기·선명도·노이즈) <output>${Math.round(c.enhance * 100)}%</output></label><input type="range" data-k="enhance" min="0" max="1" step="0.05" value="${c.enhance}"></div>` :
+      <div class="field" data-feature="enhance"><label>✨ 화질 향상 (밝기·선명도·노이즈) <output>${Math.round(c.enhance * 100)}%</output></label><input type="range" data-k="enhance" min="0" max="1" step="0.05" value="${c.enhance}"></div>` :
       `<div class="row2">
         <div class="field"><label>배경색</label><input type="color" data-k="bgColor" value="${c.bgColor}"></div>
-        <div class="field"><label>그라데이션 색</label><input type="color" data-k="bgColor2" value="${c.bgColor2 || c.bgColor}"></div>
+        <div class="field"><label>둘째 색</label><input type="color" data-k="bgColor2" value="${c.bgColor2 || c.bgColor}"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>배경 모양</label><select data-k="bgStyle">${opt(BG_STYLES, c.bgStyle || 'gradient')}</select></div>
+        <div class="field"><label>아이콘 (이모지)</label><input type="text" data-k="emoji" maxlength="4" value="${esc(c.emoji || '')}" placeholder="예) 🌿"></div>
       </div>`}
     <hr>
     <div class="sec-title">전환 효과 <small class="muted">(앞 장면 → 이 장면, 겹쳐서 부드럽게)</small></div>
@@ -302,7 +316,7 @@ function renderClipPanel() {
     </div>
     <label class="check"><input type="checkbox" data-k="textBg"${c.textBg ? ' checked' : ''}> 반투명 배경 상자</label>
     <hr>
-    <div class="sec-title">🎙 목소리 (내레이션)</div>
+    <div data-feature="voice"><div class="sec-title">🎙 목소리 (내레이션)</div>
     <div class="voice-box">
       ${voice ? `<div class="now">🎙 <b>${esc(voice.name)}</b> · ${voice.duration.toFixed(1)}초
         <button class="btn btn-sm" data-cmd="voicePlay">▶ 듣기</button>
@@ -328,7 +342,7 @@ function renderClipPanel() {
         ${voice ? '<button class="btn btn-sm" data-cmd="voiceTone">🎚 톤 적용</button>' : ''}
       </div>
       <div class="btn-row"><button class="btn btn-sm" data-cmd="voiceAll">🔊 모든 장면 내레이션 한 번에 만들기</button></div>
-    </div>
+    </div></div>
     <hr>
     <div class="btn-row">
       <button class="btn btn-sm" data-cmd="left" ${idx === 0 ? 'disabled' : ''}>◀ 앞으로</button>
@@ -343,8 +357,10 @@ function renderClipPanel() {
       ${!isVid ? '<button class="btn btn-sm" data-cmd="allDur">길이 모든 사진에</button>' : ''}
       ${(c.text || '').trim() && c.kind === 'media' ? '<button class="btn btn-sm" data-cmd="allStyle">자막 모양 모든 장면에</button>' : ''}
     </div>`;
+  applyFeatureHides(box);
 }
 
+function applyFeatureHides(root) { $$('[data-feature]', root).forEach(el => { if (FEATURES[el.dataset.feature] === false) el.hidden = true; }); }
 function onClipInput(e) {
   const el = e.target;
   const c = clipById(state.selectedId);
@@ -372,7 +388,8 @@ function onClipInput(e) {
   c[k] = v;
   const out = el.closest('.field')?.querySelector('output');
   if (out) out.textContent = ['volume', 'enhance', 'voiceVol'].includes(k) ? Math.round(v * 100) + '%' : v;
-  if (['duration', 'trimStart', 'transition', 'bgColor', 'bgColor2', 'text', 'textColor', 'enhance', 'voiceDelay'].includes(k)) renderTimelineSoon();
+  if (['duration', 'trimStart', 'transition', 'bgColor', 'bgColor2', 'text', 'textColor', 'enhance', 'voiceDelay', 'bgStyle'].includes(k)) renderTimelineSoon();
+  if (k === 'emoji' && document.fonts) document.fonts.load(`40px 'Segoe UI Emoji'`, v).catch(() => {}).finally(requestRender);
   if (['text', 'sub', 'font'].includes(k)) preloadText().then(requestRender);
   if (k === 'transition' && e.type === 'change') {
     const L = layout().find(l => l.clip === c);
@@ -497,17 +514,30 @@ async function applyToneToClip(c, silent = false) {
 async function autoMake() {
   if (state.busy) return;
   const cmd = $('#cmdInput').value.trim();
+  S.algo = $('#algoChk').checked;
+  const platform = $('#platformSel').value;
+  Platform.setPref('last_command', cmd);
+  Platform.setPref('platform', platform);
+  pause();
+  const P = PLATFORMS.find(p => p.v === platform);
+  const cmdAspect = parseCommand(cmd).aspect;
+  // ---- 사진 없이 만들기 ----
   if (!visualMedia().length) {
-    toast('먼저 📁 가져오기로 사진·영상을 넣거나 🎨 AI 생성으로 만들어 주세요.', true);
+    if (!cmd) { toast('사진이 없으면 영상에 넣을 문구를 명령어에 적어 주세요. (또는 📁 사진·영상을 넣어 주세요)', true); $('#cmdInput').focus(); return; }
+    const b = busy('✨ 사진 없이 영상 만드는 중…', genReady() ? '장면을 기획하고, 장면마다 AI 사진을 만들고 있어요. (1~3분)' : '문구와 움직이는 배경으로 장면을 만들고 있어요.');
+    try {
+      if (!cmdAspect) S.aspect = P.aspect;
+      const { plan, summary } = await buildFromScratch(cmdAspect ? cmd : `${cmd} ${P.aspect === '9:16' ? '세로' : '가로'}`, { signal: b.signal, onStatus: t => b.set(null, t) });
+      b.close();
+      afterPlan(plan, summary);
+    } catch (e) { b.close(); if (!b.flag.cancelled) toast(e.message, true); }
     return;
   }
-  Platform.setPref('last_command', cmd);
-  pause();
   let plan = null;
-  if (aiReady()) {
+  if (aiReady() && FEATURES.aiEdit) {
     const b = busy('✨ AI가 사진을 보고 편집하는 중…', `사진 ${visualMedia().length}장을 살펴보고 순서·자막·효과를 정하고 있어요. (보통 20초~1분)`);
     try {
-      plan = await planWithAI(cmd, b.signal);
+      plan = await planWithAI(`${cmd}\n(올릴 곳: ${P.label})`, b.signal);
     } catch (e) {
       b.close();
       if (b.flag.cancelled) return;
@@ -516,64 +546,75 @@ async function autoMake() {
     b.close();
   }
   try {
-    if (!plan) plan = planFromCommand(cmd);
-    const summary = applyPlan(plan);
-    changed();
-    refreshAll();
-    toast('✨ ' + summary, false, 5000);
-    const narr = state.clips.filter(c => (c.narration || '').trim());
-    if (narr.length && genReady()) await makeVoiceForClips(narr);
-    else if (narr.length) toast('내레이션 문장을 각 장면에 넣어 두었어요. ⚙ AI 설정에 Google 키를 넣으면 AI 성우 목소리로 만들 수 있어요.', false, 5000);
-    else if (plan.wants_voice && !narr.length) toast('목소리를 넣으려면 "내레이션: 첫 문장 / 둘째 문장" 처럼 적거나 장면 편집에서 문장을 적어 주세요.', false, 5000);
-    seekTo(0);
-    play();
+    if (!plan) plan = planFromCommand(cmdAspect ? cmd : `${cmd} ${{ '9:16': '쇼츠', '16:9': '유튜브', '1:1': '정사각', '4:5': '피드' }[P.aspect]}`);
+    if (!cmdAspect) plan.aspect = P.aspect;
+    plan.platform = platform;
+    afterPlan(plan, applyPlan(plan));
   } catch (e) {
     toast(e.message, true);
   }
 }
+async function afterPlan(plan, summary) {
+  changed();
+  refreshAll();
+  toast('✨ ' + summary, false, 5000);
+  const narr = state.clips.filter(c => (c.narration || '').trim());
+  if (narr.length && genReady() && FEATURES.voice) await makeVoiceForClips(narr);
+  else if (narr.length) toast('내레이션 문장을 각 장면에 넣어 두었어요. ⚙ AI 설정에 Google 키를 넣으면 AI 성우 목소리로 만들 수 있어요.', false, 5000);
+  else if (plan.wants_voice) toast('목소리를 넣으려면 "내레이션: 첫 문장 / 둘째 문장" 처럼 적거나 장면 편집에서 문장을 적어 주세요.', false, 5000);
+  seekTo(0);
+  play();
+}
 
 /* ================================================================== 저장 (동영상) */
+let lastExport = null;
 async function doExport() {
   if (state.busy) return;
   if (!state.clips.length) { toast('먼저 장면을 만들어 주세요.', true); return; }
   pause();
-  const b = busy('⬇ 동영상 만드는 중…', `${S.aspect} · ${S.quality}p · ${S.fps}fps · ${fmt(totalDuration())}`);
-  let result;
+  const b = busy('⬇ 동영상 만드는 중…', `${S.aspect} · ${S.quality}p · ${S.fps}fps · ${fmt(totalDuration())}${S.maxSizeMB ? ` · ${S.maxSizeMB}MB 이하` : ''}`);
+  let prod;
   try {
-    result = await exportVideo({ quality: S.quality, signal: b.flag, onProgress: ({ pct, text }) => b.set(pct, text) });
+    prod = await produceVideo({ signal: b.flag, onProgress: ({ pct, text }) => b.set(pct, text) });
   } catch (e) {
     b.close();
     if (!(e instanceof ExportCancelled)) { console.error(e); toast('동영상을 만들지 못했습니다: ' + (e.message || e), true); }
+    refreshAll();
     return;
   }
-  const d = new Date(), p = n => String(n).padStart(2, '0');
-  const name = `영상뚝딱-${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}.${result.ext}`;
-  const url = URL.createObjectURL(result.blob);
-  $('#busyTitle').textContent = '✅ 동영상이 완성되었습니다';
-  $('#busyNote').textContent = '';
+  refreshAll();
+  const { blob, name, result, qa, pre } = prod;
+  lastExport = { blob, name };
+  stepDone.exported = true; updateSteps();
+  const url = URL.createObjectURL(blob);
+  $('#busyTitle').textContent = qa && !qa.ok ? '⚠️ 완성 — 확인이 필요한 부분이 있어요' : '✅ 동영상이 완성되었습니다';
+  const notes = [];
+  if (pre.fixed.length) notes.push('저장 전 자동으로 고친 것: ' + pre.fixed.join(', '));
+  if (qa) notes.push(qa.ok ? `🔍 자동 검수 통과 — 장면 ${qa.checked}개 화면·길이·크기 확인` : '🔍 검수 결과: ' + qa.issues.join(' / '));
+  $('#busyNote').textContent = notes.join('\n');
   $('#busyBar').parentElement.hidden = true;
   $('#busyPct').textContent = '';
   const rv = $('#resultVideo');
   rv.src = url;
   $('#resultBox').hidden = false;
-  $('#resultInfo').textContent = `${result.width}×${result.height} · ${(result.blob.size / 1048576).toFixed(1)}MB · ${result.codecs}`;
+  $('#resultInfo').textContent = `${result.width}×${result.height} · ${(blob.size / 1048576).toFixed(1)}MB · ${result.codecs}`;
   const cancel = $('#busyCancel');
   cancel.hidden = false; cancel.textContent = '닫기';
   cancel.onclick = () => { rv.pause(); rv.removeAttribute('src'); rv.load(); URL.revokeObjectURL(url); closeModal('#busyModal'); };
   const save = $('#resultSaveBtn'), show = $('#resultShowBtn');
   const doSave = async () => {
     try {
-      const r = await Platform.saveVideo(result.blob, name, t => { $('#resultInfo').textContent = t; });
+      const r = await Platform.saveVideo(blob, name, t => { $('#resultInfo').textContent = t; });
       $('#resultInfo').textContent = r.message;
       if (r.saved) {
         dirty = false; Platform.setDirty(false);
-        if (r.path && Platform.kind === 'desktop') { show.hidden = false; show.onclick = () => Platform.showInFolder(r.path); }
+        if (r.path && Platform.kind === 'desktop') { show.hidden = false; show.textContent = '📂 폴더 열기'; show.onclick = () => Platform.showInFolder(r.path); }
         if (Platform.canShare()) { show.hidden = false; show.textContent = '📤 공유·갤러리에 저장'; show.onclick = () => Platform.shareLast(name); }
       }
     } catch (e) { $('#resultInfo').textContent = '저장 실패: ' + e.message; }
   };
   const pubBtn = $('#resultPubBtn');
-  pubBtn.hidden = false;
+  pubBtn.hidden = !FEATURES.publish;
   pubBtn.onclick = () => { cancel.onclick(); openPublish(); };
   save.hidden = false;
   save.textContent = Platform.kind === 'web' ? '⬇ 다운로드' : '💾 저장';
@@ -761,7 +802,7 @@ async function toEnglishPrompt(text, statusEl, cinematic = false) {
 let pubPlatform = null;
 function openPublish(platform) {
   if (!state.clips.length) { toast('먼저 영상을 만들어 주세요.', true); return; }
-  pubPlatform = platform || pubPlatform || (S.aspect === '16:9' ? 'youtube' : 'shorts');
+  pubPlatform = platform || pubPlatform || $('#platformSel').value || (S.aspect === '16:9' ? 'youtube' : 'shorts');
   $('#pubTabs').innerHTML = PLATFORMS.map(p => `<button data-p="${p.v}" class="${p.v === pubPlatform ? 'on' : ''}">${p.label}</button>`).join('');
   renderChecklist();
   const c = basicCopy(pubPlatform);
@@ -871,7 +912,7 @@ function setMobile(m, alsoTab = true) {
 
 /* ================================================================== 메뉴 / 단축키 */
 const ACTIONS = {
-  new: newProject, import: doImport, openProject: () => openProject(), saveProject, export: doExport,
+  new: () => { newProject(); stepDone.exported = false; updateSteps(); }, import: doImport, openProject: () => openProject(), saveProject, export: doExport,
   undo: () => { if (isTyping()) { document.execCommand('undo'); return; } if (undo()) { refreshAll(); toast('실행 취소'); } },
   redo: () => { if (isTyping()) { document.execCommand('redo'); return; } if (redo()) { refreshAll(); toast('다시 실행'); } },
   dup: () => state.selectedId && duplicateClip(state.selectedId),
@@ -880,6 +921,7 @@ const ACTIONS = {
   home: () => seekTo(0),
   auto: autoMake, generate: openGenerate, aiSettings: openAiSettings, addText: addTextClip,
   help: () => openModal('#helpModal'),
+  series: () => openSeries(), compress: () => openCompress(), schedule: () => openSchedule(), about: () => openAbout(),
   publish: () => openPublish(),
   enhanceAll: () => { state.clips.forEach(x => { if (x.kind === 'media') x.enhance = 0.6; }); changed(); refreshAll(); toast('모든 장면에 화질 향상(60%)을 적용했습니다'); },
 };
@@ -903,6 +945,14 @@ function bind() {
   $('#aiSettingsBtn').addEventListener('click', openAiSettings);
   $('#publishBtn').addEventListener('click', () => openPublish());
   bindPublish();
+  $('#newBtn').addEventListener('click', ACTIONS.new);
+  $('#helpBtn').addEventListener('click', ACTIONS.help);
+  $('#aboutBtn2').addEventListener('click', () => { closeModal('#helpModal'); openAbout(); });
+  $('#seriesBtn').addEventListener('click', ACTIONS.series);
+  $('#compressBtn').addEventListener('click', ACTIONS.compress);
+  $('#scheduleBtn').addEventListener('click', ACTIONS.schedule);
+  $$('#steps .step[data-step="2"]').forEach(el => el.addEventListener('click', () => $('#cmdInput').focus()));
+  bindAutomation();
   $('#aiMode').addEventListener('click', openAiSettings);
   $('#exportBtn').addEventListener('click', doExport);
   $('#autoBtn').addEventListener('click', autoMake);
@@ -1050,7 +1100,7 @@ function bind() {
     if (mod && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) { if (!isTyping()) { e.preventDefault(); ACTIONS.redo(); } return; }
     if (Platform.kind !== 'desktop' && mod) { // 데스크톱은 메뉴 단축키가 처리
       const k = e.key.toLowerCase();
-      const map = { s: 'saveProject', o: 'openProject', e: 'export', i: 'import', g: 'generate', d: 'dup' };
+      const map = { s: 'saveProject', o: 'openProject', e: 'export', i: 'import', g: 'generate', d: 'dup', u: 'publish', t: 'addText' };
       if (map[k]) { e.preventDefault(); ACTIONS[map[k]](); return; }
     }
     if (isTyping() || e.target.tagName === 'SELECT') return;
@@ -1081,6 +1131,10 @@ hooks.onHistory = () => { $('#undoBtn').disabled = !hist.undo.length; $('#redoBt
   canvas = $('#stage');
   ctx = canvas.getContext('2d');
   document.body.dataset.platform = Platform.kind;
+  // 기능 켜고 끄기 (config.js)
+  $$('[data-feature]').forEach(el => { if (FEATURES[el.dataset.feature] === false) el.hidden = true; });
+  $('#copyFoot').textContent = `영상뚝딱 ${BRAND.version} · ${BRAND.copyright}`;
+  $('#platformSel').value = Platform.getPref('platform') || 'shorts';
   document.body.dataset.m = 'library';
   bind();
   await Promise.all([loadAiSettings(), loadGenSettings()]);
@@ -1088,8 +1142,248 @@ hooks.onHistory = () => { $('#undoBtn').disabled = !hist.undo.length; $('#redoBt
   $('#cmdInput').value = Platform.getPref('last_command') || '';
   commit();
   refreshAll();
+  if (FEATURES.schedule) Scheduler.start(() => { if (!$('#scheduleModal').hidden) renderJobs(); updateScheduleBadge(); });
+  updateScheduleBadge();
   if (document.fonts) {
     Promise.all(FONTS.map(f => document.fonts.load(`${f.weight} 40px ${f.v}`, '가나다ABC'))).catch(() => {}).finally(requestRender);
   }
   window.__ttuk = { state, importFiles, autoMake, doExport, exportVideo, applyPlan, planFromCommand, parseCommand, pitchShift, detectPitch, addVoiceMedia, Enhancer }; // 테스트용
 })();
+
+
+/* ================================================================== 시리즈 화면 */
+async function openSeries() {
+  openModal('#seriesModal');
+  await renderTemplates();
+}
+async function renderTemplates() {
+  const list = await SeriesDB.all().catch(() => []);
+  $('#tplList').innerHTML = list.length ? list.map(t => `<div class="tpl" data-id="${t.id}">
+      <div class="info"><b>📺 ${esc(t.name)} <span class="muted small">· 다음 ${t.episode}편</span></b>
+      <small>${esc(t.style.aspect)} · ${esc(MOODS[t.style.mood]?.label || '')} · ${esc(FILTERS.find(f => f.v === t.style.filter)?.label || '')} · 장면당 ${t.style.clipDur}초 · 한 편 ${t.style.perEpisode}장${t.bgmName ? ' · 🎵 ' + esc(t.bgmName) : ''}${t.logoName ? ' · 🏷 로고' : ''}</small>
+      <small>제목 형식: ${t.titlePattern ? esc(t.titlePattern) : '(없음)'}${t.concept ? ' · ' + esc(t.concept) : ''}</small></div>
+      <div class="acts">
+        <button class="btn btn-sm btn-accent" data-ep="one">＋ 새 편 만들기</button>
+        <button class="btn btn-sm" data-ep="batch">여러 편 한 번에</button>
+        <button class="btn btn-sm" data-ep="edit">이름·제목 형식</button>
+        <button class="btn btn-sm btn-danger" data-ep="del">삭제</button>
+      </div></div>`).join('')
+    : '<div class="empty-list">아직 시리즈가 없습니다. 마음에 드는 영상을 만든 뒤 <b>＋ 지금 영상을 시리즈로 저장</b>을 누르세요.</div>';
+}
+function pickFiles(accept = 'image/*,video/*', multiple = true) {
+  return new Promise(res => {
+    if (Platform.kind === 'desktop' && accept.includes('image')) { Platform.pickFiles().then(f => res(f || [])); return; }
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = accept; inp.multiple = multiple;
+    inp.onchange = () => res([...inp.files]);
+    inp.click();
+  });
+}
+async function seriesEpisode(tpl) {
+  if (dirty && state.clips.length && !confirm('지금 작업을 지우고 새 편을 만들까요? (저장이 필요하면 먼저 💾 프로젝트 저장)')) return;
+  toast(`${tpl.name} ${tpl.episode}편에 쓸 사진·영상을 고르세요 (없으면 취소 → 사진 없이 만들기)`, false, 4000);
+  const files = await pickFiles();
+  closeModal('#seriesModal');
+  dirty = false;
+  newProject();
+  const b = busy(`📺 ${tpl.name} ${tpl.episode}편 만드는 중…`, '같은 컨셉으로 새 사진에 맞춰 편집합니다.');
+  try {
+    const { added } = await loadFiles(files, (i, n, nm) => b.set(i / Math.max(1, n) * 0.2, `불러오는 중 ${i + 1}/${n} · ${nm}`));
+    await applyTemplateAssets(tpl);
+    b.set(null, '편집하는 중…');
+    const plan = await episodePlan(tpl, added, tpl.episode, b.signal);
+    const summary = applyPlan(plan);
+    tpl.episode++; await SeriesDB.put(tpl);
+    b.close();
+    afterPlan(plan, summary);
+  } catch (e) { b.close(); toast(e.message, true); }
+}
+async function seriesBatch(tpl) {
+  const files = await pickFiles();
+  if (!files.length) return;
+  const per = Math.max(1, +prompt(`사진·영상 ${files.length}개를 고르셨어요.\n한 편에 몇 개씩 쓸까요?`, String(tpl.style.perEpisode || 5)) || 0);
+  if (!per) return;
+  const groups = [];
+  for (let i = 0; i < files.length; i += per) groups.push(files.slice(i, i + per));
+  let outDir = '';
+  if (window.native?.chooseFolder) { outDir = await window.native.chooseFolder('완성된 영상을 저장할 폴더'); if (!outDir) return; }
+  if (!confirm(`${groups.length}편을 차례로 만들어 ${outDir || '다운로드 폴더'}에 저장합니다. 시작할까요?`)) return;
+  closeModal('#seriesModal');
+  const b = busy(`📺 ${tpl.name} — ${groups.length}편 만드는 중…`, '지금 작업은 그대로 보관됩니다.');
+  const results = [];
+  try {
+    for (let g = 0; g < groups.length; g++) {
+      if (b.flag.cancelled) break;
+      const n = tpl.episode;
+      await withIsolatedProject(async () => {
+        b.set(g / groups.length, `${n}편 (${g + 1}/${groups.length}) 준비 중…`);
+        const { added } = await loadFiles(groups[g]);
+        await applyTemplateAssets(tpl);
+        applyPlan(await episodePlan(tpl, added, n, b.signal));
+        if (genReady() && FEATURES.voice) await generateVoices(state.clips, { signal: b.signal, onStatus: t => b.set(null, t) });
+        const prod = await produceVideo({ signal: b.flag, onProgress: ({ pct, text }) => b.set((g + pct) / groups.length, `${n}편: ${text}`), name: `${tpl.name}-${n}편`.replace(/[\\/:*?"<>|]/g, '_') });
+        if (outDir) await window.native.writeFile(outDir, prod.name, new Uint8Array(await prod.blob.arrayBuffer()));
+        else await Platform.saveVideo(prod.blob, prod.name);
+        results.push(`${n}편 ✅${prod.qa && !prod.qa.ok ? ' (검수 확인 필요)' : ''}`);
+      });
+      tpl.episode++; await SeriesDB.put(tpl);
+    }
+  } catch (e) { results.push('❌ ' + e.message); }
+  b.close();
+  refreshAll();
+  toast(`시리즈 만들기 끝: ${results.join(', ')}`, results.some(r => r.startsWith('❌')), 8000);
+  if (outDir) window.native?.openPath?.(outDir);
+}
+function bindSeries() {
+  $('#tplFromProject').addEventListener('click', async () => {
+    if (!state.clips.length) { toast('먼저 영상을 하나 만들어 주세요. 그 영상의 모양이 시리즈가 됩니다.', true); return; }
+    const name = prompt('시리즈 이름을 정해 주세요', (state.clips.find(c => c.kind === 'text')?.text || '우리 시리즈').split('\n')[0].slice(0, 20));
+    if (!name) return;
+    const tpl = templateFromProject(name);
+    const pat = prompt('제목 형식 ({n} 자리에 편 번호가 들어갑니다. 비우면 제목 없음)', tpl.titlePattern || `${name} {n}편`);
+    if (pat !== null) tpl.titlePattern = pat;
+    await SeriesDB.put(tpl);
+    toast(`📺 '${name}' 시리즈를 저장했습니다. 다음부터 '새 편 만들기'로 사진만 넣으면 됩니다.`, false, 4500);
+    renderTemplates();
+  });
+  $('#tplFromRef').addEventListener('click', async () => {
+    const [file] = await pickFiles('video/*', false);
+    if (!file) return;
+    const name = prompt('시리즈 이름', file.name.replace(/\.[^.]+$/, '').slice(0, 20));
+    if (!name) return;
+    const b = busy('🎞 참고 영상 분석 중…', aiReady() ? '장면 길이·색감·비율을 재고, AI가 컨셉을 읽습니다.' : '장면 길이·색감·비율을 재고 있어요. (Claude 키가 있으면 컨셉까지 분석)');
+    try {
+      const tpl = await templateFromReference(file, name, ({ pct, text }) => b.set(pct, text), Object.assign(b.flag, { abortSignal: b.signal }));
+      await SeriesDB.put(tpl);
+      b.close();
+      toast('📺 참고 영상의 컨셉으로 시리즈를 만들었습니다.', false, 4000);
+      renderTemplates();
+    } catch (e) { b.close(); toast(e.message, true); }
+  });
+  $('#tplList').addEventListener('click', async e => {
+    const btn = e.target.closest('[data-ep]'); if (!btn) return;
+    const tpl = await SeriesDB.get(btn.closest('.tpl').dataset.id);
+    if (!tpl) return;
+    if (btn.dataset.ep === 'one') seriesEpisode(tpl);
+    else if (btn.dataset.ep === 'batch') seriesBatch(tpl);
+    else if (btn.dataset.ep === 'del') { if (confirm(`'${tpl.name}' 시리즈를 지울까요?`)) { await SeriesDB.del(tpl.id); renderTemplates(); } }
+    else if (btn.dataset.ep === 'edit') {
+      const name = prompt('시리즈 이름', tpl.name); if (name === null) return;
+      const pat = prompt('제목 형식 ({n} = 편 번호)', tpl.titlePattern); if (pat === null) return;
+      const ep = prompt('다음 편 번호', tpl.episode); if (ep === null) return;
+      Object.assign(tpl, { name: name || tpl.name, titlePattern: pat, episode: Math.max(1, parseInt(ep, 10) || tpl.episode) });
+      await SeriesDB.put(tpl); renderTemplates();
+    }
+  });
+}
+
+/* ================================================================== 용량 줄이기 화면 */
+let cmpFile = null, cmpMB = 25;
+function openCompress() {
+  $('#cmpPresets').innerHTML = SIZE_PRESETS.map(p => `<button data-mb="${p.mb}" class="${p.mb === cmpMB ? 'on' : ''}">${p.label}</button>`).join('');
+  $('#cmpUseLast').hidden = !lastExport;
+  $('#exportLimitChk').checked = !!S.maxSizeMB;
+  $('#cmpStatus').textContent = '';
+  openModal('#compressModal');
+}
+async function setCmpFile(f) {
+  cmpFile = f;
+  try {
+    const info = await probeVideo(f);
+    $('#cmpInfo').textContent = `${f.name} · ${(f.size / 1e6).toFixed(1)}MB · ${info.width}×${info.height} · ${info.duration.toFixed(1)}초 · 약 ${(info.bitrate / 1e6).toFixed(1)}Mbps`;
+  } catch (e) { $('#cmpInfo').textContent = '❌ ' + e.message; cmpFile = null; }
+}
+function bindCompress() {
+  $('#cmpPick').addEventListener('click', async () => { const [f] = await pickFiles('video/*', false); if (f) setCmpFile(f); });
+  $('#cmpUseLast').addEventListener('click', () => { if (lastExport) setCmpFile(new File([lastExport.blob], lastExport.name, { type: 'video/mp4' })); });
+  $('#cmpPresets').addEventListener('click', e => { const b = e.target.closest('[data-mb]'); if (!b) return; cmpMB = +b.dataset.mb; $('#cmpMB').value = cmpMB || ''; $$('#cmpPresets button').forEach(x => x.classList.toggle('on', x === b)); });
+  $('#cmpMB').addEventListener('input', e => { cmpMB = Math.max(0, +e.target.value || 0); $$('#cmpPresets button').forEach(x => x.classList.toggle('on', +x.dataset.mb === cmpMB)); });
+  $('#exportLimitChk').addEventListener('change', e => { S.maxSizeMB = e.target.checked ? (cmpMB || 0) : 0; changed(); toast(S.maxSizeMB ? `동영상 저장 시 ${S.maxSizeMB}MB 이하로 만듭니다` : '저장 용량 제한을 껐습니다'); });
+  $('#cmpGo').addEventListener('click', async () => {
+    if (!cmpFile) { toast('먼저 줄일 동영상을 골라 주세요.', true); return; }
+    closeModal('#compressModal');
+    const b = busy('📦 용량 줄이는 중…', `${cmpFile.name} → ${cmpMB ? cmpMB + 'MB 이하' : '화질 그대로 최대한 가볍게'}`);
+    try {
+      const r = await compressVideo(cmpFile, { maxMB: cmpMB, signal: b.flag, onProgress: ({ pct, text }) => b.set(pct, text) });
+      b.close();
+      if (r.unchanged) { toast('이 영상은 이미 충분히 가볍습니다. 더 줄이려면 목표 용량(MB)을 골라 주세요.', false, 5000); return; }
+      const name = cmpFile.name.replace(/\.[^.]+$/, '') + `-${(r.after / 1e6).toFixed(0)}MB.mp4`;
+      const saved = await Platform.saveVideo(r.blob, name);
+      toast(`📦 ${(r.before / 1e6).toFixed(1)}MB → ${(r.after / 1e6).toFixed(1)}MB (${Math.round((1 - r.after / r.before) * 100)}% 줄임, ${r.width}×${r.height}) · ${saved.message}`, false, 8000);
+    } catch (e) { b.close(); if (!(e instanceof ExportCancelled)) toast('줄이지 못했습니다: ' + e.message, true); }
+  });
+}
+
+/* ================================================================== 예약 화면 */
+function updateScheduleBadge() {
+  const n = FEATURES.schedule ? Scheduler.activeCount() : 0;
+  $('#scheduleBtn').textContent = n ? `⏰ 예약 ${n}` : '⏰ 예약';
+}
+let jFolder = '', jOut = '';
+async function openSchedule() {
+  const tpls = await SeriesDB.all().catch(() => []);
+  $('#jTpl').innerHTML = '<option value="">(시리즈 없이 명령어대로)</option>' + tpls.map(t => `<option value="${t.id}">📺 ${esc(t.name)}</option>`).join('');
+  const desk = Platform.kind === 'desktop';
+  $('#schedDesktopNote').textContent = desk ? '창을 닫아도 화면 오른쪽 아래 알림 영역에서 계속 동작합니다.' : '이 화면(앱)을 켜 두어야 동작합니다. 폴더 재료·저장 폴더는 PC 앱에서 쓸 수 있어요.';
+  $('#jSource').value = desk ? 'folder' : 'text';
+  $('#jSource').querySelector('option[value="folder"]').disabled = !desk;
+  syncJobForm();
+  renderJobs();
+  openModal('#scheduleModal');
+}
+function syncJobForm() {
+  $('#jAtField').hidden = $('#jUnit').value !== 'day';
+  $('#jFolderRow').hidden = $('#jSource').value !== 'folder';
+  $('#jOutRow').hidden = Platform.kind !== 'desktop';
+  $('#jFolder').textContent = jFolder || '(고르지 않음)';
+  $('#jOut').textContent = jOut || '(고르지 않음 — 동영상 폴더)';
+}
+function renderJobs() {
+  const jobs = Scheduler.list();
+  const when = t => new Date(t).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  $('#jobList').innerHTML = jobs.length ? jobs.map(j => `<div class="job${j.enabled ? '' : ' off'}" data-id="${j.id}">
+      <div class="info"><b>⏰ ${esc(j.name)} <span class="muted small">· ${Scheduler.describe(j)}</span></b>
+      <small>${j.source === 'folder' ? `재료: ${esc(j.folder)} (한 편 ${j.perEpisode}개)` : '재료: 사진 없이 명령어로'}${j.command ? ' · ' + esc(j.command) : ''}</small>
+      <small>${j.enabled ? `다음 실행: ${when(j.nextRun)}` : '일시정지됨'} · 만든 영상 ${j.runs}개${j.last ? ` · 지난번 ${when(j.last.time)} ${j.last.ok ? '✅' : '⚠️ ' + esc(j.last.msg)}` : ''}</small></div>
+      <div class="acts">
+        <button class="btn btn-sm" data-j="run">▶ 지금 실행</button>
+        <button class="btn btn-sm" data-j="toggle">${j.enabled ? '⏸ 일시정지' : '▶ 다시 켜기'}</button>
+        <button class="btn btn-sm btn-danger" data-j="del">삭제</button>
+      </div></div>`).join('')
+    : '<div class="empty-list">아직 예약이 없습니다. 아래에서 새 예약을 추가하세요.</div>';
+}
+function bindSchedule() {
+  ['#jUnit', '#jSource'].forEach(id => $(id).addEventListener('change', syncJobForm));
+  $('#jFolderBtn').addEventListener('click', async () => { const f = await window.native?.chooseFolder?.('재료 폴더 (새 사진·영상을 넣어 둘 곳)'); if (f) { jFolder = f; syncJobForm(); } });
+  $('#jOutBtn').addEventListener('click', async () => { const f = await window.native?.chooseFolder?.('완성 영상 저장 폴더'); if (f) { jOut = f; syncJobForm(); } });
+  $('#jAdd').addEventListener('click', () => {
+    const job = {
+      name: $('#jName').value.trim() || '예약 영상', templateId: $('#jTpl').value, every: Math.max(1, +$('#jEvery').value || 1), unit: $('#jUnit').value,
+      at: $('#jAt').value, source: $('#jSource').value, folder: jFolder, perEpisode: Math.max(1, +$('#jPer').value || 5), command: $('#jCmd').value.trim(), outDir: jOut,
+    };
+    if (job.source === 'folder' && !job.folder) { $('#schedStatus').textContent = '❌ 재료 폴더를 골라 주세요.'; return; }
+    if (job.source === 'text' && !job.command && !job.templateId) { $('#schedStatus').textContent = '❌ 사진 없이 만들려면 명령어를 적거나 시리즈를 골라 주세요.'; return; }
+    if (job.unit === 'min' && job.every < 5) { job.every = 5; toast('영상 만드는 시간을 고려해 최소 5분 간격으로 맞췄습니다'); }
+    Scheduler.add(job);
+    $('#schedStatus').textContent = `✅ 예약을 추가했습니다 — ${Scheduler.describe(job)}`;
+    renderJobs(); updateScheduleBadge();
+    window.native?.setKeepRunning?.(true);
+  });
+  $('#jobList').addEventListener('click', async e => {
+    const b = e.target.closest('[data-j]'); if (!b) return;
+    const id = b.closest('.job').dataset.id, j = Scheduler.get(id);
+    if (b.dataset.j === 'run') { closeModal('#scheduleModal'); await Scheduler.runJob(j, true); }
+    else if (b.dataset.j === 'toggle') Scheduler.update(id, { enabled: !j.enabled });
+    else if (b.dataset.j === 'del' && confirm(`'${j.name}' 예약을 지울까요?`)) Scheduler.remove(id);
+    renderJobs(); updateScheduleBadge();
+    window.native?.setKeepRunning?.(Scheduler.activeCount() > 0);
+  });
+}
+
+/* ================================================================== 정보 */
+function openAbout() {
+  $('#aboutVer').textContent = 'v' + BRAND.version;
+  $('#aboutCopy').textContent = BRAND.copyright;
+  openModal('#aboutModal');
+}
+function bindAutomation() { bindSeries(); bindCompress(); bindSchedule(); }

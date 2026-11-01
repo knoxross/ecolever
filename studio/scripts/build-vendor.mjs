@@ -14,9 +14,11 @@ await build({
       import { Muxer, ArrayBufferTarget } from 'mp4-muxer';
       import { Filesystem, Directory } from '@capacitor/filesystem';
       import { Share } from '@capacitor/share';
+      import { createFile, DataStream, Endianness, MP4BoxBuffer } from 'mp4box';
       window.Anthropic = Anthropic;
       window.Mp4Muxer = { Muxer, ArrayBufferTarget };
       window.CapPlugins = { Filesystem, Directory, Share };
+      window.MP4Box = { createFile, DataStream, Endianness, MP4BoxBuffer };
     `,
     resolveDir: root,
     loader: 'js',

@@ -13,4 +13,11 @@ contextBridge.exposeInMainWorld('native', {
   httpGet: (url, headers) => ipcRenderer.invoke('http-get', url, headers),
   setDirty: d => ipcRenderer.send('dirty', d),
   onMenu: cb => ipcRenderer.on('menu', (_e, action) => cb(action)),
+  setKeepRunning: on => ipcRenderer.send('keep-running', on),
+  chooseFolder: title => ipcRenderer.invoke('choose-folder', title),
+  listFolder: dir => ipcRenderer.invoke('list-folder', dir),
+  readFile: p => ipcRenderer.invoke('read-file', p),
+  writeFile: (dir, name, data) => ipcRenderer.invoke('write-file', dir, name, data),
+  openPath: p => ipcRenderer.invoke('open-path', p),
+  notify: (title, body) => ipcRenderer.invoke('notify', title, body),
 });

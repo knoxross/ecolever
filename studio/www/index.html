@@ -4,34 +4,67 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data:; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' blob: data:; media-src 'self' blob: data:; connect-src 'self' blob: data: https://api.anthropic.com https://generativelanguage.googleapis.com https://*.googleapis.com https://*.googleusercontent.com https://localhost capacitor: http://localhost:*;">
-<title>영상뚝딱</title>
+<title>영상뚝딱 — (주)알앤케이그린월드</title>
 <link rel="stylesheet" href="fonts/fonts.css">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header class="topbar">
-  <div class="brand"><span class="logo">▶</span><b>영상뚝딱</b><span class="tagline">사진 넣고 명령어 한 줄이면 영상 완성</span></div>
+  <div class="brand"><img src="icon.png" class="logo-img" alt=""><b>영상뚝딱</b><span class="tagline">사진 넣고 명령어 한 줄이면 영상 완성</span></div>
   <div class="top-actions">
-    <button class="btn" id="importBtn" title="사진·영상·음악 가져오기 (Ctrl+I)">📁 <span class="lbl">가져오기</span></button>
-    <button class="btn btn-gen" id="genBtn" title="AI로 사람·물건 사진, 영상 만들기 (Ctrl+G)">🎨 <span class="lbl">AI 생성</span></button>
-    <button class="btn" id="addTextBtn" title="제목·문구 화면 추가">＋ <span class="lbl">글자 화면</span></button>
-    <button class="btn icon-only" id="openProjBtn" title="프로젝트 열기 (Ctrl+O)">📂</button>
-    <button class="btn icon-only" id="saveProjBtn" title="프로젝트 저장 (Ctrl+S)">💾</button>
+    <button class="btn icon-only" id="newBtn" title="새로 만들기 (Ctrl+N)">🆕</button>
+    <button class="btn icon-only" id="openProjBtn" data-feature="project" title="프로젝트 열기 (Ctrl+O)">📂</button>
+    <button class="btn icon-only" id="saveProjBtn" data-feature="project" title="프로젝트 저장 (Ctrl+S)">💾</button>
     <button class="btn icon-only" id="undoBtn" title="실행 취소 (Ctrl+Z)">↶</button>
     <button class="btn icon-only" id="redoBtn" title="다시 실행 (Ctrl+Y)">↷</button>
-    <button class="btn" id="publishBtn" title="업로드 도우미: 알고리즘 점검 · 제목 · 해시태그 · 썸네일">📈 <span class="lbl">업로드 도우미</span></button>
     <button class="btn" id="aiSettingsBtn" title="AI 설정">⚙ <span class="lbl">AI 설정</span></button>
-    <button class="btn btn-accent" id="exportBtn" title="동영상 파일로 저장 (Ctrl+E)">⬇ <span class="lbl">동영상 저장</span></button>
+    <button class="btn icon-only" id="helpBtn" title="사용 방법 (F1)">❓</button>
   </div>
   <input type="file" id="fileInput" multiple accept="image/*,video/*,audio/*" hidden>
   <input type="file" id="projInput" accept=".ttuk" hidden>
+  <input type="file" id="anyVideoInput" accept="video/*" hidden>
 </header>
+
+<nav class="steps" id="steps">
+  <div class="step" data-step="1">
+    <span class="num">1</span><span class="st-name">재료 넣기</span>
+    <button class="btn btn-sm" id="importBtn" title="사진·영상·음악 가져오기 (Ctrl+I)">📁 사진·영상·음악</button>
+    <button class="btn btn-sm btn-gen" id="genBtn" data-feature="aiGenerate" title="AI로 사람·물건 사진, 영상 만들기 (Ctrl+G)">🎨 AI로 만들기</button>
+    <button class="btn btn-sm" id="addTextBtn" title="제목·문구 화면 추가 (Ctrl+T)">＋ 글자 화면</button>
+  </div>
+  <div class="step" data-step="2">
+    <span class="num">2</span><span class="st-name">명령하기</span>
+    <span class="st-hint">아래 칸에 적고 ✨</span>
+  </div>
+  <div class="step" data-step="3">
+    <span class="num">3</span><span class="st-name">다듬기</span>
+    <span class="st-hint">장면 눌러서 고치기</span>
+  </div>
+  <div class="step" data-step="4">
+    <span class="num">4</span><span class="st-name">저장·올리기</span>
+    <button class="btn btn-sm btn-accent" id="exportBtn" title="동영상 파일로 저장 (Ctrl+E)">⬇ 동영상 저장</button>
+    <button class="btn btn-sm" id="publishBtn" data-feature="publish" title="알고리즘 점검 · 제목 · 해시태그 · 썸네일 (Ctrl+U)">📈 업로드 도우미</button>
+    <button class="btn btn-sm" id="compressBtn" data-feature="compress" title="용량 줄이기">📦 용량 줄이기</button>
+  </div>
+  <div class="step auto">
+    <span class="st-name">자동화</span>
+    <button class="btn btn-sm" id="seriesBtn" data-feature="series" title="마음에 드는 영상 컨셉으로 다음 편 계속 만들기">📺 시리즈</button>
+    <button class="btn btn-sm" id="scheduleBtn" data-feature="schedule" title="분·시간·일 단위 예약 만들기">⏰ 예약</button>
+  </div>
+</nav>
 
 <!-- 명령어 입력 -->
 <section class="command">
   <div class="cmd-row">
     <div class="cmd-box">
       <textarea id="cmdInput" rows="2" placeholder="원하는 영상을 말로 적어주세요.  예) 인스타 릴스 15초, 신나게, 제목은 '에코백 신상 출시', 마지막에 010-1234-5678"></textarea>
+      <div class="cmd-opts">
+        <label class="opt">올릴 곳 <select id="platformSel">
+          <option value="shorts">YouTube 쇼츠</option><option value="reels">인스타 릴스</option><option value="tiktok">틱톡</option><option value="youtube">유튜브 가로</option>
+        </select></label>
+        <label class="opt" title="첫 1초 훅, 2~3초 장면 전환, 진행 막대, 처음으로 이어지는 반복 재생, 행동 유도, 자막 안전 영역"><input type="checkbox" id="algoChk" checked> 📈 알고리즘 최적화</label>
+        <span class="muted small">사진이 없어도 됩니다 — 문구만 적으면 움직이는 배경으로 만들어요</span>
+      </div>
       <div class="chips" id="chips"></div>
     </div>
     <div class="cmd-side">
@@ -282,6 +315,82 @@
   </div>
 </div>
 
+<!-- 시리즈 -->
+<div class="modal" id="seriesModal" hidden>
+  <div class="modal-card wide">
+    <h2>📺 시리즈 — 마음에 드는 컨셉으로 계속 만들기</h2>
+    <p class="muted small">한 번 마음에 든 영상의 <b>모양(비율·분위기·글꼴·자막·색감·전환·속도·제목 형식·마무리·음악·로고)</b>을 저장해 두면, 다음부터는 <b>새 사진·영상만 넣어서</b> 같은 느낌의 다음 편을 만듭니다.</p>
+    <div class="btn-row">
+      <button class="btn btn-accent" id="tplFromProject">＋ 지금 영상을 시리즈로 저장</button>
+      <button class="btn" id="tplFromRef">🎞 참고 영상에서 컨셉 따오기</button>
+    </div>
+    <div class="tpl-list" id="tplList"></div>
+    <p class="small" id="seriesStatus"></p>
+    <div class="modal-actions"><button class="btn" data-close>닫기</button></div>
+  </div>
+</div>
+
+<!-- 용량 줄이기 -->
+<div class="modal" id="compressModal" hidden>
+  <div class="modal-card">
+    <h2>📦 용량 줄이기</h2>
+    <p class="muted small">SNS·메신저·이메일에 올릴 수 있게 화질은 최대한 지키면서 용량을 줄입니다. 목표가 너무 작으면 해상도를 한 단계 낮춰 뭉개짐 없이 선명하게 만듭니다.</p>
+    <div class="field"><label>줄일 동영상</label>
+      <div class="btn-row"><button class="btn btn-sm" id="cmpPick">📁 동영상 고르기</button><button class="btn btn-sm" id="cmpUseLast" hidden>방금 만든 영상</button></div>
+      <p class="small" id="cmpInfo">아직 고르지 않았습니다.</p>
+    </div>
+    <div class="field"><label>목표 용량</label><div class="seg size-seg" id="cmpPresets"></div></div>
+    <div class="field"><label>직접 입력 (MB)</label><input type="number" id="cmpMB" min="1" step="1" placeholder="예) 40"></div>
+    <hr>
+    <label class="check"><input type="checkbox" id="exportLimitChk"> 동영상 저장할 때도 이 용량 안으로 만들기</label>
+    <p class="small" id="cmpStatus"></p>
+    <div class="modal-actions"><button class="btn" data-close>닫기</button><button class="btn btn-accent" id="cmpGo">📦 줄이기</button></div>
+  </div>
+</div>
+
+<!-- 예약 -->
+<div class="modal" id="scheduleModal" hidden>
+  <div class="modal-card wide">
+    <h2>⏰ 예약 만들기</h2>
+    <p class="muted small">정해 둔 간격마다 자동으로 새 영상을 만들어 저장합니다. 앱이 켜져 있는 동안 동작해요. <span id="schedDesktopNote"></span></p>
+    <div class="job-list" id="jobList"></div>
+    <hr>
+    <h3 class="h3">새 예약</h3>
+    <div class="row2">
+      <div class="field"><label>이름</label><input type="text" id="jName" placeholder="예) 에코백 매일 쇼츠"></div>
+      <div class="field"><label>시리즈 (모양)</label><select id="jTpl"></select></div>
+    </div>
+    <div class="row3">
+      <div class="field"><label>얼마마다</label><input type="number" id="jEvery" min="1" value="1"></div>
+      <div class="field"><label>단위</label><select id="jUnit"><option value="min">분</option><option value="hour">시간</option><option value="day" selected>일</option></select></div>
+      <div class="field" id="jAtField"><label>몇 시에 (일 단위)</label><input type="time" id="jAt" value="09:00"></div>
+    </div>
+    <div class="field"><label>재료</label>
+      <select id="jSource"><option value="folder">폴더에 넣어 둔 새 사진·영상 (데스크톱)</option><option value="text">사진 없이 명령어로 (AI 사진 생성 가능)</option></select>
+    </div>
+    <div class="row2" id="jFolderRow">
+      <div class="field"><label>재료 폴더</label><div class="btn-row"><button class="btn btn-sm" id="jFolderBtn">📁 고르기</button><span class="small" id="jFolder"></span></div></div>
+      <div class="field"><label>한 편에 쓸 개수</label><input type="number" id="jPer" min="1" max="40" value="5"></div>
+    </div>
+    <div class="field"><label>명령어 (선택)</label><input type="text" id="jCmd" placeholder="예) 쇼츠 15초 신나게, 마지막에 010-1234-5678"></div>
+    <div class="field" id="jOutRow"><label>저장 폴더</label><div class="btn-row"><button class="btn btn-sm" id="jOutBtn">📁 고르기</button><span class="small" id="jOut"></span></div></div>
+    <p class="small" id="schedStatus"></p>
+    <div class="modal-actions"><button class="btn" data-close>닫기</button><button class="btn btn-accent" id="jAdd">＋ 예약 추가</button></div>
+  </div>
+</div>
+
+<!-- 정보 -->
+<div class="modal" id="aboutModal" hidden>
+  <div class="modal-card">
+    <div class="about"><img src="icon.png" alt=""><div><h2>영상뚝딱 <small id="aboutVer"></small></h2><p class="muted">사진 넣고 명령어 한 줄이면 완성되는 홍보 영상 제작기</p></div></div>
+    <p class="copyright" id="aboutCopy"></p>
+    <p class="muted small">본 프로그램의 저작권은 (주)알앤케이그린월드에 있으며, 무단 복제·배포·개작을 금합니다.<br>AI 편집: Claude (Anthropic) · AI 생성·성우: Google Gemini / Imagen / Veo · 글꼴: Noto Sans KR, Black Han Sans, Gowun Batang, Jua (SIL Open Font License)</p>
+    <div class="modal-actions"><button class="btn btn-accent" data-close>확인</button></div>
+  </div>
+</div>
+
+<footer class="copy-foot" id="copyFoot"></footer>
+
 <!-- 도움말 -->
 <div class="modal" id="helpModal" hidden>
   <div class="modal-card wide">
@@ -307,10 +416,19 @@
         <li><b>색감</b>: 흑백, 빈티지, 따뜻하게, 시원하게, 선명하게</li>
         <li><b>순서</b>: 섞어서 / 순서대로</li>
       </ul>
+      <h3>새 기능 한눈에</h3>
+      <ul>
+        <li><b>사진 없이 만들기</b>: 사진을 넣지 않고 문구만 적어도 움직이는 배경·아이콘으로 영상을 만듭니다. Google 키가 있으면 장면마다 AI 사진을 만들어 넣습니다.</li>
+        <li><b>📈 알고리즘 최적화</b>: 첫 1초 훅(첫 장면 위 제목), 2~3초 장면 전환, 위쪽 진행 막대, 처음으로 이어지는 반복 재생, 마지막 행동 유도 문구, 자막 안전 영역을 자동으로 적용합니다.</li>
+        <li><b>📺 시리즈</b>: 마음에 드는 영상을 시리즈로 저장 → 다음부터 사진만 넣으면 같은 컨셉의 다음 편. 참고 영상에서 컨셉을 따올 수도 있고, 여러 편을 한 번에 만들 수도 있습니다.</li>
+        <li><b>⏰ 예약</b>: 분·시간·일 단위(또는 매일 몇 시)로 폴더의 새 사진이나 명령어로 자동 제작·저장. PC 앱은 창을 닫아도 알림 영역에서 계속 동작합니다.</li>
+        <li><b>📦 용량 줄이기</b>: 목표 MB 안으로, 화질은 최대한 유지하며 압축. 저장할 때부터 용량 제한을 걸 수도 있습니다.</li>
+        <li><b>🔍 자동 검수</b>: 저장 전 오류를 자동으로 고치고, 저장 후 장면마다 화면을 다시 확인합니다 (검은 화면·깨짐·길이 오류).</li>
+      </ul>
       <h3>단축키</h3>
       <p>Space 재생/정지 · ←/→ 0.1초 이동(Shift: 1초) · Delete 장면 삭제 · Ctrl+Z 실행 취소 · Ctrl+Y 다시 실행 · Ctrl+D 장면 복제 · Ctrl+Enter 자동으로 만들기 · Ctrl+E 저장</p>
     </div>
-    <div class="modal-actions"><button class="btn btn-accent" data-close>닫기</button></div>
+    <div class="modal-actions"><button class="btn" id="aboutBtn2">ⓘ 프로그램 정보</button><button class="btn btn-accent" data-close>닫기</button></div>
   </div>
 </div>
 
@@ -318,6 +436,7 @@
 <div id="videoPool" aria-hidden="true"></div>
 
 <script src="vendor/vendor.js"></script>
+<script src="js/config.js"></script>
 <script src="js/core.js"></script>
 <script src="js/platform.js"></script>
 <script src="js/enhance.js"></script>
@@ -327,6 +446,11 @@
 <script src="js/generate.js"></script>
 <script src="js/project.js"></script>
 <script src="js/publish.js"></script>
+<script src="js/qa.js"></script>
+<script src="js/series.js"></script>
+<script src="js/compress.js"></script>
+<script src="js/pipeline.js"></script>
+<script src="js/scheduler.js"></script>
 <script src="js/exporter.js"></script>
 <script src="js/ui.js"></script>
 </body>

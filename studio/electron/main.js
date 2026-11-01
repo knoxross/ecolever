@@ -1,10 +1,13 @@
 // 영상뚝딱 — 데스크톱 앱 (윈도우 / 맥)
-const { app, BrowserWindow, Menu, dialog, ipcMain, shell, protocol, net, safeStorage, session } = require('electron');
+const { app, BrowserWindow, Menu, Tray, Notification, nativeImage, dialog, ipcMain, shell, protocol, net, safeStorage, session } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 const { pathToFileURL } = require('node:url');
 
 const APP_NAME = '영상뚝딱';
+const COMPANY = '(주)알앤케이그린월드';
+const COPYRIGHT = `Copyright © ${new Date().getFullYear()} ${COMPANY}. All rights reserved.`;
+const startHidden = process.argv.includes('--hidden');
 const WWW = path.join(__dirname, '..', 'www');
 const isMac = process.platform === 'darwin';
 app.setName(APP_NAME);
@@ -17,6 +20,9 @@ if (!app.requestSingleInstanceLock()) { app.quit(); }
 
 let win = null;
 let dirty = false;
+let keepRunning = false;   // 예약 작업이 있으면 창을 닫아도 알림 영역에서 계속
+let quitting = false;
+let tray = null;
 
 const MIME = {
   '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.gif': 'image/gif', '.webp': 'image/webp', '.bmp': 'image/bmp', '.avif': 'image/avif', '.heic': 'image/heic',
@@ -32,6 +38,7 @@ function createWindow() {
     icon: path.join(__dirname, '..', 'build', 'icon.png'),
     show: false,
     webPreferences: {
+      backgroundThrottling: false, // 창이 가려져도 예약·저장 작업이 느려지지 않게
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
@@ -39,7 +46,7 @@ function createWindow() {
       spellcheck: false,
     },
   });
-  win.once('ready-to-show', () => win.show());
+  win.once('ready-to-show', () => { if (!startHidden) win.show(); });
   win.loadURL('app://ttukttak/index.html');
 
   // 외부 링크는 기본 브라우저로
@@ -51,12 +58,22 @@ function createWindow() {
 
   // 저장 안 한 작업이 있으면 닫기 전에 확인
   win.on('close', e => {
+    if (!quitting && keepRunning) {
+      // 예약 작업이 켜져 있으면 끄지 않고 알림 영역으로
+      e.preventDefault();
+      win.hide();
+      if (process.platform === 'win32' && tray && !tray._shown) {
+        tray._shown = true;
+        tray.displayBalloon?.({ title: APP_NAME, content: '예약 작업을 위해 알림 영역에서 계속 실행 중입니다. 완전히 끄려면 아이콘을 오른쪽 클릭 → 종료.' });
+      }
+      return;
+    }
     if (!dirty) return;
     const r = dialog.showMessageBoxSync(win, {
       type: 'question', buttons: ['저장하지 않고 닫기', '취소'], defaultId: 1, cancelId: 1,
       title: APP_NAME, message: '저장하지 않은 작업이 있습니다.', detail: '닫으면 지금 만든 장면 구성이 사라집니다. (💾 프로젝트 저장으로 보관할 수 있어요)',
     });
-    if (r === 1) e.preventDefault();
+    if (r === 1) { e.preventDefault(); quitting = false; }
   });
 }
 
@@ -124,6 +141,10 @@ function buildMenu() {
         { label: '🎨 AI로 사람·물건·영상 만들기…', accelerator: `${cmd}+G`, click: () => send('generate') },
         { label: '📈 업로드 도우미 (알고리즘 점검·제목·해시태그·썸네일)…', accelerator: `${cmd}+U`, click: () => send('publish') },
         { type: 'separator' },
+        { label: '📺 시리즈 (같은 컨셉으로 다음 편)…', click: () => send('series') },
+        { label: '⏰ 예약 만들기 (분·시간·일)…', click: () => send('schedule') },
+        { label: '📦 용량 줄이기…', click: () => send('compress') },
+        { type: 'separator' },
         { label: 'AI 설정 (API 키)…', click: () => send('aiSettings') },
       ],
     },
@@ -149,6 +170,8 @@ function buildMenu() {
       label: '도움말',
       submenu: [
         { label: '사용 방법 · 명령어 예시', accelerator: 'F1', click: () => send('help') },
+        { label: '업데이트 확인', click: () => checkUpdates(true) },
+        { label: '윈도우 시작 시 자동 실행 (예약용)', type: 'checkbox', checked: app.getLoginItemSettings().openAtLogin, click: item => app.setLoginItemSettings({ openAtLogin: item.checked, args: ['--hidden'] }) },
         { label: 'Claude API 키 발급 (console.anthropic.com)', click: () => shell.openExternal('https://console.anthropic.com/settings/keys') },
         { label: 'Google AI 키 발급 (aistudio.google.com)', click: () => shell.openExternal('https://aistudio.google.com/apikey') },
         ...(isMac ? [] : [{ type: 'separator' }, { label: `${APP_NAME} 정보`, click: about }]),
@@ -161,9 +184,43 @@ function buildMenu() {
 function about() {
   dialog.showMessageBox(win, {
     type: 'info', title: `${APP_NAME} 정보`, message: `${APP_NAME} ${app.getVersion()}`,
-    detail: '사진 넣고 명령어 한 줄이면 완성되는 동영상 제작기\n\nAI 편집: Claude (Anthropic)\nAI 생성·성우: Google Gemini / Imagen / Veo\n\n© R&K GREENWORLD',
+    detail: `사진 넣고 명령어 한 줄이면 완성되는 홍보 영상 제작기\n\n${COPYRIGHT}\n본 프로그램의 저작권은 ${COMPANY}에 있으며 무단 복제·배포·개작을 금합니다.\n\nAI 편집: Claude (Anthropic)\nAI 생성·성우: Google Gemini / Imagen / Veo`,
     buttons: ['확인'],
   });
+}
+
+/* ---------- 알림 영역(트레이) ---------- */
+function showWindow() { if (!win) createWindow(); else { win.show(); if (win.isMinimized()) win.restore(); win.focus(); } }
+function setupTray() {
+  if (tray) return;
+  const img = nativeImage.createFromPath(path.join(__dirname, '..', 'build', 'icon.png')).resize({ width: 16, height: 16 });
+  tray = new Tray(img);
+  tray.setToolTip(`${APP_NAME} — 예약 작업 실행 중`);
+  tray.setContextMenu(Menu.buildFromTemplate([
+    { label: `${APP_NAME} 열기`, click: showWindow },
+    { type: 'separator' },
+    { label: '종료', click: () => { quitting = true; app.quit(); } },
+  ]));
+  tray.on('click', showWindow);
+}
+
+/* ---------- 자동 업데이트 (회사 홈페이지에 새 버전을 올리면 자동 설치) ---------- */
+let updater = null;
+function checkUpdates(manual = false) {
+  try {
+    if (!updater) {
+      updater = require('electron-updater').autoUpdater;
+      updater.autoDownload = true;
+      updater.on('update-downloaded', info => {
+        const r = dialog.showMessageBoxSync(win, { type: 'info', buttons: ['지금 다시 시작해서 설치', '나중에'], defaultId: 0, title: APP_NAME, message: `새 버전 ${info.version} 이(가) 준비되었습니다.`, detail: '다시 시작하면 새 기능이 적용됩니다. (작업은 먼저 저장하세요)' });
+        if (r === 0) { quitting = true; updater.quitAndInstall(); }
+      });
+    }
+    updater.checkForUpdates().then(r => {
+      if (manual && (!r || !r.isUpdateAvailable)) dialog.showMessageBox(win, { type: 'info', title: APP_NAME, message: '최신 버전을 쓰고 있습니다.', buttons: ['확인'] });
+      else if (manual) dialog.showMessageBox(win, { type: 'info', title: APP_NAME, message: '새 버전을 내려받는 중입니다. 다 받으면 알려 드릴게요.', buttons: ['확인'] });
+    }).catch(e => { if (manual) dialog.showMessageBox(win, { type: 'warning', title: APP_NAME, message: '업데이트를 확인하지 못했습니다.', detail: String(e.message || e).slice(0, 300), buttons: ['확인'] }); });
+  } catch (e) { if (manual) dialog.showMessageBox(win, { type: 'warning', title: APP_NAME, message: '업데이트 기능을 쓸 수 없습니다.', detail: String(e), buttons: ['확인'] }); }
 }
 
 /* ---------- 비밀 키 보관 (운영체제 암호화) ---------- */
@@ -226,6 +283,32 @@ function registerIpc() {
     return { status: res.status, body: new Uint8Array(await res.arrayBuffer()) };
   });
   ipcMain.on('dirty', (_e, d) => { dirty = !!d; });
+  ipcMain.on('keep-running', (_e, on) => { keepRunning = !!on; if (keepRunning) setupTray(); });
+  ipcMain.handle('choose-folder', async (_e, title) => {
+    const r = await dialog.showOpenDialog(win, { title: title || '폴더 고르기', buttonLabel: '이 폴더 선택', properties: ['openDirectory', 'createDirectory'] });
+    return r.canceled ? '' : r.filePaths[0];
+  });
+  ipcMain.handle('list-folder', async (_e, dir) => {
+    const names = await fs.promises.readdir(dir).catch(() => []);
+    const out = [];
+    for (const n of names) {
+      const p = path.join(dir, n);
+      const st = await fs.promises.stat(p).catch(() => null);
+      if (st && st.isFile()) out.push({ path: p, name: n, size: st.size, mtime: st.mtimeMs });
+    }
+    return out;
+  });
+  ipcMain.handle('read-file', async (_e, p) => ({ data: await fs.promises.readFile(p), type: MIME[path.extname(p).toLowerCase()] || '' }));
+  ipcMain.handle('write-file', async (_e, dir, name, data) => {
+    const target = dir || app.getPath('videos');
+    await fs.promises.mkdir(target, { recursive: true });
+    let p = path.join(target, name), k = 1;
+    while (fs.existsSync(p)) p = path.join(target, name.replace(/(\.[^.]+)$/, `(${++k})$1`));
+    await fs.promises.writeFile(p, Buffer.from(data));
+    return p;
+  });
+  ipcMain.handle('open-path', (_e, p) => shell.openPath(p));
+  ipcMain.handle('notify', (_e, title, body) => { if (Notification.isSupported()) new Notification({ title, body }).show(); });
 }
 
 app.whenReady().then(() => {
@@ -243,7 +326,10 @@ app.whenReady().then(() => {
   registerIpc();
   buildMenu();
   createWindow();
+  if (startHidden) setupTray();
+  if (app.isPackaged) setTimeout(() => checkUpdates(false), 15000);
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 });
-app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
-app.on('window-all-closed', () => { if (!isMac) app.quit(); });
+app.on('second-instance', showWindow);
+app.on('before-quit', () => { quitting = true; });
+app.on('window-all-closed', () => { if (!isMac && !keepRunning) app.quit(); });

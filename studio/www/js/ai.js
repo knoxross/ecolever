@@ -171,3 +171,53 @@ async function testAiKey(key, model) {
     return { ok: false, message: aiErrorMessage(e) };
   }
 }
+
+/* ------------------------------------------------------------------ 사진 없이: AI 가 장면 기획 */
+const SCRATCH_SCHEMA = {
+  type: 'object', additionalProperties: false,
+  required: ['aspect', 'mood', 'font', 'title', 'outro', 'scenes', 'summary'],
+  properties: {
+    aspect: enumOf(['16:9', '9:16', '1:1', '4:5']),
+    mood: enumOf(Object.keys(MOODS)),
+    font: enumOf(FONTS.map(f => f.v)),
+    title: textCard,
+    outro: textCard,
+    scenes: {
+      type: 'array',
+      items: {
+        type: 'object', additionalProperties: false,
+        required: ['caption', 'narration', 'image_prompt', 'emoji', 'duration', 'transition'],
+        properties: {
+          caption: { type: 'string' },
+          narration: { type: 'string' },
+          image_prompt: { type: 'string' },
+          emoji: { type: 'string' },
+          duration: { type: 'number' },
+          transition: enumOf(TRANSITIONS.map(t => t.v)),
+        },
+      },
+    },
+    summary: { type: 'string' },
+  },
+};
+async function planScratchWithAI(command, withImages, signal) {
+  const res = await aiClient().beta.messages.create(Object.assign({
+    model: AI.model, max_tokens: 16000,
+    system: `당신은 한국어 홍보 숏폼 영상 기획자입니다. 사용자는 사진 없이 명령어만 줬습니다. 바로 만들 수 있는 장면 계획을 JSON 으로 씁니다.
+- 첫 장면은 1초 안에 시선을 잡는 훅(질문·놀라운 사실·혜택)으로 시작하고, 장면마다 하나의 메시지만 담습니다. 2~3초마다 장면이 바뀌게 합니다.
+- caption: 화면에 크게 보일 짧은 한국어 문구(최대 2줄, 한 줄 12자 안팎). 명령어에 없는 사실(가격·수치·인증)은 지어내지 마세요.
+- narration: 명령어가 내레이션·목소리를 원할 때만 자연스러운 구어체로, 아니면 빈 문자열.
+- image_prompt: ${withImages ? '이 장면 배경으로 쓸 실사 사진을 만들 영어 설명(사람이면 나이·성별·외모·행동·장소, 물건이면 재질·배경·조명). 글자는 넣지 말 것.' : '빈 문자열로 두세요.'}
+- emoji: 장면 분위기에 맞는 이모지 1개 또는 빈 문자열.
+- duration: 장면 길이(초). 명령어에 전체 길이가 있으면 합계(제목·마지막 포함)를 맞춥니다.
+- title: 필요하면 짧은 제목(없으면 text 빈 문자열, duration 1.2 정도). outro: 연락처·상호가 있으면 그대로 sub 에, 없으면 행동 유도 문구.
+- summary: 기획 요약 한 문장.`,
+    messages: [{ role: 'user', content: `명령어:\n${command}` }],
+    output_config: { effort: 'medium', format: { type: 'json_schema', schema: SCRATCH_SCHEMA } },
+  }, AI.model !== 'claude-haiku-5-5' ? { betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' } : {}), { signal })
+    .catch(e => { throw new Error(aiErrorMessage(e)); });
+  if (res.stop_reason === 'refusal') throw new Error('AI가 이 요청을 처리하지 않았습니다. 명령어를 바꿔 주세요.');
+  const p = JSON.parse(res.content.filter(b => b.type === 'text').map(b => b.text).join(''));
+  p.summary = `AI 기획: ${p.summary || ''}`;
+  return p;
+}

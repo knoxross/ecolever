@@ -7,7 +7,7 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 [hidden]{display:none !important;}
 html,body{height:100%;}
-body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',system-ui,sans-serif;font-size:13px;overflow:hidden;-webkit-font-smoothing:antialiased;user-select:none;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',system-ui,sans-serif;font-size:13.5px;overflow:hidden;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;user-select:none;}
 textarea,input{user-select:text;}
 button,select,input,textarea{font-family:inherit;font-size:13px;color:inherit;}
 button{cursor:pointer;}
@@ -48,7 +48,7 @@ a{color:var(--brass);}
 .ai-mode b{color:#c9b8ff;}
 
 /* layout */
-.layout{height:calc(100% - 52px - var(--cmd-h, 96px));display:grid;grid-template-columns:230px 1fr 310px;grid-template-rows:1fr 200px;grid-template-areas:"lib stage props" "tl tl tl";}
+.layout{flex:1;min-height:0;display:grid;grid-template-columns:230px 1fr 310px;grid-template-rows:1fr 200px;grid-template-areas:"lib stage props" "tl tl tl";}
 .panel{background:var(--panel);overflow:auto;}
 .library{grid-area:lib;border-right:1px solid var(--line);}
 .props{grid-area:props;border-left:1px solid var(--line);}
@@ -228,3 +228,41 @@ hr{border:0;border-top:1px solid var(--line);margin:14px 0;}
 .checklist li small{display:block;color:var(--muted);}
 .link-btn{background:none;border:0;color:var(--brass);font-size:12px;}
 .thumb-prev{width:100%;border-radius:8px;background:#000;display:block;margin-bottom:6px;}
+
+/* ---------- 단계 막대 (쉽게 보기) ---------- */
+.brand .logo-img{width:28px;height:28px;border-radius:7px;}
+.steps{display:flex;gap:6px;padding:7px 12px;background:var(--panel);border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:thin;flex-shrink:0;}
+.step{display:flex;align-items:center;gap:6px;padding:4px 10px 4px 6px;border-radius:10px;background:var(--panel-2);border:1px solid var(--line);flex-shrink:0;}
+.step .num{width:22px;height:22px;border-radius:50%;background:var(--panel-3);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;color:var(--muted);}
+.step .st-name{font-weight:700;white-space:nowrap;margin-right:2px;}
+.step .st-hint{color:var(--muted);font-size:12px;white-space:nowrap;}
+.step.done .num{background:var(--accent);color:#fff;}
+.step.now{border-color:var(--brass);box-shadow:0 0 0 1px var(--brass) inset;}
+.step.now .num{background:var(--brass);color:#222;}
+.step.auto{margin-left:auto;background:#22202e;border-color:#3b3557;}
+.command,.topbar{flex-shrink:0;}
+.cmd-opts{display:flex;gap:12px;align-items:center;margin-top:7px;flex-wrap:wrap;}
+.cmd-opts .opt{display:flex;gap:6px;align-items:center;font-size:12.5px;cursor:pointer;}
+.cmd-opts select{background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:3px 6px;}
+.copy-foot{position:fixed;right:10px;bottom:4px;font-size:10.5px;color:#6f6b63;pointer-events:none;z-index:2;}
+.about{display:flex;gap:14px;align-items:center;margin-bottom:12px;}
+.about img{width:64px;height:64px;}
+.about small{font-size:12px;color:var(--muted);font-weight:400;}
+.copyright{font-weight:700;margin:8px 0;}
+.size-seg{grid-template-columns:repeat(3,1fr);}
+.tpl-list,.job-list{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+.tpl,.job{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:10px;display:flex;gap:10px;align-items:flex-start;}
+.tpl .info,.job .info{flex:1;min-width:0;}
+.tpl b,.job b{display:block;margin-bottom:2px;}
+.tpl small,.job small{color:var(--muted);display:block;line-height:1.5;}
+.tpl .acts,.job .acts{display:flex;flex-direction:column;gap:5px;}
+.job.off{opacity:.55;}
+.empty-list{color:var(--muted);text-align:center;padding:16px;border:1px dashed var(--line);border-radius:10px;}
+@media (max-width:1000px){
+  body{display:block;}
+  .steps{padding:6px 8px;}
+  .step .st-hint{display:none;}
+  .copy-foot{position:static;text-align:center;padding:10px;}
+}
+@media (max-width:1600px){ .step .st-hint{display:none;} .steps{gap:5px;} .step{padding:3px 8px 3px 5px;} }
+@media (max-width:1250px){ .step .st-name{font-size:12px;} .step .btn-sm{padding:5px 7px;font-size:11.5px;} }

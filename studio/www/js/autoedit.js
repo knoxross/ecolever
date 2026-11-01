@@ -189,6 +189,17 @@ function shuffle(a) {
 }
 
 /* ------------------------------------------------------------------ 계획 적용 */
+/* 글자 화면 아이콘 자동 선택 */
+const EMOJI_RULES = [
+  [/에코백|가방|백팩|토트/, '👜'], [/친환경|자연|나무|숲|식물|그린|에코/, '🌿'], [/할인|세일|특가|이벤트|쿠폰|%/, '🏷️'],
+  [/행사|축제|페스티벌|파티|기념/, '🎉'], [/신상|신제품|출시|런칭|새로/, '✨'], [/문의|전화|연락|상담/, '📞'],
+  [/커피|카페|음료/, '☕'], [/음식|맛집|요리|메뉴|식당/, '🍽️'], [/선물|기프트|굿즈|답례/, '🎁'], [/배송|택배|빠른/, '🚚'],
+  [/여행|휴가|바다|캠핑/, '🏖️'], [/사랑|감사|고마/, '💚'], [/공부|교육|학교|강의|책|서점/, '📚'], [/운동|헬스|건강/, '💪'],
+  [/주문|구매|쇼핑|장바구니/, '🛒'], [/품질|인증|시험|보증|안전/, '✅'], [/기업|회사|비즈니스|단체|대량/, '🏢'], [/아이|어린이|키즈|아기/, '🧸'],
+];
+const pickEmoji = text => (EMOJI_RULES.find(([re]) => re.test(text || '')) || [null, ''])[1];
+const CTA_TEXT = { shorts: '구독하고 다음 영상 보기 👆', reels: '저장하고 팔로우 💚', tiktok: '팔로우하고 다음 편 보기', youtube: '구독·좋아요 부탁드려요' };
+
 function applyPlan(plan) {
   pause();
   const mood = MOODS[plan.mood] || MOODS.clean;
@@ -198,30 +209,42 @@ function applyPlan(plan) {
   const capAnim = TEXT_ANIMS.some(a => a.v === cs.animation) ? cs.animation : mood.anim;
   const capPos = ['top', 'center', 'bottom'].includes(cs.position) ? cs.position : 'bottom';
   const capBox = typeof cs.box === 'boolean' ? cs.box : mood.textBg;
+  const card = Object.assign({ bgColor: mood.titleBg[0], bgColor2: mood.titleBg[1], bgStyle: mood === MOODS.calm || mood === MOODS.luxury ? 'aurora' : mood === MOODS.energetic ? 'rays' : mood === MOODS.cute ? 'bokeh' : 'aurora', textColor: mood.textColor }, plan.card_style || {});
+  const mstyle = Object.assign({ fontSize: null, enhance: null }, plan.media_style || {});
 
   if (['16:9', '9:16', '1:1', '4:5'].includes(plan.aspect)) S.aspect = plan.aspect;
+  S.mood = MOODS[plan.mood] ? plan.mood : 'clean';
   S.filter = FILTERS.some(f => f.v === plan.filter) ? plan.filter : 'none';
   if (plan.music === false) S.bgmId = '';
   else if (!S.bgmId) S.bgmId = state.media.find(m => m.type === 'audio' && m.role !== 'voice')?.id || '';
   if (typeof plan.music_volume === 'number') S.bgmVolume = clamp(plan.music_volume, 0, 1);
   setCanvasSize();
   const portrait = canvas.height > canvas.width;
+  const shortForm = S.aspect === '9:16' || S.aspect === '4:5' || S.aspect === '1:1';
 
   state.clips.forEach(disposeClip);
   const clips = [];
-  const [bg1, bg2] = mood.titleBg;
-  const textClip = (txt, sub, dur) => newClip('text', {
-    text: txt, sub: sub || '', font, fontSize: portrait ? 118 : 128, textColor: mood.textColor,
+  const textClip = (txt, sub, dur, extra = {}) => newClip('text', Object.assign({
+    text: txt, sub: sub || '', font, fontSize: portrait ? 118 : 128, textColor: card.textColor,
     textPos: 'center', textBg: false, textAnim: capAnim === 'type' ? 'type' : (capAnim === 'pop' ? 'pop' : 'up'),
-    bgColor: bg1, bgColor2: bg2, duration: dur, transition: 'fade', transDur: Math.min(0.8, mood.transDur + 0.2),
-  });
-  // 세로 숏폼은 첫 1~2초가 승부 → 제목 화면을 짧게 (훅)
-  const shortForm = S.aspect === '9:16';
-  if (plan.title && plan.title.text) clips.push(textClip(plan.title.text, plan.title.sub, shortForm ? clamp(+plan.title.duration || 1.2, 0.8, 1.4) : clamp(+plan.title.duration || mood.titleDur, 1, 8)));
+    bgColor: card.bgColor, bgColor2: card.bgColor2, bgStyle: card.bgStyle, duration: dur, transition: 'fade',
+    transDur: Math.min(0.8, mood.transDur + 0.2), emoji: pickEmoji(`${txt} ${sub || ''}`),
+  }, extra));
 
   for (const pc of plan.clips || []) {
-    const m = state.media[pc.media];
-    if (!m || (m.type !== 'image' && m.type !== 'video')) continue;
+    const m = pc.media >= 0 ? state.media[pc.media] : null;
+    if (!m) { // 사진 없이 글자 장면
+      if (!(pc.caption || '').trim()) continue;
+      const c = textClip(pc.caption.trim(), (pc.sub || '').trim(), clamp(+pc.duration || mood.clipDur, 0.8, 20), {
+        fontSize: portrait ? 104 : 112, emoji: pc.emoji ?? pickEmoji(pc.caption),
+        transition: TRANSITIONS.some(x => x.v === pc.transition) ? pc.transition : mood.trans[0], transDur: mood.transDur,
+        bgStyle: pc.bg_style || BG_STYLES[2 + (clips.length % 5)].v,
+      });
+      c.narration = (pc.narration || '').trim();
+      clips.push(c);
+      continue;
+    }
+    if (m.type !== 'image' && m.type !== 'video') continue;
     let dur = clamp(+pc.duration || mood.clipDur, 0.4, 120);
     let trim = 0;
     if (m.type === 'video') {
@@ -230,22 +253,48 @@ function applyPlan(plan) {
     }
     const mismatch = (m.w / m.h) / (canvas.width / canvas.height);
     const fit = mismatch > 1.7 || mismatch < 1 / 1.7 ? 'blur' : 'cover';
-    clips.push(clipFromMedia(m, {
+    const c = clipFromMedia(m, {
       duration: round2(dur), trimStart: round2(trim), fit,
       motion: MOTIONS.some(x => x.v === pc.motion) ? pc.motion : (m.type === 'video' ? 'none' : 'zoomIn'),
       transition: TRANSITIONS.some(x => x.v === pc.transition) ? pc.transition : mood.trans[0],
       transDur: mood.transDur,
-      text: (pc.caption || '').trim(), font, fontSize: portrait ? 62 : 58, textColor: capColor, textPos: capPos,
+      text: (pc.caption || '').trim(), font, fontSize: mstyle.fontSize || (portrait ? 62 : 58), textColor: capColor, textPos: capPos,
       textBg: capBox, textAnim: capAnim,
-    }));
-    clips[clips.length - 1].narration = (pc.narration || '').trim();
+      enhance: mstyle.enhance != null ? mstyle.enhance : (Math.max(m.w, m.h) < 1200 ? 0.6 : 0),
+    });
+    c.narration = (pc.narration || '').trim();
+    clips.push(c);
   }
-  if (!clips.some(c => c.kind === 'media')) throw new Error('쓸 수 있는 사진·동영상이 없습니다.');
-  if (plan.outro && plan.outro.text) clips.push(textClip(plan.outro.text, plan.outro.sub, clamp(+plan.outro.duration || Math.max(2.4, mood.titleDur), 1, 8)));
+  if (!clips.length) throw new Error('만들 장면이 없습니다. 사진을 넣거나 명령어에 문구를 적어 주세요.');
+
+  // ---- 제목 (훅) ----
+  const firstMedia = clips.find(c => c.kind === 'media');
+  if (plan.title && plan.title.text) {
+    if (S.algo && shortForm && firstMedia && clips[0] === firstMedia && !firstMedia.text) {
+      // 숏폼: 따로 제목 화면을 두지 않고 첫 장면 위에 바로 제목 → 0초부터 볼거리 (넘김 방지)
+      Object.assign(firstMedia, { text: plan.title.text, textPos: 'top', textAnim: 'pop', fontSize: portrait ? 116 : 96, textBg: false });
+    } else {
+      const d = S.algo && shortForm ? clamp(+plan.title.duration || 1.2, 0.8, 1.4) : clamp(+plan.title.duration || mood.titleDur, 1, 8);
+      clips.unshift(textClip(plan.title.text, plan.title.sub, d));
+    }
+  }
+  // ---- 마무리 ----
+  const platform = plan.platform || (S.aspect === '16:9' ? 'youtube' : 'shorts');
+  if (plan.outro && plan.outro.text) {
+    clips.push(textClip(plan.outro.text, plan.outro.sub, clamp(+plan.outro.duration || Math.max(2.4, mood.titleDur), 1, 8)));
+    S.loopEnd = false;
+  } else if (S.algo && shortForm) {
+    // 행동 유도 + 처음으로 이어지는 반복 재생 (다시 보기 = 완주율·재시청 ↑)
+    const last = clips[clips.length - 1];
+    if (last.kind === 'media' && !last.text && plan.cta !== false) Object.assign(last, { text: plan.cta || CTA_TEXT[platform] || CTA_TEXT.shorts, textPos: 'center', textAnim: 'pop', textBg: true });
+    S.loopEnd = true;
+  } else S.loopEnd = false;
+  S.progressBar = !!(S.algo && shortForm && plan.progress_bar !== false);
+  S.beatPunch = !!(S.algo && (plan.mood === 'energetic' || plan.mood === 'cute'));
   clips[0].transition = 'none';
   state.clips = clips;
 
-  // 음악 박자에 맞추기
+  // ---- 음악 박자에 맞추기 ----
   let beatNote = '';
   const bgm = mediaById(S.bgmId);
   S.bgmOffset = 0;
@@ -262,7 +311,37 @@ function applyPlan(plan) {
     }
     beatNote = ` · 음악 박자(${bgm.beat.bpm}BPM)에 맞춤`;
   }
-  state.selectedId = state.clips.find(c => c.kind === 'media')?.id || state.clips[0].id;
+  state.selectedId = (state.clips.find(c => c.kind === 'media') || state.clips[0]).id;
   state.time = 0;
   return `${plan.summary || ''} · 장면 ${state.clips.length}개 · ${totalDuration().toFixed(1)}초${beatNote}`;
+}
+
+/* ------------------------------------------------------------------ 사진 없이 만들기 (글자·움직이는 배경) */
+function planFromScratch(text) {
+  const it = parseCommand(text);
+  const moodKey = it.mood || 'clean';
+  const mood = MOODS[moodKey];
+  const aspect = it.aspect || '9:16';
+  // 문장 모으기: 자막 → 내레이션 → 명령어 문장
+  let lines = it.captions.length ? it.captions.slice() : it.narrations.slice();
+  if (!lines.length) {
+    lines = it.raw.replace(/["“”'‘’「『」』][^"“”'‘’「『」』]*["“”'‘’「『」』]/g, ' ')
+      .split(/[.!?\n]|,\s*(?=[가-힣])/).map(s => s.trim())
+      .filter(s => s.length >= 4 && !/^(쇼츠|릴스|틱톡|유튜브|인스타|\d+\s*(초|분))|(신나게|잔잔하게|깔끔하게|고급스럽게|귀엽게|흑백|빈티지|따뜻하게|시원하게)$/.test(s) && !/0\d{1,2}[-.\s]?\d{3,4}/.test(s));
+  }
+  if (!lines.length && !it.title) throw new Error('사진이 없을 때는 명령어에 영상에 넣을 문구를 적어 주세요.\n예) 쇼츠 15초, \'에코백 신상 출시\', 자막: 튼튼한 황마 / 두 가지 색상 / 대량 주문 환영');
+  if (!lines.length) lines = ['지금 바로 만나보세요'];
+  const titleDur = 1.8, outroDur = 2.6;
+  const hasOutro = it.outro && (it.contacts.length || it.outroText);
+  let unit = it.perClip || Math.max(1.8, mood.clipDur * 0.9);
+  if (it.total) unit = Math.max(1.2, (it.total - (it.title ? titleDur : 0) - (hasOutro ? outroDur : 0)) / lines.length);
+  return {
+    source: 'scratch', aspect, mood: moodKey, filter: 'none', font: mood.font,
+    title: it.title ? { text: it.title, sub: it.sub, duration: titleDur } : { text: '', sub: '' },
+    outro: hasOutro ? { text: it.outroText || (/문의/.test(it.raw) ? '문의' : it.title || '문의'), sub: it.contacts.join('   '), duration: outroDur } : { text: '', sub: '' },
+    caption_style: { position: 'center', color: '#ffffff', box: false, animation: mood.anim },
+    clips: lines.map((l, i) => ({ media: -1, caption: l, duration: unit, transition: mood.trans[i % mood.trans.length], narration: it.narrations[i] || '' })),
+    music: !it.noMusic, music_volume: S.bgmVolume, wants_voice: it.voice, cta: false,
+    summary: `사진 없이 만들기: ${aspect} · ${mood.label}`,
+  };
 }

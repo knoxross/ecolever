@@ -6,9 +6,16 @@
 
 class ExportCancelled extends Error { constructor() { super('취소했습니다.'); } }
 
-async function pickVideoCodec(W, H, fps) {
-  if (!window.VideoEncoder) return null;
-  const bitrate = Math.round(W * H * fps * 0.12);
+/** 영상 비트레이트: 기본은 화질 우선, 용량 제한이 있으면 그 안에 들어가게 */
+function targetVideoBitrate(W, H, fps, duration, maxMB, audioBps = 160000) {
+  const quality = Math.round(W * H * fps * 0.12);
+  if (!maxMB) return quality;
+  const budget = (maxMB * 8e6 * 0.94) / Math.max(1, duration) - audioBps;
+  return Math.max(250000, Math.min(quality, Math.round(budget)));
+}
+async function videoCodecCandidates(W, H, fps, bitrate) {
+  const out = [];
+  if (!window.VideoEncoder) return out;
   const list = [
     { codec: 'avc1.640033', mux: 'avc', label: 'H.264' },
     { codec: 'avc1.4d0033', mux: 'avc', label: 'H.264' },
@@ -17,14 +24,15 @@ async function pickVideoCodec(W, H, fps) {
     { codec: 'av01.0.08M.08', mux: 'av1', label: 'AV1' },
   ];
   for (const c of list) {
-    const config = { codec: c.codec, width: W, height: H, bitrate, framerate: fps, latencyMode: 'quality' };
+    const config = { codec: c.codec, width: W, height: H, bitrate, framerate: fps, latencyMode: 'quality', bitrateMode: 'variable' };
     if (c.mux === 'avc') config.avc = { format: 'avc' };
     try {
       const r = await VideoEncoder.isConfigSupported(config);
-      if (r.supported) return { ...c, config: r.config || config };
+      if (r.supported) out.push({ ...c, config: r.config || config });
     } catch (e) { /* 다음 후보 */ }
   }
-  return null;
+  // 같은 코덱 계열은 하나만 (H.264 실패 시 VP9 → AV1 순으로 재시도)
+  return out.filter((c, i) => out.findIndex(x => x.mux === c.mux) === i);
 }
 async function pickAudioCodec(sampleRate) {
   if (!window.AudioEncoder) return null;
@@ -33,7 +41,7 @@ async function pickAudioCodec(sampleRate) {
     { codec: 'opus', mux: 'opus', label: 'Opus' },
   ];
   for (const c of list) {
-    const config = { codec: c.codec, sampleRate, numberOfChannels: 2, bitrate: 192000 };
+    const config = { codec: c.codec, sampleRate, numberOfChannels: 2, bitrate: 160000 };
     try {
       const r = await AudioEncoder.isConfigSupported(config);
       if (r.supported) return { ...c, config: r.config || config };
@@ -116,6 +124,8 @@ async function prepareFrame(t, lay) {
     const md = clipMedia(L.clip).duration;
     jobs.push(seekExact(v, Math.min(L.clip.trimStart + clamp(local, 0, L.clip.duration), md - 0.001)));
   }
+  const total = lay[lay.length - 1].end, ll = loopEndLen();
+  if (ll && t > total - ll && lay[0] !== L && isVideoClip(lay[0].clip)) jobs.push(seekExact(getClipVideo(lay[0].clip), lay[0].clip.trimStart));
   if (local < transLen(L.clip, i)) {
     const P = lay[i - 1];
     if (isVideoClip(P.clip)) {
@@ -144,61 +154,88 @@ async function exportVideo(opts) {
     await preloadText();
     state.clips.forEach(c => { if (isVideoClip(c)) { const v = getClipVideo(c); v.pause(); } });
 
-    const vcodec = await pickVideoCodec(W, H, fps);
-    if (!vcodec || !window.Mp4Muxer) {
-      return await exportRealtime({ onProgress, signal, W, H });
-    }
     const sampleRate = 48000;
     const acodec = await pickAudioCodec(sampleRate);
+    const vbit = targetVideoBitrate(W, H, fps, total, opts.maxSizeMB ?? S.maxSizeMB);
+    const cands = await videoCodecCandidates(W, H, fps, vbit);
+    if (!cands.length || !window.Mp4Muxer) return await exportRealtime({ onProgress, signal, W, H });
     let mix = null;
     if (acodec) mix = await renderAudioMix(total, sampleRate, text => onProgress({ pct: 0, text }));
     if (signal.cancelled) throw new ExportCancelled();
-
-    const { Muxer, ArrayBufferTarget } = window.Mp4Muxer;
-    const target = new ArrayBufferTarget();
-    const muxer = new Muxer({
-      target,
-      video: { codec: vcodec.mux, width: W, height: H, frameRate: fps },
-      audio: mix ? { codec: acodec.mux, numberOfChannels: 2, sampleRate } : undefined,
-      fastStart: 'in-memory',
-      firstTimestampBehavior: 'offset',
-    });
-
-    let encError = null;
-    const venc = new VideoEncoder({
-      output: (chunk, meta) => muxer.addVideoChunk(chunk, meta),
-      error: e => { encError = e; },
-    });
-    venc.configure(vcodec.config);
-
-    // 소리 먼저 인코딩
-    if (mix) {
-      const aenc = new AudioEncoder({
-        output: (chunk, meta) => muxer.addAudioChunk(chunk, meta),
-        error: e => { encError = e; },
-      });
-      aenc.configure(acodec.config);
-      const L0 = mix.getChannelData(0), R0 = mix.getChannelData(1);
-      const N = 4096;
-      for (let off = 0; off < mix.length; off += N) {
-        const n = Math.min(N, mix.length - off);
-        const data = new Float32Array(n * 2);
-        data.set(L0.subarray(off, off + n), 0);
-        data.set(R0.subarray(off, off + n), n);
-        const ad = new AudioData({ format: 'f32-planar', sampleRate, numberOfFrames: n, numberOfChannels: 2, timestamp: Math.round(off * 1e6 / sampleRate), data });
-        aenc.encode(ad);
-        ad.close();
+    let lastErr = null;
+    const maxMB = opts.maxSizeMB ?? S.maxSizeMB;
+    for (const vcodec of cands) {
+      try {
+        let blob = await encodeTimeline({ W, H, fps, total, vcodec, acodec, mix, sampleRate, onProgress, signal });
+        // 용량 제한을 넘으면 비율만큼 낮춰 한 번 더 (최대 2회)
+        for (let k = 0; maxMB && blob.size > maxMB * 1e6 && k < 2; k++) {
+          const cfg = Object.assign({}, vcodec.config, { bitrate: Math.max(200000, Math.round(vcodec.config.bitrate * (maxMB * 1e6 * 0.92) / blob.size)) });
+          onProgress({ pct: 0, text: `용량 ${maxMB}MB 에 맞추는 중… (현재 ${(blob.size / 1e6).toFixed(1)}MB)` });
+          blob = await encodeTimeline({ W, H, fps, total, vcodec: { ...vcodec, config: cfg }, acodec, mix, sampleRate, onProgress, signal });
+          vcodec.config = cfg;
+        }
+        return { blob, ext: 'mp4', width: W, height: H, codecs: `${vcodec.label}${mix ? ' + ' + acodec.label : ''}`, bitrate: vcodec.config.bitrate };
+      } catch (e) {
+        if (e instanceof ExportCancelled) throw e;
+        console.warn('인코더 오류, 다른 방식으로 다시 시도', vcodec.codec, e);
+        lastErr = e;
+        onProgress({ pct: 0, text: '다른 방식으로 다시 만드는 중…' });
       }
-      await aenc.flush();
-      aenc.close();
     }
+    // 모든 인코더가 실패하면 실시간 녹화로
+    console.warn('WebCodecs 실패, 실시간 녹화로 전환', lastErr);
+    return await exportRealtime({ onProgress, signal, W, H });
+  } finally {
+    state.busy = false;
+    setCanvasSize(prevQuality);
+    S.quality = prevQuality;
+    state.time = 0;
+    requestRender();
+  }
+}
 
-    // 화면 한 프레임씩
+/** 소리(AudioBuffer)를 인코딩해 muxer 에 넣기 */
+async function encodeAudioInto(muxer, mix, acodec, sampleRate) {
+  let err = null;
+  const aenc = new AudioEncoder({ output: (chunk, meta) => muxer.addAudioChunk(chunk, meta), error: e => { err = e; } });
+  aenc.configure(acodec.config);
+  const ch = mix.numberOfChannels;
+  const L0 = mix.getChannelData(0), R0 = mix.getChannelData(Math.min(1, ch - 1));
+  const N = 4096;
+  for (let off = 0; off < mix.length; off += N) {
+    const n = Math.min(N, mix.length - off);
+    const data = new Float32Array(n * 2);
+    data.set(L0.subarray(off, off + n), 0);
+    data.set(R0.subarray(off, off + n), n);
+    const ad = new AudioData({ format: 'f32-planar', sampleRate, numberOfFrames: n, numberOfChannels: 2, timestamp: Math.round(off * 1e6 / sampleRate), data });
+    aenc.encode(ad);
+    ad.close();
+    if (aenc.encodeQueueSize > 50) await wait(1);
+  }
+  await aenc.flush();
+  aenc.close();
+  if (err) throw err;
+}
+async function encodeTimeline({ W, H, fps, total, vcodec, acodec, mix, sampleRate, onProgress, signal }) {
+  const { Muxer, ArrayBufferTarget } = window.Mp4Muxer;
+  const target = new ArrayBufferTarget();
+  const muxer = new Muxer({
+    target,
+    video: { codec: vcodec.mux, width: W, height: H, frameRate: fps },
+    audio: mix ? { codec: acodec.mux, numberOfChannels: 2, sampleRate } : undefined,
+    fastStart: 'in-memory',
+    firstTimestampBehavior: 'offset',
+  });
+  let encError = null;
+  const venc = new VideoEncoder({ output: (chunk, meta) => muxer.addVideoChunk(chunk, meta), error: e => { encError = e; } });
+  venc.configure(vcodec.config);
+  try {
+    if (mix) await encodeAudioInto(muxer, mix, acodec, sampleRate);
     const lay = layout();
     const frames = Math.max(1, Math.round(total * fps));
     const started = performance.now();
     for (let i = 0; i < frames; i++) {
-      if (signal.cancelled) { try { venc.close(); } catch (e) { /* 무시 */ } throw new ExportCancelled(); }
+      if (signal.cancelled) throw new ExportCancelled();
       if (encError) throw encError;
       const t = Math.min(i / fps, total - 0.0005);
       await prepareFrame(t, lay);
@@ -206,7 +243,7 @@ async function exportVideo(opts) {
       const vf = new VideoFrame(canvas, { timestamp: Math.round(i * 1e6 / fps), duration: Math.round(1e6 / fps) });
       venc.encode(vf, { keyFrame: i % (fps * 2) === 0 });
       vf.close();
-      while (venc.encodeQueueSize > 6) await wait(4);
+      while (venc.encodeQueueSize > 6) { if (encError) throw encError; await wait(4); }
       if (i % 3 === 0 || i === frames - 1) {
         const pct = (i + 1) / frames;
         const el = (performance.now() - started) / 1000;
@@ -217,18 +254,12 @@ async function exportVideo(opts) {
     }
     onProgress({ pct: 1, text: '파일 마무리하는 중…' });
     await venc.flush();
-    venc.close();
     if (encError) throw encError;
-    muxer.finalize();
-    const blob = new Blob([target.buffer], { type: 'video/mp4' });
-    return { blob, ext: 'mp4', width: W, height: H, codecs: `${vcodec.label}${mix ? ' + ' + acodec.label : ''}` };
   } finally {
-    state.busy = false;
-    setCanvasSize(prevQuality);
-    S.quality = prevQuality;
-    state.time = 0;
-    requestRender();
+    try { venc.close(); } catch (e) { /* 이미 닫힘 */ }
   }
+  muxer.finalize();
+  return new Blob([target.buffer], { type: 'video/mp4' });
 }
 
 /* ------------------------------------------------------------------ 실시간 녹화 (예비) */

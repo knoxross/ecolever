@@ -70,6 +70,11 @@ const state = {
     aspect: '16:9', quality: 720, fps: 30, bg: '#000000', filter: 'none',
     bgmId: '', bgmVolume: 0.7, bgmFade: true, bgmOffset: 0, beatSync: true,
     logoId: '', logoPos: 'tr', logoSize: 0.16,
+    algo: true,          // 알고리즘 최적화 (훅·완주율·반복 재생)
+    progressBar: false,  // 위쪽 진행 막대 (끝까지 보게 만드는 장치)
+    loopEnd: false,      // 끝 → 처음으로 자연스럽게 이어지는 반복 재생 마무리
+    beatPunch: false,    // 박자마다 살짝 튕기는 줌
+    maxSizeMB: 0,        // 저장 용량 제한 (0 = 제한 없음)
   },
 };
 const S = state.settings;
@@ -204,7 +209,11 @@ async function loadFiles(files, onProgress) {
     const f = files[i];
     onProgress?.(i, files.length, f.name);
     const type = guessType(f.name, f.type);
-    if (!type) { failed.push(f.name); continue; }
+    if (!type) { failed.push(`${f.name} (지원하지 않는 형식)`); continue; }
+    if (/\.(heic|heif)$/i.test(f.name) || /heic|heif/i.test(f.type)) {
+      failed.push(`${f.name} (아이폰 HEIC 사진은 JPG로 바꿔 넣어 주세요: 아이폰 설정 → 카메라 → 포맷 → '높은 호환성')`);
+      continue;
+    }
     const m = { id: uid(), type, name: f.name, url: URL.createObjectURL(f), file: f };
     try {
       if (type === 'image') await loadImage(m);
@@ -213,7 +222,7 @@ async function loadFiles(files, onProgress) {
     } catch (e) {
       console.error(e);
       URL.revokeObjectURL(m.url);
-      failed.push(f.name);
+      failed.push(`${f.name} (${e && e.userMessage ? e.userMessage : '파일이 손상되었거나 열 수 없는 형식'})`);
       continue;
     }
     state.media.push(m);
@@ -225,8 +234,20 @@ async function loadImage(m) {
   const img = new Image();
   img.src = m.url;
   await img.decode();
-  m.el = img; m.w = img.naturalWidth; m.h = img.naturalHeight;
-  m.thumb = makeThumb(img, m.w, m.h, 320);
+  m.w = img.naturalWidth; m.h = img.naturalHeight;
+  if (!m.w || !m.h) throw Object.assign(new Error('empty image'), { userMessage: '빈 이미지' });
+  // 아주 큰 사진(예: 5000만 화소)은 메모리·속도를 위해 4096 픽셀로 줄여 둠 (화질 차이 없음)
+  const MAX = 4096;
+  if (Math.max(m.w, m.h) > MAX) {
+    const sc = MAX / Math.max(m.w, m.h);
+    const c = document.createElement('canvas');
+    c.width = Math.round(m.w * sc); c.height = Math.round(m.h * sc);
+    const g = c.getContext('2d');
+    g.imageSmoothingQuality = 'high';
+    g.drawImage(img, 0, 0, c.width, c.height);
+    m.el = c; m.w = c.width; m.h = c.height;
+  } else m.el = img;
+  m.thumb = makeThumb(m.el, m.w, m.h, 320);
 }
 function makeThumb(src, w, h, size) {
   const c = document.createElement('canvas');
@@ -240,7 +261,7 @@ function loadVideo(m) {
     const v = document.createElement('video');
     v.muted = true; v.preload = 'auto'; v.playsInline = true; v.src = m.url;
     const timer = setTimeout(() => reject(new Error('timeout')), 20000);
-    v.onerror = () => { clearTimeout(timer); reject(new Error('video load error')); };
+    v.onerror = () => { clearTimeout(timer); reject(Object.assign(new Error('video load error'), { userMessage: '이 컴퓨터에서 재생할 수 없는 동영상 형식 — MP4(H.264)로 바꿔 주세요' })); };
     v.onloadedmetadata = () => {
       m.w = v.videoWidth; m.h = v.videoHeight;
       m.duration = isFinite(v.duration) ? v.duration : 10;
@@ -326,6 +347,7 @@ function newClip(kind, extra = {}) {
     text: '', sub: '', font: FONTS[0].v, fontSize: 64, textColor: '#ffffff', textPos: 'bottom', textBg: true, textAnim: 'up',
     bgColor: '#2f4332', bgColor2: '',
     enhance: 0, voiceId: '', voiceVol: 1, voiceDelay: 0.3, narration: '',
+    bgStyle: 'gradient', emoji: '',
   }, extra);
 }
 function clipFromMedia(m, extra = {}) {
@@ -393,6 +415,10 @@ function render(t) {
   const i = indexAt(t, lay), L = lay[i];
   const local = clamp(t - L.start, 0, L.clip.duration);
   const td = transLen(L.clip, i);
+  const total = lay[lay.length - 1].end;
+  ctx.save();
+  const punch = beatPunchAt(t);
+  if (punch > 1) { ctx.translate(W / 2, H / 2); ctx.scale(punch, punch); ctx.translate(-W / 2, -H / 2); }
   if (td > 0 && local < td) {
     const P = lay[i - 1];
     const p = easeInOut(local / td);
@@ -411,7 +437,31 @@ function render(t) {
   } else {
     drawClip(L.clip, local);
   }
+  // 반복 재생 마무리: 끝부분이 첫 장면으로 자연스럽게 이어짐
+  const loopLen = loopEndLen();
+  if (loopLen && t > total - loopLen && lay.length > 1) {
+    ctx.save(); ctx.globalAlpha = easeInOut((t - (total - loopLen)) / loopLen); drawClip(lay[0].clip, 0); ctx.restore();
+  }
+  ctx.restore();
   drawLogo();
+  if (S.progressBar && total > 0) {
+    const h = Math.max(4, Math.round(H * 0.006));
+    ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.fillRect(0, 0, W, h);
+    ctx.fillStyle = 'rgba(255,255,255,0.9)'; ctx.fillRect(0, 0, W * clamp(t / total, 0, 1), h);
+  }
+}
+function loopEndLen() {
+  if (!S.loopEnd || state.clips.length < 2) return 0;
+  const last = state.clips[state.clips.length - 1];
+  return Math.min(0.5, last.duration * 0.3);
+}
+function beatPunchAt(t) {
+  if (!S.beatPunch) return 1;
+  const bgm = mediaById(S.bgmId);
+  if (!bgm || !bgm.beat) return 1;
+  const p = bgm.beat.period;
+  const ph = (((t + S.bgmOffset - bgm.beat.offset) % p) + p) % p;
+  return 1 + 0.035 * Math.max(0, 1 - ph / 0.16);
 }
 function applyTransition(kind, p, W, H) {
   switch (kind) {
@@ -433,12 +483,7 @@ function drawClip(clip, local) {
   const W = canvas.width, H = canvas.height;
   ctx.save();
   if (clip.kind === 'text') {
-    if (clip.bgColor2) {
-      const g = ctx.createLinearGradient(0, 0, W, H);
-      g.addColorStop(0, clip.bgColor); g.addColorStop(1, clip.bgColor2);
-      ctx.fillStyle = g;
-    } else ctx.fillStyle = clip.bgColor;
-    ctx.fillRect(0, 0, W, H);
+    drawTextBackground(clip, local);
   } else {
     ctx.fillStyle = S.bg; ctx.fillRect(0, 0, W, H);
     const m = clipMedia(clip);
@@ -470,6 +515,70 @@ function drawClip(clip, local) {
   }
   if ((clip.text || '').trim() || (clip.sub || '').trim()) drawText(clip, local);
   ctx.restore();
+}
+/* ---------- 글자 화면 배경 (사진 없이도 영상 제작) ---------- */
+const BG_STYLES = [
+  { v: 'solid', label: '단색' }, { v: 'gradient', label: '그라데이션' }, { v: 'aurora', label: '오로라 (움직임)' },
+  { v: 'bokeh', label: '빛망울 (움직임)' }, { v: 'rays', label: '빛줄기 (움직임)' }, { v: 'wave', label: '물결 (움직임)' }, { v: 'grid', label: '레트로 격자 (움직임)' },
+];
+function hexToRgb(h) { const n = parseInt(String(h || '#000000').slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+function mixHex(a, b, k) { const x = hexToRgb(a), y = hexToRgb(b); return `rgb(${x.map((v, i) => Math.round(v + (y[i] - v) * k)).join(',')})`; }
+function rgba(h, a) { const x = hexToRgb(h); return `rgba(${x[0]},${x[1]},${x[2]},${a})`; }
+function seeded(i) { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); }
+function drawTextBackground(clip, t) {
+  const W = canvas.width, H = canvas.height, M = Math.min(W, H);
+  const c1 = clip.bgColor || '#2f4332', c2 = clip.bgColor2 || c1;
+  const style = clip.bgStyle || (clip.bgColor2 ? 'gradient' : 'solid');
+  if (style === 'solid') { ctx.fillStyle = c1; ctx.fillRect(0, 0, W, H); return; }
+  const ang = style === 'gradient' ? 0 : t * 0.15;
+  const g = ctx.createLinearGradient(W * (0.5 - 0.5 * Math.cos(ang)), 0, W * (0.5 + 0.5 * Math.cos(ang)), H);
+  g.addColorStop(0, c1); g.addColorStop(1, c2);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  ctx.save();
+  if (style === 'aurora') {
+    ctx.globalCompositeOperation = 'lighter';
+    for (let k = 0; k < 3; k++) {
+      const x = W * (0.5 + 0.38 * Math.sin(t * (0.35 + k * 0.13) + k * 2.1));
+      const y = H * (0.5 + 0.34 * Math.cos(t * (0.28 + k * 0.11) + k * 1.3));
+      const r = M * (0.55 + 0.12 * k);
+      const rg = ctx.createRadialGradient(x, y, 0, x, y, r);
+      rg.addColorStop(0, rgba(k === 1 ? '#ffffff' : c2, 0.28)); rg.addColorStop(1, rgba(c2, 0));
+      ctx.fillStyle = rg; ctx.fillRect(0, 0, W, H);
+    }
+  } else if (style === 'bokeh') {
+    for (let k = 0; k < 22; k++) {
+      const r = M * (0.02 + 0.07 * seeded(k));
+      const speed = 0.03 + 0.06 * seeded(k + 50);
+      const x = W * seeded(k + 100) + Math.sin(t * 0.6 + k) * M * 0.02;
+      const y = ((seeded(k + 200) - t * speed) % 1 + 1) % 1 * (H + 2 * r) - r;
+      ctx.fillStyle = rgba('#ffffff', 0.06 + 0.16 * seeded(k + 300));
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+    }
+  } else if (style === 'rays') {
+    ctx.translate(W / 2, H * 0.45); ctx.rotate(t * 0.12);
+    ctx.fillStyle = rgba('#ffffff', 0.07);
+    for (let k = 0; k < 12; k++) {
+      ctx.rotate(Math.PI / 6);
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-M * 0.12, Math.hypot(W, H)); ctx.lineTo(M * 0.12, Math.hypot(W, H)); ctx.closePath(); ctx.fill();
+    }
+  } else if (style === 'wave') {
+    for (let k = 0; k < 3; k++) {
+      ctx.fillStyle = rgba('#ffffff', 0.07 + k * 0.03);
+      ctx.beginPath(); ctx.moveTo(0, H);
+      for (let x = 0; x <= W; x += W / 40) ctx.lineTo(x, H * (0.72 + k * 0.08) + Math.sin(x / W * Math.PI * 2 * (1.2 + k * 0.3) + t * (1 + k * 0.4)) * H * 0.035);
+      ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
+    }
+  } else if (style === 'grid') {
+    ctx.strokeStyle = rgba('#ffffff', 0.16); ctx.lineWidth = Math.max(1, M * 0.003);
+    const hz = H * 0.55, n = 14;
+    for (let k = 0; k <= n; k++) { const x = W * k / n; ctx.beginPath(); ctx.moveTo(W / 2 + (x - W / 2) * 0.15, hz); ctx.lineTo(W / 2 + (x - W / 2) * 3, H); ctx.stroke(); }
+    for (let k = 0; k < 10; k++) { const p = ((k / 10 + t * 0.12) % 1); const y = hz + (H - hz) * p * p; ctx.globalAlpha = p; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+  }
+  ctx.restore();
+  // 가장자리 살짝 어둡게 (글자가 잘 보이게)
+  const v = ctx.createRadialGradient(W / 2, H / 2, M * 0.3, W / 2, H / 2, Math.hypot(W, H) * 0.6);
+  v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,0.28)');
+  ctx.fillStyle = v; ctx.fillRect(0, 0, W, H);
 }
 function motionAt(kind, p) {
   const e = easeInOut(p) * 0.6 + p * 0.4;
@@ -504,9 +613,21 @@ function textFont(clip, size) {
 function drawText(clip, local) {
   const W = canvas.width, H = canvas.height;
   const scale = Math.min(W, H) / 1080;
-  const fs = Math.max(8, clip.fontSize * scale);
-  const subFs = fs * 0.48;
   const anim = clip.textAnim;
+  // 글자가 화면 밖으로 넘치거나 너무 많은 줄이 되지 않게 크기 자동 맞춤 (잘림 방지)
+  let fs = Math.max(8, clip.fontSize * scale);
+  const isCard = clip.kind === 'text';
+  const maxLines = isCard ? 4 : 3, maxH = H * (isCard ? 0.72 : 0.36);
+  for (let k = 0; k < 10; k++) {
+    ctx.font = textFont(clip, fs);
+    const n = (clip.text || '').trim() ? wrapText(clip.text, W * 0.86).length : 0;
+    ctx.font = textFont(clip, fs * 0.48);
+    const ns = (clip.sub || '').trim() ? wrapText(clip.sub, W * 0.8).length : 0;
+    const h = n * fs * 1.3 + ns * fs * 0.48 * 1.45 + (clip.emoji ? fs * 1.3 : 0);
+    if ((n <= maxLines && h <= maxH) || fs < 14 * scale) break;
+    fs *= 0.88;
+  }
+  const subFs = fs * 0.48;
   const a = clamp(local / 0.55, 0, 1);
   ctx.save();
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -522,7 +643,8 @@ function drawText(clip, local) {
   ctx.font = textFont(Object.assign({}, clip, { font: clip.kind === 'text' ? "'Noto Sans KR'" : clip.font }), subFs);
   const subLines = (clip.sub || '').trim() ? wrapText(clip.sub, W * 0.8) : [];
   const lh = fs * 1.3, slh = subFs * 1.45, gap = subLines.length && fullLines.length ? fs * 0.35 : 0;
-  const blockH = fullLines.length * lh + gap + subLines.length * slh;
+  const emH = clip.emoji ? fs * 1.3 : 0;
+  const blockH = emH + fullLines.length * lh + gap + subLines.length * slh;
   // 세로 영상은 아래쪽이 앱 버튼·설명에 가려지므로 자막을 조금 올림 (안전 영역)
   const margin = clip.textPos === 'bottom' && H > W * 1.4 ? H * 0.2 : H * 0.08;
   let y0 = clip.textPos === 'top' ? margin : clip.textPos === 'center' ? (H - blockH) / 2 : H - margin - blockH;
@@ -561,10 +683,17 @@ function drawText(clip, local) {
       ctx.fillText(l, W / 2, y);
     });
   };
-  drawLines(lines, fs, lh, y0, clip.textColor);
+  if (clip.emoji) {
+    ctx.save();
+    const b = anim === 'none' ? 0 : Math.sin(clamp(local / 0.6, 0, 1) * Math.PI) * fs * 0.15 + Math.sin(local * 2.4) * fs * 0.04;
+    ctx.font = `${Math.round(fs * 1.05)}px 'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif`;
+    ctx.fillText(clip.emoji, W / 2, y0 + emH / 2 - b);
+    ctx.restore();
+  }
+  drawLines(lines, fs, lh, y0 + emH, clip.textColor);
   if (subLines.length) {
     ctx.globalAlpha *= anim === 'none' ? 1 : clamp((local - 0.25) / 0.5, 0, 1);
-    drawLines(subLines, subFs, slh, y0 + fullLines.length * lh + gap, clip.textColor, clip.kind === 'text' ? "'Noto Sans KR'" : null);
+    drawLines(subLines, subFs, slh, y0 + emH + fullLines.length * lh + gap, clip.textColor, clip.kind === 'text' ? "'Noto Sans KR'" : null);
   }
   ctx.restore();
 }
