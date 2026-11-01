@@ -535,7 +535,7 @@ async function autoMake() {
     } catch (e) { b.close(); if (!b.flag.cancelled) toast(e.message, true); }
     return;
   }
-  let plan = null;
+  let plan = null, aiErr = '';
   if (aiReady() && FEATURES.aiEdit) {
     const b = busy('✨ AI가 사진을 보고 편집하는 중…', `사진 ${visualMedia().length}장을 살펴보고 순서·자막·효과를 정하고 있어요. (보통 20초~1분)`);
     try {
@@ -543,7 +543,7 @@ async function autoMake() {
     } catch (e) {
       b.close();
       if (b.flag.cancelled) return;
-      toast(e.message + ' — 기본 자동편집으로 만들었습니다.', true);
+      aiErr = e.message;
     }
     b.close();
   }
@@ -551,15 +551,16 @@ async function autoMake() {
     if (!plan) plan = planFromCommand(cmdAspect ? cmd : `${cmd} ${{ '9:16': '쇼츠', '16:9': '유튜브', '1:1': '정사각', '4:5': '피드' }[P.aspect]}`);
     if (!cmdAspect) plan.aspect = P.aspect;
     plan.platform = platform;
-    afterPlan(plan, applyPlan(plan));
+    afterPlan(plan, applyPlan(plan), aiErr);
   } catch (e) {
     toast(e.message, true);
   }
 }
-async function afterPlan(plan, summary) {
+async function afterPlan(plan, summary, aiErr = '') {
   changed();
   refreshAll();
-  toast('✨ ' + summary, false, 5000);
+  if (aiErr) toast(`⚠️ AI 편집 실패: ${aiErr} → 기본 자동편집으로 만들었어요. (${summary.replace(/^[^·]*·\s*/, '')})`, true, 9000);
+  else toast('✨ ' + summary, false, 5000);
   const narr = state.clips.filter(c => (c.narration || '').trim());
   if (narr.length && genReady() && FEATURES.voice) await makeVoiceForClips(narr);
   else if (narr.length) toast('내레이션 문장을 각 장면에 넣어 두었어요. ⚙ AI 설정에 Google 키를 넣으면 AI 성우 목소리로 만들 수 있어요.', false, 5000);

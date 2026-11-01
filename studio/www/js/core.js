@@ -222,7 +222,7 @@ async function loadFiles(files, onProgress) {
       else if (type === 'video') await loadVideo(m);
       else await loadAudio(m);
     } catch (e) {
-      console.error(e);
+      console.warn('파일을 열 수 없음:', f.name, e && e.message);
       URL.revokeObjectURL(m.url);
       failed.push(`${f.name} (${e && e.userMessage ? e.userMessage : '파일이 손상되었거나 열 수 없는 형식'})`);
       continue;

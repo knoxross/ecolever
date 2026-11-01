@@ -88,12 +88,13 @@ const PEOPLE = {
 const REALISM = 'photorealistic, real photograph, shot on a full-frame camera with a 50mm lens, natural lighting, realistic skin texture and pores, natural hair strands, accurate hands, true-to-life colors, high detail, sharp focus, no text, no watermark';
 
 function buildPersonPrompt(o) {
-  const subj = {
-    woman: 'a woman', man: 'a man', girl: 'a young girl', boy: 'a young boy', couple: 'a couple', family: 'a family with parents and children', group: 'a small group of people',
-  }[o.gender] || 'a person';
-  const look = o.look ? `${o.look} ` : '';
+  const noun = {
+    woman: 'woman', man: 'man', girl: 'young girl', boy: 'young boy', couple: 'couple', family: 'family with parents and children', group: 'small group of people',
+  }[o.gender] || 'person';
+  const desc = (o.look ? `${o.look} ` : '') + noun;
+  const article = /^[aeiouAEIOU]/.test(desc) ? 'an' : 'a';
   const age = o.age && !['girl', 'boy', 'family', 'group'].includes(o.gender) ? ` ${o.age}` : '';
-  const parts = [`${o.shot || 'medium shot'} of ${look}${subj}${age}, ${o.mood || 'smiling naturally'}`];
+  const parts = [`${o.shot || 'medium shot'} of ${article} ${desc}${age}, ${o.mood || 'smiling naturally'}`];
   if (o.action) parts.push(o.action);
   if (o.place) parts.push(`at ${o.place}`);
   if (o.outfit) parts.push(`wearing ${o.outfit}`);

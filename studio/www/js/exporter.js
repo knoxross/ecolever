@@ -13,7 +13,7 @@ function targetVideoBitrate(W, H, fps, duration, maxMB, audioBps = 160000) {
   const budget = (maxMB * 8e6 * 0.94) / Math.max(1, duration) - audioBps;
   return Math.max(250000, Math.min(quality, Math.round(budget)));
 }
-async function videoCodecCandidates(W, H, fps, bitrate) {
+async function videoCodecCandidates(W, H, fps, bitrate, constant = false) {
   const out = [];
   if (!window.VideoEncoder) return out;
   const list = [
@@ -24,10 +24,11 @@ async function videoCodecCandidates(W, H, fps, bitrate) {
     { codec: 'av01.0.08M.08', mux: 'av1', label: 'AV1' },
   ];
   for (const c of list) {
-    const config = { codec: c.codec, width: W, height: H, bitrate, framerate: fps, latencyMode: 'quality', bitrateMode: 'variable' };
+    const config = { codec: c.codec, width: W, height: H, bitrate, framerate: fps, latencyMode: 'quality', bitrateMode: constant ? 'constant' : 'variable' };
     if (c.mux === 'avc') config.avc = { format: 'avc' };
     try {
-      const r = await VideoEncoder.isConfigSupported(config);
+      let r = await VideoEncoder.isConfigSupported(config);
+      if (!r.supported && constant) { config.bitrateMode = 'variable'; r = await VideoEncoder.isConfigSupported(config); }
       if (r.supported) out.push({ ...c, config: r.config || config });
     } catch (e) { /* 다음 후보 */ }
   }
@@ -156,8 +157,18 @@ async function exportVideo(opts) {
 
     const sampleRate = 48000;
     const acodec = await pickAudioCodec(sampleRate);
-    const vbit = targetVideoBitrate(W, H, fps, total, opts.maxSizeMB ?? S.maxSizeMB);
-    const cands = await videoCodecCandidates(W, H, fps, vbit);
+    let vbit = targetVideoBitrate(W, H, fps, total, opts.maxSizeMB ?? S.maxSizeMB);
+    const limitMB = opts.maxSizeMB ?? S.maxSizeMB;
+    // 용량 제한 때문에 화소당 정보가 너무 적으면(뭉개짐) 해상도를 한 단계씩 낮춰 선명함 유지
+    if (limitMB) {
+      for (const q of [1080, 720, 540, 480]) {
+        if (q >= Math.min(canvas.width, canvas.height)) continue;
+        if (vbit / (canvas.width * canvas.height * fps) >= 0.045) break;
+        setCanvasSize(q);
+        vbit = targetVideoBitrate(canvas.width, canvas.height, fps, total, limitMB);
+      }
+    }
+    const cands = await videoCodecCandidates(canvas.width, canvas.height, fps, vbit, !!limitMB);
     if (!cands.length || !window.Mp4Muxer) return await exportRealtime({ onProgress, signal, W, H });
     let mix = null;
     if (acodec) mix = await renderAudioMix(total, sampleRate, text => onProgress({ pct: 0, text }));
@@ -166,15 +177,21 @@ async function exportVideo(opts) {
     const maxMB = opts.maxSizeMB ?? S.maxSizeMB;
     for (const vcodec of cands) {
       try {
-        let blob = await encodeTimeline({ W, H, fps, total, vcodec, acodec, mix, sampleRate, onProgress, signal });
+        let blob = await encodeTimeline({ W: canvas.width, H: canvas.height, fps, total, vcodec, acodec, mix, sampleRate, onProgress, signal });
         // 용량 제한을 넘으면 비율만큼 낮춰 한 번 더 (최대 2회)
         for (let k = 0; maxMB && blob.size > maxMB * 1e6 && k < 2; k++) {
           const cfg = Object.assign({}, vcodec.config, { bitrate: Math.max(200000, Math.round(vcodec.config.bitrate * (maxMB * 1e6 * 0.92) / blob.size)) });
           onProgress({ pct: 0, text: `용량 ${maxMB}MB 에 맞추는 중… (현재 ${(blob.size / 1e6).toFixed(1)}MB)` });
-          blob = await encodeTimeline({ W, H, fps, total, vcodec: { ...vcodec, config: cfg }, acodec, mix, sampleRate, onProgress, signal });
+          blob = await encodeTimeline({ W: canvas.width, H: canvas.height, fps, total, vcodec: { ...vcodec, config: cfg }, acodec, mix, sampleRate, onProgress, signal });
           vcodec.config = cfg;
         }
-        return { blob, ext: 'mp4', width: W, height: H, codecs: `${vcodec.label}${mix ? ' + ' + acodec.label : ''}`, bitrate: vcodec.config.bitrate };
+        // 그래도 넘치면 압축기로 한 번 더 (해상도·비트레이트 자동 조절, 목표 보장)
+        if (maxMB && blob.size > maxMB * 1e6) {
+          onProgress({ pct: 0, text: `용량 ${maxMB}MB 에 맞게 압축하는 중…` });
+          const c = await compressVideo(new File([blob], 'out.mp4', { type: 'video/mp4' }), { maxMB, signal, onProgress });
+          return { blob: c.blob, ext: 'mp4', width: c.width, height: c.height, codecs: `${vcodec.label} (용량 맞춤)`, bitrate: 0 };
+        }
+        return { blob, ext: 'mp4', width: canvas.width, height: canvas.height, codecs: `${vcodec.label}${mix ? ' + ' + acodec.label : ''}`, bitrate: vcodec.config.bitrate };
       } catch (e) {
         if (e instanceof ExportCancelled) throw e;
         console.warn('인코더 오류, 다른 방식으로 다시 시도', vcodec.codec, e);
