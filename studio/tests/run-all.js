@@ -468,7 +468,8 @@ async function functionalSuite(browser, url, F, label, opts) {
     await page.waitForFunction(() => window.__ttuk.state.clips.some(c => c.voiceId), null, { timeout: 60000 });
     await stop(page);
     const req = rec.anthropic.find(x => x.body);
-    assert(req.headers['x-api-key'] === 'sk-ant-test', 'API 키 헤더 없음');
+    assert(req.headers['x-api-key'] === 'sk-ant-test' || req.headers['authorization'] === 'Bearer sk-ant-test', 'API 키 헤더 없음');
+    assert(req.headers['anthropic-dangerous-direct-browser-access'] === 'true', '브라우저 직접 호출 헤더 없음');
     assert(req.body.model === 'claude-opus-5-5', '모델 ' + req.body.model);
     assert(req.body.output_config?.format?.type === 'json_schema', '구조화 출력 아님');
     assert(req.body.fallbacks === 'default' && /server-side-fallback-2026-07-01/.test(req.headers['anthropic-beta'] || ''), '거절 대비(fallback) 설정 없음');
