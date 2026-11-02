@@ -126,6 +126,8 @@ function buildMenu() {
         { label: '뒷부분 잘라내기 ⇥  (])', click: () => send('trimOut') },
         { label: '💬 자막 넣기  (S)', click: () => send('addSub') },
         { label: '🔗 영상 이어붙이기…', click: () => send('join') },
+        { label: '⏸ 장면 멈춤 (지금 화면 2초)', click: () => send('freeze') },
+        { label: '🧩 겹치기 (사진·영상·스티커·글자)', click: () => send('overlay') },
         { type: 'separator' },
         { label: '글자 화면 추가', accelerator: `${cmd}+T`, click: () => send('addText') },
         { label: '선택한 장면 복제', accelerator: `${cmd}+D`, click: () => send('dup') },

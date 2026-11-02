@@ -11,3 +11,4 @@ android/local.properties
 tests/.fixtures/
 tests/report/*.mp4
 tests/report/jobs_out/
+build/ffmpeg/

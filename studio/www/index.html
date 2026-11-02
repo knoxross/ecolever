@@ -110,6 +110,8 @@
       <button class="btn btn-sm" id="splitBtn" title="지금 위치에서 장면을 둘로 자르기 (C)">✂ 여기서 자르기</button>
       <button class="btn btn-sm" id="trimInBtn" title="지금 장면의 앞부분을 지금 위치까지 잘라내기 ([)">⇤ 앞부분 잘라내기</button>
       <button class="btn btn-sm" id="trimOutBtn" title="지금 장면의 뒷부분을 지금 위치부터 잘라내기 (])">뒷부분 잘라내기 ⇥</button>
+      <button class="btn btn-sm" id="freezeBtn" title="지금 화면을 2초 동안 멈춰 보여 주기">⏸ 장면 멈춤</button>
+      <button class="btn btn-sm" id="ovlQuickBtn" title="화면 위에 사진·영상·스티커·글자 겹치기">🧩 겹치기</button>
       <button class="btn btn-sm btn-accent" id="subHereBtn" title="지금 위치에 자막 넣기 — 화면에서 바로 입력, 끌어서 위치 이동 (S)">💬 자막 넣기</button>
     </div>
     <div class="stage-sub-edit" id="stageSubEdit" hidden><textarea id="stageSubText" rows="2" placeholder="자막을 입력하세요 (Enter: 완료 · Shift+Enter: 줄바꿈 · Esc: 취소)"></textarea></div>
@@ -119,7 +121,19 @@
     <div class="tabs">
       <button class="tab active" data-tab="clip">장면 편집</button>
       <button class="tab" data-tab="subs">💬 자막</button>
+      <button class="tab" data-tab="ovl">🧩 겹치기</button>
       <button class="tab" data-tab="project">영상 설정</button>
+    </div>
+    <div class="tab-body" id="ovlTab" hidden>
+      <div class="btn-row">
+        <button class="btn btn-sm btn-accent" id="ovlMediaBtn" title="미디어의 사진·영상을 화면 위에 작게 올리기 (화면 속 화면)">🖼 사진·영상 겹치기</button>
+        <button class="btn btn-sm" id="ovlStickerBtn">😀 스티커</button>
+        <button class="btn btn-sm" id="ovlTextBtn">🔤 글자 올리기</button>
+      </div>
+      <div class="sticker-grid" id="stickerGrid" hidden></div>
+      <div class="media-pick" id="ovlMediaPick" hidden></div>
+      <p class="muted small" style="margin:8px 0">화면에서 <b>끌어서 위치</b>, <b>마우스 휠로 크기</b>, <b>Shift+휠로 회전</b>. 지금 재생 위치부터 3초 동안 나옵니다 (아래에서 시간 조절).</p>
+      <div class="sub-list" id="ovlList"></div>
     </div>
     <div class="tab-body" id="subsTab" hidden>
       <div class="btn-row">
@@ -145,6 +159,7 @@
         <div class="field"><label>글자 색</label><input type="color" id="subColor"></div>
         <div class="field"><label>강조 색 (*별표*)</label><input type="color" id="subHl"></div>
       </div>
+      <div class="field"><label>글자 템플릿</label><select id="subTpl"></select></div>
       <div class="field"><label>나타나기</label><select id="subAnim"></select></div>
       <label class="check"><input type="checkbox" id="subOutline"> 글자 테두리 (밝은 화면에서도 잘 보이게)</label>
       <label class="check"><input type="checkbox" id="subBox"> 반투명 배경 상자</label>
@@ -202,6 +217,7 @@
         <div class="ruler" id="ruler"></div>
         <div class="track" id="track"></div>
         <div class="sub-track" id="subTrack" title="자막 줄 — 눌러서 편집"></div>
+        <div class="sub-track ovl-track" id="ovlTrack" title="겹치기 — 눌러서 편집"></div>
         <div class="audio-track" id="audioTrack"></div>
         <div class="playhead" id="playhead"></div>
       </div>
@@ -212,6 +228,7 @@
     <button data-m="library" class="on">🖼 미디어</button>
     <button data-m="clip">✏️ 장면 편집</button>
     <button data-m="subs">💬 자막</button>
+    <button data-m="ovl">🧩 겹치기</button>
     <button data-m="project">⚙ 영상 설정</button>
   </nav>
 </main>
@@ -480,6 +497,7 @@
         <li><b>📺 시리즈</b>: 마음에 드는 영상을 시리즈로 저장 → 다음부터 사진만 넣으면 같은 컨셉의 다음 편. 참고 영상에서 컨셉을 따올 수도 있고, 여러 편을 한 번에 만들 수도 있습니다.</li>
         <li><b>⏰ 예약</b>: 분·시간·일 단위(또는 매일 몇 시)로 폴더의 새 사진이나 명령어로 자동 제작·저장. PC 앱은 창을 닫아도 알림 영역에서 계속 동작합니다.</li>
         <li><b>📦 용량 줄이기</b>: 목표 MB 안으로, 화질은 최대한 유지하며 압축. 저장할 때부터 용량 제한을 걸 수도 있습니다.</li>
+        <li><b>캡컷식 편집</b>: 장면 편집에서 <b>속도</b>(0.25~4배)·<b>⏪ 거꾸로 재생</b>·소리 서서히 키우기/줄이기, 아래 막대의 <b>⏸ 장면 멈춤</b>, 오른쪽 <b>🧩 겹치기</b> 탭에서 사진·영상(화면 속 화면)·스티커·글자를 화면 위에 올리기(끌어서 위치, 휠로 크기, Shift+휠 회전), 자막 <b>글자 템플릿</b>(유튜브 노란 자막·예능·뉴스 하단 막대·네온·말풍선·영화 자막).</li>
         <li><b>💬 자막</b>: 오른쪽 '💬 자막' 탭에서 원하는 시간에 자막을 넣고 고칩니다. 내레이션으로 자동 자막, AI 말소리 받아쓰기, SRT 불러오기·저장, *별표* 강조 색. 저장하는 영상에 그대로 입혀집니다.</li>
         <li><b>🔍 자동 검수</b>: 저장 전 오류를 자동으로 고치고, 저장 후 장면마다 화면을 다시 확인합니다 (검은 화면·깨짐·길이 오류).</li>
       </ul>
@@ -506,6 +524,7 @@
 <script src="js/publish.js"></script>
 <script src="js/qa.js"></script>
 <script src="js/subtitles.js"></script>
+<script src="js/overlays.js"></script>
 <script src="js/editing.js"></script>
 <script src="js/series.js"></script>
 <script src="js/compress.js"></script>

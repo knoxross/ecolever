@@ -19,6 +19,7 @@ async function buildProjectBlob() {
     settings: S,
     clips: state.clips.map(stripClip),
     subs: state.subs,
+    overlays: state.overlays.map(stripClip),
     media: media.map(m => ({ id: m.id, type: m.type, role: m.role || '', name: m.name, mime: m.file.type || '', size: m.file.size })),
     command: $('#cmdInput')?.value || '',
   };
@@ -55,6 +56,7 @@ async function readProjectFile(file, onProgress) {
     .map(c => Object.assign(newClip(c.kind), c, { id: uid(), mediaId: c.kind === 'media' ? mapId(c.mediaId) : null, voiceId: mapId(c.voiceId) }))
     .filter(c => c.kind === 'text' || c.mediaId);
   state.subs = Array.isArray(header.subs) ? header.subs : [];
+  state.overlays = (header.overlays || []).map(o => Object.assign({}, o, { mediaId: o.mediaId ? mapId(o.mediaId) : undefined })).filter(o => !o.mediaId || mediaById(o.mediaId));
   state.selectedId = state.clips[0]?.id || null;
   state.time = 0;
   return header;

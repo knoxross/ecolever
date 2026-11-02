@@ -75,20 +75,22 @@ async function renderAudioMix(total, sampleRate, onStep) {
     const ab = await getVideoAudio(m);
     if (!ab) continue;
     // 다음 장면으로 넘어가는 동안 소리를 겹쳐서 부드럽게 (크로스페이드)
-    const fadeIn = Math.max(0.06, transLen(c, i));
+    const special = clipSpeed(c) !== 1 || c.reverse;
+    const fadeIn = Math.max(0.06, transLen(c, i), c.fadeIn || 0);
     const nextT = i + 1 < lay.length ? transLen(lay[i + 1].clip, i + 1) : 0;
-    const tail = Math.max(0, Math.min(nextT, m.duration - c.trimStart - c.duration));
-    const fadeOut = Math.max(0.06, tail || 0.08);
+    const tail = special ? 0 : Math.max(0, Math.min(nextT, m.duration - c.trimStart - c.duration));
+    const fadeOut = Math.max(0.06, tail || 0.08, c.fadeOut || 0);
     const end = L.end + tail;
     const src = oac.createBufferSource();
-    src.buffer = ab;
+    src.buffer = special ? speedAudio(c, ab) : ab;
     const g = oac.createGain();
     g.gain.setValueAtTime(0, L.start);
     g.gain.linearRampToValueAtTime(c.volume, L.start + Math.min(fadeIn, c.duration / 2));
     g.gain.setValueAtTime(c.volume, Math.max(L.start + Math.min(fadeIn, c.duration / 2), end - fadeOut));
     g.gain.linearRampToValueAtTime(0, end);
     src.connect(g); g.connect(oac.destination);
-    src.start(L.start, c.trimStart, Math.min(c.duration + tail, ab.duration - c.trimStart));
+    if (special) src.start(L.start, 0, c.duration);
+    else src.start(L.start, c.trimStart, Math.min(c.duration + tail, ab.duration - c.trimStart));
     any = true;
   }
   for (const sg of voiceSegments()) {
@@ -105,6 +107,23 @@ async function renderAudioMix(total, sampleRate, onStep) {
   return await oac.startRendering();
 }
 
+/** 속도·역재생 장면의 소리: 해당 구간을 잘라 거꾸로 / 높이는 그대로 빠르기만 바꿈 */
+function speedAudio(c, ab) {
+  const key = `${c.trimStart}|${c.duration}|${c.speed}|${c.reverse}`;
+  if (c._aseg && c._aseg.key === key) return c._aseg.buf;
+  const sr = ab.sampleRate, sp = clipSpeed(c);
+  const s0 = Math.round(c.trimStart * sr), n = Math.max(1, Math.min(ab.length - s0, Math.round(srcSpan(c) * sr)));
+  const outLen = Math.max(1, Math.round(c.duration * sr));
+  const out = new AudioBuffer({ length: outLen, numberOfChannels: ab.numberOfChannels, sampleRate: sr });
+  for (let ch = 0; ch < ab.numberOfChannels; ch++) {
+    let seg = ab.getChannelData(ch).slice(s0, s0 + n);
+    if (c.reverse) seg.reverse();
+    if (Math.abs(sp - 1) > 0.001) seg = timeStretch(seg, 1 / sp, sr);
+    out.getChannelData(ch).set(seg.subarray(0, outLen));
+  }
+  c._aseg = { key, buf: out };
+  return out;
+}
 function seekExact(v, time) {
   return new Promise(resolve => {
     if (v.readyState >= 2 && !v.seeking && Math.abs(v.currentTime - time) < 0.0005) { resolve(); return; }
@@ -123,17 +142,18 @@ async function prepareFrame(t, lay) {
   if (isVideoClip(L.clip)) {
     const v = getClipVideo(L.clip);
     const md = clipMedia(L.clip).duration;
-    jobs.push(seekExact(v, Math.min(L.clip.trimStart + clamp(local, 0, L.clip.duration), md - 0.001)));
+    jobs.push(seekExact(v, Math.min(srcTime(L.clip, clamp(local, 0, L.clip.duration)), md - 0.001)));
   }
   const total = lay[lay.length - 1].end, ll = loopEndLen();
-  if (ll && t > total - ll && lay[0] !== L && isVideoClip(lay[0].clip)) jobs.push(seekExact(getClipVideo(lay[0].clip), lay[0].clip.trimStart));
+  if (ll && t > total - ll && lay[0] !== L && isVideoClip(lay[0].clip)) jobs.push(seekExact(getClipVideo(lay[0].clip), srcTime(lay[0].clip, 0)));
   if (local < transLen(L.clip, i)) {
     const P = lay[i - 1];
     if (isVideoClip(P.clip)) {
       const v = getClipVideo(P.clip);
-      jobs.push(seekExact(v, Math.min(P.clip.trimStart + P.clip.duration + local, clipMedia(P.clip).duration - 0.001)));
+      jobs.push(seekExact(v, Math.min(srcTime(P.clip, P.clip.duration + local), clipMedia(P.clip).duration - 0.001)));
     }
   }
+  if (window.overlayFrameJobs) jobs.push(...overlayFrameJobs(t));
   if (jobs.length) await Promise.all(jobs);
 }
 

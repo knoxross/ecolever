@@ -16,7 +16,11 @@ function splitAt(t) {
   if (local < 0.15 || local > c.duration - 0.15) throw new Error('장면의 맨 앞이나 맨 끝에서는 자를 수 없습니다. 재생 위치를 장면 가운데로 옮겨 주세요.');
   const b = Object.assign(stripClip(c), { id: uid(), transition: 'none', voiceId: '', voiceSrcId: '', narration: '' });
   b.duration = round2(c.duration - local);
-  if (isVideoClip(c)) b.trimStart = round2(c.trimStart + local);
+  if (isVideoClip(c)) {
+    const sp = clipSpeed(c);
+    if (c.reverse) { b.trimStart = c.trimStart; c.trimStart = round2(c.trimStart + (c.duration - local) * sp); }
+    else b.trimStart = round2(c.trimStart + local * sp);
+  }
   c.duration = round2(local);
   state.clips.splice(state.clips.indexOf(c) + 1, 0, b);
   return b;
@@ -28,7 +32,7 @@ function trimInAt(t) {
   const { L, local } = hit, c = L.clip;
   if (local < 0.05) throw new Error('이미 장면의 시작입니다.');
   if (c.duration - local < 0.3) throw new Error('너무 짧아집니다. 재생 위치를 앞으로 옮겨 주세요.');
-  if (isVideoClip(c)) c.trimStart = round2(c.trimStart + local);
+  if (isVideoClip(c) && !c.reverse) c.trimStart = round2(c.trimStart + local * clipSpeed(c));
   c.duration = round2(c.duration - local);
   return L.start;
 }
@@ -38,6 +42,7 @@ function trimOutAt(t) {
   if (!hit) throw new Error('장면이 없습니다.');
   const { L, local } = hit, c = L.clip;
   if (local < 0.3) throw new Error('너무 짧아집니다. 재생 위치를 뒤로 옮겨 주세요.');
+  if (isVideoClip(c) && c.reverse) c.trimStart = round2(c.trimStart + (c.duration - local) * clipSpeed(c));
   c.duration = round2(local);
   return L.start + local;
 }
@@ -203,4 +208,27 @@ function openSourcePreview(m) {
   $('#srcInfo').textContent = `${m.w}×${m.h} · ${fmt(m.duration)} · ${(m.file.size / 1e6).toFixed(1)}MB`;
   openModal('#srcModal');
   v.play().catch(() => {});
+}
+
+
+/* ------------------------------------------------------------------ 장면 멈춤 (지금 화면을 2초 정지 화면으로) */
+async function freezeAt(t, seconds = 2) {
+  const hit = clipAtTime(t);
+  if (!hit || !isVideoClip(hit.L.clip)) throw new Error('동영상 장면 위에서 눌러 주세요. (그 순간의 화면을 멈춰 보여 줍니다)');
+  const { L, local } = hit, c = L.clip, m = clipMedia(c);
+  const v = getClipVideo(c);
+  await seekExact(v, Math.min(srcTime(c, local), m.duration - 0.01));
+  const cv = document.createElement('canvas');
+  cv.width = v.videoWidth; cv.height = v.videoHeight;
+  cv.getContext('2d').drawImage(v, 0, 0);
+  const blob = await new Promise(r => cv.toBlob(r, 'image/jpeg', 0.95));
+  const { added } = await loadFiles([new File([blob], `멈춤-${m.name.replace(/\.[^.]+$/, '')}-${local.toFixed(1)}초.jpg`, { type: 'image/jpeg' })]);
+  if (!added[0]) throw new Error('멈춤 화면을 만들지 못했습니다.');
+  const still = clipFromMedia(added[0], { duration: seconds, motion: 'none', fit: c.fit, transition: 'none', text: '' });
+  const idx = state.clips.indexOf(c);
+  if (local > 0.15 && local < c.duration - 0.15) {
+    const b = splitAt(t);
+    state.clips.splice(state.clips.indexOf(b), 0, still);
+  } else state.clips.splice(local <= 0.15 ? idx : idx + 1, 0, still);
+  return still;
 }

@@ -298,3 +298,16 @@ hr{border:0;border-top:1px solid var(--line);margin:14px 0;}
 #aspectSeg{grid-template-columns:1fr 1fr 1fr 1fr;}
 #aspectSeg button{font-size:11.5px;}
 .sub-row .pos{background:var(--panel);border:1px solid var(--line);border-radius:5px;font-size:11.5px;padding:2px;}
+
+/* 겹치기 · 스티커 */
+.sticker-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin:8px 0;max-height:180px;overflow:auto;background:var(--panel-2);border-radius:8px;padding:6px;}
+.sticker-grid button{font-size:22px;background:none;border:0;border-radius:6px;padding:4px;}
+.sticker-grid button:hover{background:var(--panel-3);}
+.media-pick{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0;}
+.media-pick button{aspect-ratio:16/11;border-radius:6px;border:1px solid var(--line);background:#000 center/cover no-repeat;}
+.ovl-track .sb{background:rgba(255,92,138,.3);border-color:rgba(255,140,170,.8);color:#ffe3ec;}
+.ovl-row .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:6px;}
+.ovl-row label{font-size:11px;color:var(--muted);display:block;}
+.ovl-row input[type=range]{width:100%;accent-color:var(--accent);}
+.ovl-row select,.ovl-row input[type=text],.ovl-row input[type=color]{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:3px;font-size:12px;}
+@media (max-width:1000px){ body[data-m="ovl"] .library{display:none;} }

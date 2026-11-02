@@ -71,6 +71,21 @@ function blackSegments(file) {
   const r = spawnSync('ffmpeg', ['-i', file, '-vf', 'blackdetect=d=0.25:pix_th=0.08', '-an', '-f', 'null', '-']);
   return (r.stderr.toString().match(/black_start:[\d.]+ black_end:[\d.]+/g) || []);
 }
+/** 출력 영상의 t초 화면이 원본의 어느 시점과 가장 닮았는지 (속도·역재생 검사) */
+function grayFrame(file, t, vf) {
+  const r = spawnSync('ffmpeg', ['-loglevel', 'error', '-ss', String(t), '-i', file, '-frames:v', '1', '-vf', vf + ',scale=96:54,format=gray', '-f', 'rawvideo', '-']);
+  return r.stdout;
+}
+function matchSourceTime(outFile, t, srcFile, cands, srcCrop) {
+  const f = grayFrame(outFile, t, 'null');
+  let best = null, bestD = Infinity;
+  for (const s of cands) {
+    const g = grayFrame(srcFile, s, srcCrop);
+    let d = 0; for (let i = 0; i < Math.min(f.length, g.length); i++) d += Math.abs(f[i] - g[i]);
+    if (d < bestD) { bestD = d; best = s; }
+  }
+  return best;
+}
 function freezes(file, minSec = 1.0) {
   const r = spawnSync('ffmpeg', ['-i', file, '-vf', `freezedetect=n=0.003:d=${minSec}`, '-an', '-f', 'null', '-']);
   return (r.stderr.toString().match(/freeze_start: [\d.]+/g) || []);
@@ -540,6 +555,40 @@ async function functionalSuite(browser, url, F, label, opts) {
     }
     assert(res.includes('21:9=1680×720') && res.includes('4:3=960×720') && res[6].startsWith('9:16'), res.join(' '));
     return res.join(' · ');
+  });
+
+  await test('캡컷식: 속도 2배·장면 멈춤·겹치기(스티커·글자·사진)·자막 템플릿 → 저장 화면 시점 정확', async () => {
+    await page.evaluate(() => { dirty = false; newProject(); });
+    await importFiles(page, [F('phone30.mp4'), path.join(IMGS, 'product-1color.jpg')]);
+    await page.waitForFunction(() => window.__ttuk.state.media.length === 2, null, { timeout: 60000 });
+    await page.evaluate(() => { pause(); S.aspect = '16:9'; S.quality = 720; S.filter = 'none'; const st = window.__ttuk.state; st.clips.splice(1); st.clips[0].duration = 8; st.clips[0].fit = 'cover'; changed(); refreshAll(); });
+    await page.evaluate(() => { showTab('clip'); selectClip(window.__ttuk.state.clips[0].id); });
+    await page.selectOption('#clipTab select[data-k="speed"]', '2');
+    await page.evaluate(() => seekTo(1));
+    await page.click('#freezeBtn'); await page.waitForTimeout(800);
+    await page.evaluate(() => showTab('ovl'));
+    await page.click('#ovlStickerBtn'); await page.click('#stickerGrid [data-st="🔥"]');
+    await page.click('#ovlMediaBtn'); await page.click('#ovlMediaPick button >> nth=1');
+    await page.evaluate(() => { addSub(0.2, 3, '유튜브 *노란* 자막'); S.sub = Object.assign(subStyle(), { tpl: 'youtube' }); changed(); });
+    const st = await page.evaluate(() => ({ c: window.__ttuk.state.clips.map(c => [clipMedia(c).type, c.duration, c.trimStart, c.speed]), o: window.__ttuk.state.overlays.length }));
+    assert(JSON.stringify(st.c) === '[["video",1,0,2],["image",2,0,1],["video",3,2,2]]', '구성 ' + JSON.stringify(st.c));
+    assert(st.o === 2, '겹치기 ' + st.o);
+    const e = await exportViaUI(page, out('capcut.mp4'));
+    assert(/검수 통과/.test(e.note), '검수: ' + e.note);
+    const crop = 'crop=1080:608:0:656';
+    const cands = Array.from({ length: 33 }, (_, k) => k * 0.25);
+    const got = [[0.5, 1.0], [2.0, 2.0], [4.5, 5.0], [5.5, 7.0]].map(([t, exp]) => [t, exp, matchSourceTime(out('capcut.mp4'), t, F('phone30.mp4'), cands, crop)]);
+    assert(got.every(([, exp, g]) => Math.abs(exp - g) < 0.01), '시점 불일치 ' + JSON.stringify(got));
+    return checkVideo(out('capcut.mp4'), { w: 1280, h: 720, duration: 6, audio: true }) + ' · 시점 ' + got.map(([t, , g]) => `${t}→${g}`).join(' ');
+  });
+  await test('캡컷식: 역재생 → 저장 화면이 거꾸로', async () => {
+    await page.evaluate(() => { const st = window.__ttuk.state; st.overlays = []; st.subs = []; const v = st.clips.find(c => clipMedia(c).type === 'video'); st.clips = [v]; Object.assign(v, { speed: 1, trimStart: 0, duration: 4, reverse: true, transition: 'none', _aseg: null }); changed(); refreshAll(); });
+    const e = await exportViaUI(page, out('reverse.mp4'));
+    assert(/검수 통과/.test(e.note), '검수: ' + e.note);
+    const cands = Array.from({ length: 17 }, (_, k) => k * 0.25);
+    const got = [[0.5, 3.5], [2.0, 2.0], [3.5, 0.5]].map(([t, exp]) => [t, exp, matchSourceTime(out('reverse.mp4'), t, F('phone30.mp4'), cands, 'crop=1080:608:0:656')]);
+    assert(got.every(([, exp, g]) => Math.abs(exp - g) < 0.01), '역재생 시점 ' + JSON.stringify(got));
+    return got.map(([t, , g]) => `${t}초→원본 ${g}초`).join(' · ');
   });
 
   /* ---------- AI (모의 응답) ---------- */

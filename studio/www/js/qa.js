@@ -16,8 +16,8 @@ async function preflight() {
       const m = clipMedia(c);
       if (!m) { errors.push(`${n}번 장면의 사진·영상 파일이 없습니다.`); continue; }
       if (m.type === 'video') {
+        if (c.trimStart + srcSpan(c) > m.duration + 0.02) { c.duration = round2(Math.max(0.3, (m.duration - c.trimStart) / clipSpeed(c))); fixed.push(`${n}번 장면(속도 ${clipSpeed(c)}배) 길이를 원본 안으로 맞춤`); }
         if (c.trimStart > m.duration - 0.2) { c.trimStart = Math.max(0, round2(m.duration - Math.min(c.duration, m.duration))); fixed.push(`${n}번 장면 시작 지점을 영상 길이 안으로 맞춤`); }
-        if (c.trimStart + c.duration > m.duration + 0.01) { c.duration = round2(Math.max(0.3, m.duration - c.trimStart)); fixed.push(`${n}번 장면 길이를 원본 영상 길이에 맞춤`); }
         const v = getClipVideo(c);
         if (v.error) errors.push(`${n}번 장면 영상(${m.name})을 재생할 수 없습니다.`);
       }
@@ -28,6 +28,8 @@ async function preflight() {
     if (i > 0 && c.transition !== 'none' && c.transDur > c.duration * 0.9) { c.transDur = round1(c.duration * 0.6); fixed.push(`${n}번 장면 전환 시간을 장면 길이에 맞춤`); }
     if (c.voiceId && !mediaById(c.voiceId)) { c.voiceId = ''; fixed.push(`${n}번 장면의 사라진 목소리 연결을 정리`); }
   }
+  const lostOv = state.overlays.filter(o => o.mediaId && !mediaById(o.mediaId));
+  if (lostOv.length) { state.overlays = state.overlays.filter(o => !lostOv.includes(o)); fixed.push(`파일이 사라진 겹치기 ${lostOv.length}개 정리`); }
   if (S.bgmId && !mediaById(S.bgmId)) { S.bgmId = ''; fixed.push('사라진 배경음악 연결을 정리'); }
   if (state.clips[0].transition !== 'none') state.clips[0].transition = 'none';
   await preloadText();

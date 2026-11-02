@@ -68,6 +68,11 @@ function drawSubtitles(t) {
     ctx.translate(cx, cy); ctx.scale(s, s); ctx.translate(-cx, -cy);
   }
   ctx.font = font(fs);
+  if (st.tpl && st.tpl !== 'basic' && window.drawTemplateText) { // 글자 템플릿
+    drawTemplateText(shown, cx, y0, fs, st.tpl, st.color, st.hl, st.font);
+    ctx.restore();
+    return;
+  }
   if (st.box) {
     const mw = Math.max(...lines.map(l => ctx.measureText(plain(l)).width));
     const pad = fs * 0.32;

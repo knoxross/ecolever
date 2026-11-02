@@ -63,6 +63,7 @@ const state = {
   media: [],
   clips: [],
   subs: [],       // 자막 줄: { id, start, end, text }
+  overlays: [],   // 겹치기: 사진·영상·스티커·글자
   selectedId: null,
   time: 0,
   playing: false,
@@ -359,6 +360,7 @@ function newClip(kind, extra = {}) {
     text: '', sub: '', font: FONTS[0].v, fontSize: 64, textColor: '#ffffff', textPos: 'bottom', textBg: true, textAnim: 'up',
     bgColor: '#2f4332', bgColor2: '',
     enhance: 0, voiceId: '', voiceVol: 1, voiceDelay: 0.3, narration: '',
+    speed: 1, reverse: false, fadeIn: 0, fadeOut: 0,
     bgStyle: 'gradient', emoji: '',
   }, extra);
 }
@@ -400,6 +402,20 @@ const totalDuration = () => state.clips.reduce((s, c) => s + c.duration, 0);
 function indexAt(t, lay) {
   for (let i = 0; i < lay.length; i++) if (t < lay[i].end) return i;
   return lay.length - 1;
+}
+/* 속도·역재생: 장면 길이(화면 시간) ↔ 원본 영상 시간 */
+const clipSpeed = c => clamp(+c.speed || 1, 0.25, 4);
+const srcSpan = c => c.duration * clipSpeed(c);
+function srcTime(c, local) {
+  const sp = clipSpeed(c);
+  return c.reverse ? Math.max(0, c.trimStart + srcSpan(c) - Math.max(0, local) * sp) : c.trimStart + Math.max(0, local) * sp;
+}
+/** 장면 소리 서서히 키우기·줄이기 비율 (0~1) */
+function clipFade(c, local) {
+  let f = 1;
+  if (c.fadeIn > 0 && local < c.fadeIn) f = Math.min(f, local / c.fadeIn);
+  if (c.fadeOut > 0 && local > c.duration - c.fadeOut) f = Math.min(f, Math.max(0, (c.duration - local) / c.fadeOut));
+  return clamp(f, 0, 1);
 }
 const transLen = (c, i) => (i === 0 || c.transition === 'none' ? 0 : Math.min(c.transDur, c.duration * 0.9));
 
@@ -457,6 +473,7 @@ function render(t) {
     ctx.save(); ctx.globalAlpha = easeInOut((t - (total - loopLen)) / loopLen); drawClip(lay[0].clip, 0); ctx.restore();
   }
   ctx.restore();
+  if (window.drawOverlays) drawOverlays(t);
   drawLogo();
   if (window.drawSubtitles) drawSubtitles(t);
   if (S.progressBar && total > 0) {
@@ -771,23 +788,30 @@ function syncVideos(t) {
   for (const { clip } of lay) {
     if (!isVideoClip(clip)) continue;
     const v = getClipVideo(clip);
-    if (clip._gain) clip._gain.gain.value = clip.volume; else v.volume = clamp(clip.volume, 0, 1);
+    const myLocal = clip === L.clip ? local : 0;
+    const vol = clip.reverse ? 0 : clip.volume * clipFade(clip, myLocal); // 역재생 소리는 미리보기에서 끔
+    if (clip._gain) clip._gain.gain.value = vol; else v.volume = clamp(vol, 0, 1);
+    const sp = clipSpeed(clip);
+    if (!clip.reverse && Math.abs(v.playbackRate - sp) > 0.001) { v.playbackRate = sp; v.preservesPitch = true; }
     if (clip === L.clip) {
-      const want = clip.trimStart + clamp(local, 0, clip.duration);
+      const want = srcTime(clip, clamp(local, 0, clip.duration));
       const nearEnd = local >= clip.duration - 0.06 || (v.duration && want >= v.duration - 0.06);
-      if (state.playing && !nearEnd) {
+      if (clip.reverse) { // 거꾸로는 한 장면씩 넘겨서 보여 줌
+        if (!v.paused) v.pause();
+        if (!v.seeking && Math.abs(v.currentTime - want) > 0.03) v.currentTime = want;
+      } else if (state.playing && !nearEnd) {
         if (v.paused) {
           if (Math.abs(v.currentTime - want) > 0.12) v.currentTime = want;
           v.play().catch(() => {});
-        } else if (!v.seeking && Math.abs(v.currentTime - want) > 1.5) v.currentTime = want;
+        } else if (!v.seeking && Math.abs(v.currentTime - want) > 1.5 * sp) v.currentTime = want;
       } else {
         if (!v.paused) v.pause();
         if (!v.seeking && Math.abs(v.currentTime - want) > 0.04) v.currentTime = want;
       }
     } else if (clip === prev) {
       const md = clipMedia(clip).duration;
-      const want = Math.min(clip.trimStart + clip.duration + local, md - 0.05);
-      if (state.playing && want < md - 0.08) {
+      const want = Math.min(srcTime(clip, clip.duration + local), md - 0.05);
+      if (state.playing && want < md - 0.08 && !clip.reverse) {
         if (v.paused) { if (Math.abs(v.currentTime - want) > 0.12) v.currentTime = want; v.play().catch(() => {}); }
         else if (!v.seeking && Math.abs(v.currentTime - want) > 0.45) v.currentTime = want;
       } else {
@@ -796,13 +820,15 @@ function syncVideos(t) {
       }
     } else {
       if (!v.paused) v.pause();
-      if (!v.seeking && Math.abs(v.currentTime - clip.trimStart) > 0.1) v.currentTime = clip.trimStart;
+      const first = srcTime(clip, 0);
+      if (!v.seeking && Math.abs(v.currentTime - first) > 0.1) v.currentTime = first;
     }
   }
 }
 let playStartWall = 0, playStartT = 0, rafId = 0, renderQueued = false;
 function frame() {
   syncVideos(state.time);
+  if (window.syncOverlayVideos) syncOverlayVideos(state.time);
   render(state.time);
   hooks.onTime();
 }
@@ -841,12 +867,12 @@ function loop() {
   const lay = layout();
   if (lay.length) {
     const i = indexAt(clamp(t, 0, total - 1e-3), lay), L = lay[i];
-    if (isVideoClip(L.clip) && L.clip._video) {
+    if (isVideoClip(L.clip) && L.clip._video && !L.clip.reverse) {
       const v = L.clip._video;
       const local = t - L.start;
       if (local > transLen(L.clip, i) + 0.15 && local < L.clip.duration - 0.15) {
         if (!v.paused && !v.seeking && v.readyState >= 3) {
-          const vt = L.start + (v.currentTime - L.clip.trimStart);
+          const vt = L.start + (v.currentTime - L.clip.trimStart) / clipSpeed(L.clip);
           const drift = Math.abs(vt - t);
           if (drift > 0.04 && drift < 2) {
             playStartT = vt; playStartWall = performance.now(); t = vt;
@@ -876,7 +902,7 @@ function seekTo(t) {
 /* ------------------------------------------------------------------ 실행 취소 / 다시 실행 */
 const hist = { undo: [], redo: [], last: null, timer: 0 };
 function snapshot() {
-  return JSON.stringify({ clips: state.clips.map(stripClip), subs: state.subs, settings: S, selectedId: state.selectedId });
+  return JSON.stringify({ clips: state.clips.map(stripClip), subs: state.subs, overlays: state.overlays.map(stripClip), settings: S, selectedId: state.selectedId });
 }
 function commit(debounceMs = 0) {
   clearTimeout(hist.timer);
@@ -906,6 +932,9 @@ function restore(json) {
   const keepLogo = mediaById(data.settings.logoId) ? data.settings.logoId : '';
   Object.assign(S, data.settings, { bgmId: keepBgm, logoId: keepLogo });
   state.subs = data.subs || [];
+  const oldOv = new Map(state.overlays.map(o => [o.id, o]));
+  state.overlays = (data.overlays || []).filter(o => !o.mediaId || mediaById(o.mediaId)).map(o => { const p = oldOv.get(o.id); if (p && p._video && p.mediaId === o.mediaId) { o._video = p._video; oldOv.delete(o.id); } return o; });
+  oldOv.forEach(o => window.disposeOverlay && disposeOverlay(o));
   state.selectedId = clipById(data.selectedId) ? data.selectedId : null;
   state.time = Math.min(state.time, totalDuration());
 }

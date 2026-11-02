@@ -53,7 +53,7 @@ function changed(debounce = 0) {
 }
 function refreshAll() {
   setCanvasSize();
-  renderLibrary(); renderTimeline(); renderClipPanel(); syncProjectForm(); renderSubsPanel(); updateEmpty();
+  renderLibrary(); renderTimeline(); renderClipPanel(); syncProjectForm(); renderSubsPanel(); renderOverlayPanel(); updateEmpty();
   preloadText().then(requestRender);
   requestRender();
 }
@@ -143,6 +143,8 @@ function removeMedia(id) {
   if (used.length && !confirm(`이 파일을 쓰는 장면 ${used.length}개도 함께 지워집니다. 계속할까요?`)) return;
   used.forEach(c => { disposeClip(c); state.clips.splice(state.clips.indexOf(c), 1); });
   state.clips.forEach(c => { if (c.voiceId === id) c.voiceId = ''; if (c.voiceSrcId === id) c.voiceSrcId = ''; });
+  state.overlays.filter(o => o.mediaId === id).forEach(disposeOverlay);
+  state.overlays = state.overlays.filter(o => o.mediaId !== id);
   removeMediaData(m);
   if (!clipById(state.selectedId)) state.selectedId = state.clips[0]?.id || null;
   if (state.clips[0]) state.clips[0].transition = 'none';
@@ -185,6 +187,7 @@ function renderTimeline() {
   if (bgm && total > 0) aud += `<div class="bgm" style="left:0;width:${total * pps}px" title="배경음악">🎵 ${esc(bgm.name)}</div>`;
   for (const sg of voiceSegments()) aud += `<div class="bgm voice" style="left:${sg.start * pps}px;width:${Math.max(6, (sg.end - sg.start) * pps)}px" title="목소리">🎙</div>`;
   $('#audioTrack').innerHTML = aud;
+  $('#ovlTrack').innerHTML = state.overlays.map(o => `<div class="sb${o.id === selOverlayId ? ' sel' : ''}" data-ovl="${o.id}" style="left:${o.start * pps}px;width:${Math.max(6, (o.end - o.start) * pps)}px">${ovIcon(o)} ${esc(ovName(o))}</div>`).join('');
   $('#subTrack').innerHTML = state.subs.map(x => `<div class="sb${x.id === selSubId ? ' sel' : ''}" data-sub="${x.id}" style="left:${x.start * pps}px;width:${Math.max(6, (x.end - x.start) * pps)}px" title="${esc(plain(x.text))}">💬 ${esc(plain(x.text))}</div>`).join('');
   $('#tlInner').style.width = (end * pps + 60) + 'px';
   updateTimeUI();
@@ -269,7 +272,7 @@ function renderClipPanel() {
   const m = clipMedia(c);
   const isVid = m?.type === 'video';
   const idx = state.clips.indexOf(c);
-  const maxDur = isVid ? round1(m.duration - c.trimStart) : 120;
+  const maxDur = isVid ? round1((m.duration - c.trimStart) / clipSpeed(c)) : 120;
   const voice = c.voiceId ? mediaById(c.voiceId) : null;
   const tone = c.voiceTone || { mode: 'none' };
   box.innerHTML = `
@@ -281,7 +284,15 @@ function renderClipPanel() {
       <div class="field"><label>길이(초)</label><input type="number" data-k="duration" min="0.3" max="${maxDur}" step="0.1" value="${c.duration}"></div>
       ${isVid ? `<div class="field"><label>시작 지점(초)</label><input type="number" data-k="trimStart" min="0" max="${round1(m.duration - 0.3)}" step="0.1" value="${c.trimStart}"></div>` : ''}
     </div>
-    ${isVid ? `<div class="field"><label>원본 소리 <output>${Math.round(c.volume * 100)}%</output></label><input type="range" data-k="volume" min="0" max="1.5" step="0.01" value="${c.volume}"></div>` : ''}
+    ${isVid ? `<div class="field"><label>원본 소리 <output>${Math.round(c.volume * 100)}%</output></label><input type="range" data-k="volume" min="0" max="1.5" step="0.01" value="${c.volume}"></div>
+      <div class="row2">
+        <div class="field"><label>속도</label><select data-k="speed">${opt([0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 3, 4].map(v => ({ v, label: v === 1 ? '보통 (1배)' : v + '배' + (v < 1 ? ' 느리게' : ' 빠르게') })), c.speed || 1)}</select></div>
+        <div class="field"><label>&nbsp;</label><label class="check" style="margin:6px 0 0"><input type="checkbox" data-k="reverse"${c.reverse ? ' checked' : ''}> ⏪ 거꾸로 재생</label></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>소리 서서히 키우기(초)</label><input type="number" data-k="fadeIn" min="0" max="10" step="0.1" value="${c.fadeIn || 0}"></div>
+        <div class="field"><label>소리 서서히 줄이기(초)</label><input type="number" data-k="fadeOut" min="0" max="10" step="0.1" value="${c.fadeOut || 0}"></div>
+      </div>` : ''}
     ${c.kind === 'media' ? `
       <div class="row2">
         <div class="field"><label>화면 맞춤</label>
@@ -385,10 +396,19 @@ function onClipInput(e) {
   else if (el.type === 'number' || el.type === 'range') { v = parseFloat(el.value); if (!isFinite(v)) return; }
   else v = el.value;
   const m = clipMedia(c);
-  if (k === 'duration') v = clamp(v, 0.3, m?.type === 'video' ? Math.max(0.3, m.duration - c.trimStart) : 120);
+  if (k === 'duration') v = clamp(v, 0.3, m?.type === 'video' ? Math.max(0.3, (m.duration - c.trimStart) / clipSpeed(c)) : 120);
   if (k === 'trimStart' && m) { v = clamp(v, 0, m.duration - 0.3); c.duration = Math.min(c.duration, round1(m.duration - v)); }
   if (k === 'transDur') v = clamp(v, 0.1, 3);
+  if (k === 'speed') { // 원본 구간은 그대로, 화면 길이만 바뀜
+    v = clamp(parseFloat(el.value) || 1, 0.25, 4);
+    const span = srcSpan(c);
+    c.duration = round2(Math.max(0.3, Math.min(span, m.duration - c.trimStart) / v));
+    c._aseg = null;
+  }
+  if (k === 'reverse') c._aseg = null;
+  if (k === 'fadeIn' || k === 'fadeOut') v = clamp(v, 0, c.duration);
   c[k] = v;
+  if (k === 'speed' && e.type === 'change') { renderClipPanel(); renderTimeline(); toast(`속도 ${v}배 — 장면 길이 ${c.duration}초`); }
   const out = el.closest('.field')?.querySelector('output');
   if (out) out.textContent = ['volume', 'enhance', 'voiceVol'].includes(k) ? Math.round(v * 100) + '%' : v;
   if (['duration', 'trimStart', 'transition', 'bgColor', 'bgColor2', 'text', 'textColor', 'enhance', 'voiceDelay', 'bgStyle'].includes(k)) renderTimelineSoon();
@@ -669,7 +689,8 @@ function newProject() {
   pause();
   state.clips.forEach(disposeClip);
   state.media.forEach(m => URL.revokeObjectURL(m.url));
-  state.clips = []; state.media = []; state.subs = []; state.selectedId = null; state.time = 0;
+  state.overlays.forEach(disposeOverlay);
+  state.clips = []; state.media = []; state.subs = []; state.overlays = []; state.selectedId = null; state.time = 0;
   Object.assign(S, { bgmId: '', logoId: '', bgmOffset: 0, filter: 'none' });
   $('#cmdInput').value = '';
   hist.undo = []; hist.redo = []; hist.last = null; commit();
@@ -911,8 +932,10 @@ function showTab(name) {
   $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
   $('#clipTab').hidden = name !== 'clip';
   $('#subsTab').hidden = name !== 'subs';
+  $('#ovlTab').hidden = name !== 'ovl';
+  if (name === 'ovl') renderOverlayPanel();
   $('#projectTab').hidden = name !== 'project';
-  if (window.matchMedia('(max-width:1000px)').matches) setMobile(['project', 'clip', 'subs'].includes(name) ? name : 'library', false);
+  if (window.matchMedia('(max-width:1000px)').matches) setMobile(['project', 'clip', 'subs', 'ovl'].includes(name) ? name : 'library', false);
 }
 function setMobile(m, alsoTab = true) {
   document.body.dataset.m = m;
@@ -935,6 +958,8 @@ const ACTIONS = {
   trimIn: () => editOp(() => { const at = trimInAt(state.time); seekTo(at + 0.01); return '⇤ 앞부분을 잘라냈습니다'; }),
   trimOut: () => editOp(() => { trimOutAt(state.time); return '뒷부분을 잘라냈습니다 ⇥'; }),
   join: () => doJoin(),
+  freeze: async () => { if (!state.clips.length) return; pause(); try { await freezeAt(state.time); changed(); refreshAll(); toast('⏸ 지금 화면을 2초 동안 멈춰 보여 줍니다 (장면 편집에서 길이 조절)'); } catch (e) { toast(e.message, true); } },
+  overlay: () => { showTab('ovl'); },
   addSub: () => addSubOnStage(),
   fullscreen: () => toggleFullscreen(),
   series: () => openSeries(), compress: () => openCompress(), schedule: () => openSchedule(), about: () => openAbout(),
@@ -972,6 +997,10 @@ function bind() {
   $('#stepSubBtn').addEventListener('click', addSubOnStage);
   $('#fullBtn').addEventListener('click', toggleFullscreen);
   $('#joinBtn').addEventListener('click', ACTIONS.join);
+  $('#freezeBtn').addEventListener('click', ACTIONS.freeze);
+  $('#ovlQuickBtn').addEventListener('click', ACTIONS.overlay);
+  bindOverlays();
+  bindOverlayStage();
   $('#srcAddBtn').addEventListener('click', () => { const m = mediaById(srcMediaId); if (m) { addClipAt(m); closeModal('#srcModal'); $('#srcVideo').pause(); } });
   new MutationObserver(() => { if ($('#srcModal').hidden) $('#srcVideo').pause(); }).observe($('#srcModal'), { attributes: true, attributeFilter: ['hidden'] });
   bindStageSubs();
@@ -1469,6 +1498,7 @@ function renderSubsPanel() {
   $('#subFont').innerHTML = opt(FONTS, st.font);
   $('#subPos').innerHTML = opt(SUB_POS, st.pos);
   $('#subAnim').innerHTML = opt(SUB_ANIMS, st.anim);
+  $('#subTpl').innerHTML = opt(TEXT_TPLS, st.tpl || 'basic');
   $('#subSize').value = st.size; $('#subSizeOut').textContent = st.size;
   $('#subColor').value = st.color; $('#subHl').value = st.hl;
   $('#subOutline').checked = !!st.outline; $('#subBox').checked = !!st.box;
@@ -1562,6 +1592,7 @@ function bindSubs() {
   $('#subFont').addEventListener('change', e => { setSt('font', e.target.value); preloadSubs(); });
   $('#subPos').addEventListener('change', e => setSt('pos', e.target.value));
   $('#subAnim').addEventListener('change', e => setSt('anim', e.target.value));
+  $('#subTpl').addEventListener('change', e => { setSt('tpl', e.target.value); toast('자막 템플릿: ' + TEXT_TPLS.find(t => t.v === e.target.value).label); });
   $('#subSize').addEventListener('input', e => { $('#subSizeOut').textContent = e.target.value; setSt('size', +e.target.value); });
   $('#subColor').addEventListener('input', e => setSt('color', e.target.value));
   $('#subHl').addEventListener('input', e => setSt('hl', e.target.value));
@@ -1602,4 +1633,101 @@ async function doJoin() {
       seekTo(0);
     }
   } catch (e) { b.close(); toast(e.message, true); }
+}
+
+
+/* ================================================================== 겹치기 화면 */
+const ovIcon = o => ({ image: '🖼', video: '🎞', sticker: o.text, text: '🔤' }[o.type] || '🧩');
+const ovName = o => (o.type === 'image' || o.type === 'video') ? (mediaById(o.mediaId)?.name || '') : o.type === 'text' ? plain(o.text || '') : '스티커';
+function renderOverlayPanel() {
+  const list = $('#ovlList');
+  if (!list) return;
+  if (!state.overlays.length) { list.innerHTML = '<p class="empty">아직 겹친 것이 없습니다.<br>위 버튼으로 사진·영상·스티커·글자를 화면 위에 올려 보세요.</p>'; return; }
+  list.innerHTML = state.overlays.map((o, i) => `<div class="sub-row ovl-row${o.id === selOverlayId ? ' sel' : ''}" data-ovl="${o.id}">
+    <div class="times">${ovIcon(o)} ${i + 1}.
+      <input type="number" step="0.1" min="0" data-o="start" value="${o.start.toFixed(2)}" title="시작(초)"> ~
+      <input type="number" step="0.1" min="0" data-o="end" value="${o.end.toFixed(2)}" title="끝(초)">
+      <span class="sp"></span>
+      <button class="btn btn-sm" data-oa="go" title="이 위치로 이동">▶</button>
+      <button class="btn btn-sm" data-oa="setStart" title="시작을 지금 위치로">⇤</button>
+      <button class="btn btn-sm" data-oa="setEnd" title="끝을 지금 위치로">⇥</button>
+      <button class="btn btn-sm" data-oa="front" title="맨 앞으로">⬆</button>
+      <button class="btn btn-sm btn-danger" data-oa="del" title="삭제">✕</button>
+    </div>
+    ${o.type === 'text' ? `<input type="text" data-o="text" value="${esc(o.text)}" placeholder="글자 (*별표*로 강조)">` : ''}
+    <div class="grid3">
+      <div><label>크기</label><input type="range" data-o="w" min="0.04" max="1.2" step="0.01" value="${o.w}"></div>
+      <div><label>회전</label><input type="range" data-o="rot" min="-180" max="180" step="1" value="${o.rot || 0}"></div>
+      <div><label>투명도</label><input type="range" data-o="opacity" min="0.1" max="1" step="0.05" value="${o.opacity}"></div>
+      <div><label>나타나기</label><select data-o="anim">${opt(OV_ANIMS, o.anim)}</select></div>
+      ${o.type === 'text' ? `<div><label>템플릿</label><select data-o="tpl">${opt(TEXT_TPLS, o.tpl)}</select></div><div><label>글자 색</label><input type="color" data-o="color" value="${o.color || '#ffffff'}"></div>`
+      : (o.type === 'image' || o.type === 'video') ? `<div><label>모서리</label><select data-o="round">${opt([{ v: '', label: '각지게' }, { v: '1', label: '둥글게' }], o.round ? '1' : '')}</select></div>` : ''}
+    </div></div>`).join('');
+}
+function bindOverlays() {
+  $('#stickerGrid').innerHTML = STICKERS.map(s => `<button data-st="${s}">${s}</button>`).join('');
+  $('#ovlStickerBtn').addEventListener('click', () => { $('#stickerGrid').hidden = !$('#stickerGrid').hidden; $('#ovlMediaPick').hidden = true; });
+  $('#stickerGrid').addEventListener('click', e => {
+    const b = e.target.closest('[data-st]'); if (!b) return;
+    if (!totalDuration()) { toast('먼저 장면을 만들어 주세요.', true); return; }
+    addOverlay({ type: 'sticker', text: b.dataset.st, w: 0.22, x: 0.75, y: 0.3, anim: 'pop' });
+    document.fonts?.load(`40px 'Segoe UI Emoji'`, b.dataset.st).finally(requestRender);
+    changed(); renderOverlayPanel(); renderTimeline(); requestRender();
+  });
+  $('#ovlTextBtn').addEventListener('click', () => {
+    if (!totalDuration()) { toast('먼저 장면을 만들어 주세요.', true); return; }
+    const t = prompt('화면에 올릴 글자 (*별표*로 강조)', '오늘만 *특가*');
+    if (!t) return;
+    addOverlay({ type: 'text', text: t, w: 0.3, x: 0.5, y: 0.25, tpl: 'variety', anim: 'pop' });
+    preloadText(); document.fonts?.load(`400 40px 'Black Han Sans'`, t).finally(requestRender);
+    changed(); renderOverlayPanel(); renderTimeline(); requestRender();
+  });
+  $('#ovlMediaBtn').addEventListener('click', () => {
+    const vis = state.media.filter(m => m.type === 'image' || m.type === 'video');
+    if (!vis.length) { toast('먼저 📁 가져오기로 사진·영상을 넣어 주세요.', true); return; }
+    const pick = $('#ovlMediaPick');
+    pick.innerHTML = vis.map(m => `<button data-mid="${m.id}" title="${esc(m.name)}" style="background-image:url('${m.thumb}')"></button>`).join('');
+    pick.hidden = !pick.hidden; $('#stickerGrid').hidden = true;
+  });
+  $('#ovlMediaPick').addEventListener('click', e => {
+    const b = e.target.closest('[data-mid]'); if (!b) return;
+    if (!totalDuration()) { toast('먼저 장면을 만들어 주세요.', true); return; }
+    const m = mediaById(b.dataset.mid);
+    addOverlay({ type: m.type, mediaId: m.id, w: 0.38, x: 0.72, y: 0.3, anim: 'pop', round: true, end: state.time + Math.min(m.type === 'video' ? m.duration : 3, 10) });
+    $('#ovlMediaPick').hidden = true;
+    changed(); renderOverlayPanel(); renderTimeline(); requestRender();
+    toast('화면 위에 올렸습니다. 화면에서 끌어서 옮기고, 휠로 크기를 바꾸세요.');
+  });
+  const list = $('#ovlList');
+  const ovOf = el => ovById(el.closest('.ovl-row')?.dataset.ovl);
+  list.addEventListener('input', e => {
+    const o = ovOf(e.target); if (!o) return;
+    const k = e.target.dataset.o; if (!k) return;
+    let v = e.target.value;
+    if (['start', 'end', 'w', 'rot', 'opacity'].includes(k)) { v = parseFloat(v); if (!isFinite(v)) return; }
+    if (k === 'round') v = !!v;
+    o[k] = v;
+    if (o.end <= o.start) o.end = round2(o.start + 0.3);
+    selOverlayId = o.id;
+    if (k === 'text') document.fonts?.load(`400 40px 'Black Han Sans'`, v).finally(requestRender);
+    changed(400); renderTimelineSoon(); requestRender();
+  });
+  list.addEventListener('focusin', e => { const o = ovOf(e.target); if (o && selOverlayId !== o.id) { selOverlayId = o.id; if (state.time < o.start || state.time >= o.end) seekTo(o.start + 0.4); requestRender(); } });
+  list.addEventListener('click', e => {
+    const b = e.target.closest('[data-oa]'); if (!b) return;
+    const o = ovOf(b); if (!o) return;
+    const a = b.dataset.oa;
+    selOverlayId = o.id;
+    if (a === 'go') { seekTo(o.start + 0.4); return; }
+    if (a === 'setStart') o.start = round2(Math.min(state.time, o.end - 0.2));
+    if (a === 'setEnd') o.end = round2(Math.max(state.time, o.start + 0.2));
+    if (a === 'front') { state.overlays = state.overlays.filter(x => x !== o).concat(o); }
+    if (a === 'del') { disposeOverlay(o); state.overlays = state.overlays.filter(x => x !== o); }
+    changed(); renderOverlayPanel(); renderTimeline(); requestRender();
+  });
+  $('#ovlTrack').addEventListener('click', e => {
+    const el = e.target.closest('[data-ovl]'); if (!el) return;
+    const o = ovById(el.dataset.ovl); if (!o) return;
+    selOverlayId = o.id; showTab('ovl'); renderOverlayPanel(); renderTimeline(); seekTo(o.start + 0.4);
+  });
 }
