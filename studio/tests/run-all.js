@@ -569,7 +569,8 @@ async function functionalSuite(browser, url, F, label, opts) {
     await page.evaluate(() => showTab('ovl'));
     await page.click('#ovlStickerBtn'); await page.click('#stickerGrid [data-st="🔥"]');
     await page.click('#ovlMediaBtn'); await page.click('#ovlMediaPick button >> nth=1');
-    await page.evaluate(() => { addSub(0.2, 3, '유튜브 *노란* 자막'); S.sub = Object.assign(subStyle(), { tpl: 'youtube' }); changed(); });
+    // 화면 시점 비교가 가려지지 않게, 겹치기·자막은 비교 시점(0.5·2·4.5·5.5초) 사이(2.6~3.9초)에 둠
+    await page.evaluate(() => { addSub(2.6, 3.9, '유튜브 *노란* 자막'); S.sub = Object.assign(subStyle(), { tpl: 'youtube' }); window.__ttuk.state.overlays.forEach(o => { o.start = 2.6; o.end = 3.9; }); changed(); });
     const st = await page.evaluate(() => ({ c: window.__ttuk.state.clips.map(c => [clipMedia(c).type, c.duration, c.trimStart, c.speed]), o: window.__ttuk.state.overlays.length }));
     assert(JSON.stringify(st.c) === '[["video",1,0,2],["image",2,0,1],["video",3,2,2]]', '구성 ' + JSON.stringify(st.c));
     assert(st.o === 2, '겹치기 ' + st.o);
