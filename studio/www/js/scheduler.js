@@ -48,10 +48,15 @@ const Scheduler = (() => {
   function update(id, patch) { const j = jobs.find(x => x.id === id); if (!j) return; Object.assign(j, patch); if ('every' in patch || 'unit' in patch || 'at' in patch || patch.enabled) j.nextRun = nextRun(j); save(); }
   function remove(id) { jobs = jobs.filter(j => j.id !== id); save(); }
 
+  let lastInput = Date.now();
+  ['pointerdown', 'keydown', 'wheel', 'input'].forEach(ev => window.addEventListener(ev, () => { lastInput = Date.now(); }, true));
   async function tick() {
     if (running || state.busy || !$('#busyModal').hidden) return;
     const due = jobs.find(j => j.enabled && j.nextRun <= Date.now());
     if (!due) return;
+    // 재생 중이거나 방금까지 작업 중이면 기다림 (단, 15분 넘게 밀리면 실행)
+    const overdue = Date.now() - due.nextRun > 15 * 60e3;
+    if (!overdue && (state.playing || Date.now() - lastInput < 45e3)) return;
     running = true;
     try { await runJob(due); } finally { running = false; }
   }

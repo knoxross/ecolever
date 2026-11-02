@@ -194,13 +194,14 @@ function stopBgm() {
 }
 
 /* ------------------------------------------------------------------ 미디어 불러오기 */
+const UNSUPPORTED_VIDEO_MSG = "이 컴퓨터에서 재생할 수 없는 동영상 형식입니다 (휴대폰 '고효율 HEVC/H.265' 영상이 흔한 원인). 해결: ① 휴대폰 카메라 설정에서 갤럭시 '고효율 동영상' 끄기 / 아이폰 '높은 호환성' 으로 찍기 ② 이미 찍은 영상은 MP4(H.264)로 변환해서 넣기";
 function guessType(name, mime = '') {
   if (mime.startsWith('image/')) return 'image';
   if (mime.startsWith('video/')) return 'video';
   if (mime.startsWith('audio/')) return 'audio';
   const ext = name.split('.').pop().toLowerCase();
   if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'avif', 'heic', 'heif'].includes(ext)) return 'image';
-  if (['mp4', 'webm', 'mov', 'm4v', 'ogv', 'mkv', '3gp'].includes(ext)) return 'video';
+  if (['mp4', 'webm', 'mov', 'm4v', 'ogv', 'mkv', '3gp', 'avi', 'wmv', 'flv', 'mts', 'm2ts', 'ts', 'mpg', 'mpeg'].includes(ext)) return 'video';
   if (['mp3', 'wav', 'ogg', 'm4a', 'aac', 'flac', 'opus', 'wma'].includes(ext)) return 'audio';
   return null;
 }
@@ -262,19 +263,28 @@ function loadVideo(m) {
   return new Promise((resolve, reject) => {
     const v = document.createElement('video');
     v.muted = true; v.preload = 'auto'; v.playsInline = true; v.src = m.url;
-    const timer = setTimeout(() => reject(new Error('timeout')), 20000);
-    v.onerror = () => { clearTimeout(timer); reject(Object.assign(new Error('video load error'), { userMessage: '이 컴퓨터에서 재생할 수 없는 동영상 형식 — MP4(H.264)로 바꿔 주세요' })); };
+    // 실패하면 영상 요소를 정리한 뒤 알림 (지워진 파일을 계속 읽으려는 오류 방지)
+    const finish = (err) => {
+      clearTimeout(timer);
+      v.onerror = v.onloadedmetadata = v.onseeked = null;
+      v.removeAttribute('src'); v.load();
+      if (err) reject(err); else resolve();
+    };
+    const unsupported = () => Object.assign(new Error('unsupported video'), { unsupported: true, userMessage: UNSUPPORTED_VIDEO_MSG });
+    const timer = setTimeout(() => finish(Object.assign(new Error('timeout'), { userMessage: '영상을 여는 데 너무 오래 걸립니다 (파일이 너무 크거나 손상됨)' })), 30000);
+    v.onerror = () => finish(v.error && v.error.code === 4 ? unsupported() : Object.assign(new Error('video load error'), { userMessage: '파일이 손상되었거나 열 수 없는 동영상입니다' }));
     v.onloadedmetadata = () => {
       m.w = v.videoWidth; m.h = v.videoHeight;
       m.duration = isFinite(v.duration) ? v.duration : 10;
-      if (!m.w) { clearTimeout(timer); reject(new Error('no video track')); return; }
+      // 소리는 읽히는데 화면 크기가 0 → 이 컴퓨터가 화면을 풀 수 없는 압축 방식(HEVC 등)
+      if (!m.w) { finish(unsupported()); return; }
       v.currentTime = Math.min(1, m.duration / 3);
     };
     v.onseeked = () => {
-      clearTimeout(timer);
+      // 화면 정보는 있는데 실제로 한 장도 못 풀었으면 재생 불가 (일부 PC 의 HEVC)
+      if ('webkitDecodedFrameCount' in v && v.webkitDecodedFrameCount === 0 && v.readyState < 2) { finish(unsupported()); return; }
       try { m.thumb = makeThumb(v, m.w, m.h, 640); } catch (e) { m.thumb = ''; }
-      v.removeAttribute('src'); v.load();
-      resolve();
+      finish();
     };
   });
 }
@@ -769,7 +779,7 @@ function syncVideos(t) {
         if (v.paused) {
           if (Math.abs(v.currentTime - want) > 0.12) v.currentTime = want;
           v.play().catch(() => {});
-        } else if (!v.seeking && Math.abs(v.currentTime - want) > 0.45) v.currentTime = want;
+        } else if (!v.seeking && Math.abs(v.currentTime - want) > 1.5) v.currentTime = want;
       } else {
         if (!v.paused) v.pause();
         if (!v.seeking && Math.abs(v.currentTime - want) > 0.04) v.currentTime = want;
@@ -825,7 +835,30 @@ function pause() {
 }
 function loop() {
   const total = totalDuration();
-  const t = playStartT + (performance.now() - playStartWall) / 1000;
+  let t = playStartT + (performance.now() - playStartWall) / 1000;
+  // 지금 장면이 동영상이면 그 영상의 실제 재생 위치를 시계로 삼음
+  // (느린 PC·큰 영상에서 영상이 늦게 따라올 때 억지로 되감아 화면이 멈춰 보이던 문제 방지)
+  const lay = layout();
+  if (lay.length) {
+    const i = indexAt(clamp(t, 0, total - 1e-3), lay), L = lay[i];
+    if (isVideoClip(L.clip) && L.clip._video) {
+      const v = L.clip._video;
+      const local = t - L.start;
+      if (local > transLen(L.clip, i) + 0.15 && local < L.clip.duration - 0.15) {
+        if (!v.paused && !v.seeking && v.readyState >= 3) {
+          const vt = L.start + (v.currentTime - L.clip.trimStart);
+          const drift = Math.abs(vt - t);
+          if (drift > 0.04 && drift < 2) {
+            playStartT = vt; playStartWall = performance.now(); t = vt;
+            if (drift > 0.3) { startBgm(t); startVoices(t); } // 음악도 다시 맞춤
+          }
+        } else if (v.readyState < 3 || v.seeking) {
+          // 영상이 데이터를 기다리는 중이면 시계도 잠깐 멈춤 (화면과 시간이 어긋나지 않게)
+          playStartT = state.time; playStartWall = performance.now(); t = state.time;
+        }
+      }
+    }
+  }
   if (t >= total) { state.time = total; frame(); pause(); return; }
   state.time = t;
   frame();

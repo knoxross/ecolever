@@ -30,6 +30,7 @@
     <span class="num">1</span><span class="st-name">재료 넣기</span>
     <button class="btn btn-sm" id="importBtn" title="사진·영상·음악 가져오기 (Ctrl+I)">📁 사진·영상·음악</button>
     <button class="btn btn-sm btn-gen" id="genBtn" data-feature="aiGenerate" title="AI로 사람·물건 사진, 영상 만들기 (Ctrl+G)">🎨 AI로 만들기</button>
+    <button class="btn btn-sm" id="joinBtn" title="여러 동영상을 순서대로 이어붙이기">🔗 영상 이어붙이기</button>
     <button class="btn btn-sm" id="addTextBtn" title="제목·문구 화면 추가 (Ctrl+T)">＋ 글자 화면</button>
   </div>
   <div class="step" data-step="2">
@@ -38,7 +39,8 @@
   </div>
   <div class="step" data-step="3">
     <span class="num">3</span><span class="st-name">다듬기</span>
-    <span class="st-hint">장면 눌러서 고치기</span>
+    <button class="btn btn-sm" id="stepSubBtn" title="자막 넣기 (S)">💬 자막</button>
+    <span class="st-hint">✂ 자르기 · 장면 눌러서 고치기</span>
   </div>
   <div class="step" data-step="4">
     <span class="num">4</span><span class="st-name">저장·올리기</span>
@@ -102,7 +104,15 @@
       <button class="icon-btn play" id="playBtn" title="재생 / 일시정지 (Space)">▶</button>
       <span class="time"><span id="curTime">0:00.0</span> / <span id="totTime">0:00.0</span></span>
       <input type="range" id="seek" min="0" max="1000" value="0" step="1" aria-label="재생 위치">
+      <button class="icon-btn" id="fullBtn" title="전체 화면으로 보기 (F)">⛶</button>
     </div>
+    <div class="edit-bar">
+      <button class="btn btn-sm" id="splitBtn" title="지금 위치에서 장면을 둘로 자르기 (C)">✂ 여기서 자르기</button>
+      <button class="btn btn-sm" id="trimInBtn" title="지금 장면의 앞부분을 지금 위치까지 잘라내기 ([)">⇤ 앞부분 잘라내기</button>
+      <button class="btn btn-sm" id="trimOutBtn" title="지금 장면의 뒷부분을 지금 위치부터 잘라내기 (])">뒷부분 잘라내기 ⇥</button>
+      <button class="btn btn-sm btn-accent" id="subHereBtn" title="지금 위치에 자막 넣기 — 화면에서 바로 입력, 끌어서 위치 이동 (S)">💬 자막 넣기</button>
+    </div>
+    <div class="stage-sub-edit" id="stageSubEdit" hidden><textarea id="stageSubText" rows="2" placeholder="자막을 입력하세요 (Enter: 완료 · Shift+Enter: 줄바꿈 · Esc: 취소)"></textarea></div>
   </section>
 
   <aside class="panel props" id="propsPanel">
@@ -148,6 +158,10 @@
           <button data-v="9:16">9:16 쇼츠·릴스</button>
           <button data-v="1:1">1:1 정사각</button>
           <button data-v="4:5">4:5 인스타 피드</button>
+          <button data-v="4:3">4:3 일반</button>
+          <button data-v="3:4">3:4 세로</button>
+          <button data-v="21:9">21:9 시네마</button>
+          <button data-v="orig">원본 영상 비율</button>
         </div>
       </div>
       <div class="row2">
@@ -412,6 +426,16 @@
   </div>
 </div>
 
+<!-- 원본 영상 미리보기 -->
+<div class="modal" id="srcModal" hidden>
+  <div class="modal-card wide">
+    <h2 id="srcTitle">원본 영상</h2>
+    <video id="srcVideo" controls playsinline style="width:100%;max-height:60vh;background:#000;border-radius:8px"></video>
+    <p class="muted small" id="srcInfo"></p>
+    <div class="modal-actions"><button class="btn" id="srcAddBtn">＋ 타임라인에 넣기</button><button class="btn btn-accent" data-close>닫기</button></div>
+  </div>
+</div>
+
 <!-- 정보 -->
 <div class="modal" id="aboutModal" hidden>
   <div class="modal-card">
@@ -482,6 +506,7 @@
 <script src="js/publish.js"></script>
 <script src="js/qa.js"></script>
 <script src="js/subtitles.js"></script>
+<script src="js/editing.js"></script>
 <script src="js/series.js"></script>
 <script src="js/compress.js"></script>
 <script src="js/pipeline.js"></script>

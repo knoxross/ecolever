@@ -51,9 +51,12 @@ function drawSubtitles(t) {
   }
   const lh = fs * 1.32, blockH = lines.length * lh;
   const portrait = H > W * 1.4;
-  let y0 = st.pos === 'top' ? H * (portrait ? 0.14 : 0.08) : st.pos === 'middle' ? (H - blockH) / 2 : H - H * (portrait ? 0.22 : 0.09) - blockH;
-  // 장면 자막이 아래에 있으면 그 위로 올려서 겹치지 않게
-  if (st.pos === 'bottom' && captionTop != null && y0 + blockH > captionTop - fs * 0.3) y0 = Math.max(H * 0.05, captionTop - fs * 0.45 - blockH);
+  const custom = sb.x != null && sb.y != null; // 화면에서 끌어서 옮긴 위치
+  const cx = (custom ? sb.x : 0.5) * W;
+  let y0 = custom ? sb.y * H - blockH / 2 : st.pos === 'top' ? H * (portrait ? 0.14 : 0.08) : st.pos === 'middle' ? (H - blockH) / 2 : H - H * (portrait ? 0.22 : 0.09) - blockH;
+  // 장면 자막이 아래에 있으면 그 위로 올려서 겹치지 않게 (직접 옮긴 자막은 그대로)
+  if (!custom && st.pos === 'bottom' && captionTop != null && y0 + blockH > captionTop - fs * 0.3) y0 = Math.max(H * 0.05, captionTop - fs * 0.45 - blockH);
+  y0 = clamp(y0, H * 0.02, H * 0.98 - blockH);
   ctx.save();
   ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
   const fadeIn = clamp(local / 0.18, 0, 1), fadeOut = clamp((sb.end - t) / 0.15, 0, 1);
@@ -62,20 +65,20 @@ function drawSubtitles(t) {
     const p = clamp(local / 0.28, 0, 1), s = p >= 1 ? 1 : Math.max(0.01, easeOutBack(p));
     const cy = y0 + blockH / 2;
     ctx.globalAlpha *= Math.min(clamp(p * 3, 0, 1), fadeOut);
-    ctx.translate(W / 2, cy); ctx.scale(s, s); ctx.translate(-W / 2, -cy);
+    ctx.translate(cx, cy); ctx.scale(s, s); ctx.translate(-cx, -cy);
   }
   ctx.font = font(fs);
   if (st.box) {
     const mw = Math.max(...lines.map(l => ctx.measureText(plain(l)).width));
     const pad = fs * 0.32;
     ctx.fillStyle = 'rgba(0,0,0,0.6)';
-    roundRect((W - mw) / 2 - pad * 1.3, y0 - pad * 0.7, mw + pad * 2.6, blockH + pad * 1.4, fs * 0.22);
+    roundRect(cx - mw / 2 - pad * 1.3, y0 - pad * 0.7, mw + pad * 2.6, blockH + pad * 1.4, fs * 0.22);
     ctx.fill();
   }
   shown.forEach((line, k) => {
     const runs = richRuns(line);
     const full = plain(lines[k]);
-    let x = (W - ctx.measureText(full).width) / 2;
+    let x = cx - ctx.measureText(full).width / 2;
     const y = y0 + lh * k + lh / 2;
     for (const r of runs) {
       if (st.outline && !st.box) {

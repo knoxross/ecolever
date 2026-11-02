@@ -88,7 +88,7 @@ async function importFiles(files, { toTimeline = true } = {}) {
       state.clips.push(c);
     }
   }
-  if (failed.length) toast(`열 수 없는 파일: ${failed.join(', ')}`, true);
+  if (failed.length) toast(`열 수 없는 파일: ${failed.join(' / ')}`, true, failed.join('').length > 80 ? 14000 : 5000);
   else if (added.length) toast(`${added.length}개 파일을 넣었습니다. 위 칸에 원하는 영상을 적고 ✨ 자동으로 만들기를 눌러 보세요.`, false, 4000);
   if (!state.selectedId && state.clips[0]) state.selectedId = state.clips[0].id;
   changed();
@@ -117,6 +117,7 @@ function renderLibrary() {
     if (m.type !== 'audio') acts.push(`<button data-act="add" title="타임라인 끝에 추가">＋</button>`);
     if (m.type === 'audio') acts.push(`<button data-act="bgm" title="배경음악으로 사용">🎵</button>`);
     if (m.type === 'audio') acts.push(`<button data-act="listen" title="듣기">▶</button>`);
+    if (m.type === 'video') acts.push(`<button data-act="preview" title="원본 영상 재생해 보기">▶</button>`);
     if (m.type === 'image') acts.push(`<button data-act="logo" title="로고(워터마크)로 사용">🏷</button>`);
     acts.push(`<button data-act="del" title="삭제">✕</button>`);
     return `<div class="lib-item${S.bgmId === m.id ? ' is-bgm' : ''}${usedIds.has(m.id) ? ' used' : ''}" draggable="${m.type !== 'audio'}" data-id="${m.id}" tabindex="0">
@@ -892,7 +893,8 @@ function syncProjectForm() {
   $('#bgmSelect').innerHTML = `<option value="">없음</option>` + audios.map(m => `<option value="${m.id}"${m.id === S.bgmId ? ' selected' : ''}>${m.role === 'voice' ? '🎙 ' : '🎵 '}${esc(m.name)}</option>`).join('');
   const imgs = state.media.filter(m => m.type === 'image');
   $('#logoSelect').innerHTML = `<option value="">없음</option>` + imgs.map(m => `<option value="${m.id}"${m.id === S.logoId ? ' selected' : ''}>${esc(m.name)}</option>`).join('');
-  $$('#aspectSeg button').forEach(b => b.classList.toggle('on', b.dataset.v === S.aspect));
+  const known = [...$$('#aspectSeg button')].some(b => b.dataset.v === S.aspect);
+  $$('#aspectSeg button').forEach(b => b.classList.toggle('on', b.dataset.v === S.aspect || (!known && b.dataset.v === 'orig')));
   $('#quality').value = String(S.quality);
   $('#fps').value = String(S.fps);
   $('#filterSel').innerHTML = opt(FILTERS, S.filter);
@@ -929,6 +931,12 @@ const ACTIONS = {
   home: () => seekTo(0),
   auto: autoMake, generate: openGenerate, aiSettings: openAiSettings, addText: addTextClip,
   help: () => openModal('#helpModal'),
+  split: () => editOp(() => { const b = splitAt(state.time); state.selectedId = b.id; return '✂ 장면을 둘로 잘랐습니다'; }),
+  trimIn: () => editOp(() => { const at = trimInAt(state.time); seekTo(at + 0.01); return '⇤ 앞부분을 잘라냈습니다'; }),
+  trimOut: () => editOp(() => { trimOutAt(state.time); return '뒷부분을 잘라냈습니다 ⇥'; }),
+  join: () => doJoin(),
+  addSub: () => addSubOnStage(),
+  fullscreen: () => toggleFullscreen(),
   series: () => openSeries(), compress: () => openCompress(), schedule: () => openSchedule(), about: () => openAbout(),
   publish: () => openPublish(),
   enhanceAll: () => { state.clips.forEach(x => { if (x.kind === 'media') x.enhance = 0.6; }); changed(); refreshAll(); toast('모든 장면에 화질 향상(60%)을 적용했습니다'); },
@@ -957,6 +965,16 @@ function bind() {
   $('#helpBtn').addEventListener('click', ACTIONS.help);
   $('#aboutBtn2').addEventListener('click', () => { closeModal('#helpModal'); openAbout(); });
   $('#seriesBtn').addEventListener('click', ACTIONS.series);
+  $('#splitBtn').addEventListener('click', ACTIONS.split);
+  $('#trimInBtn').addEventListener('click', ACTIONS.trimIn);
+  $('#trimOutBtn').addEventListener('click', ACTIONS.trimOut);
+  $('#subHereBtn').addEventListener('click', addSubOnStage);
+  $('#stepSubBtn').addEventListener('click', addSubOnStage);
+  $('#fullBtn').addEventListener('click', toggleFullscreen);
+  $('#joinBtn').addEventListener('click', ACTIONS.join);
+  $('#srcAddBtn').addEventListener('click', () => { const m = mediaById(srcMediaId); if (m) { addClipAt(m); closeModal('#srcModal'); $('#srcVideo').pause(); } });
+  new MutationObserver(() => { if ($('#srcModal').hidden) $('#srcVideo').pause(); }).observe($('#srcModal'), { attributes: true, attributeFilter: ['hidden'] });
+  bindStageSubs();
   $('#compressBtn').addEventListener('click', ACTIONS.compress);
   $('#scheduleBtn').addEventListener('click', ACTIONS.schedule);
   $$('#steps .step[data-step="2"]').forEach(el => el.addEventListener('click', () => $('#cmdInput').focus()));
@@ -1009,6 +1027,7 @@ function bind() {
     else if (act === 'bgm') { S.bgmId = S.bgmId === m.id ? '' : m.id; changed(); refreshAll(); toast(S.bgmId ? '배경음악으로 정했습니다' : '배경음악을 뺐습니다'); }
     else if (act === 'logo') { S.logoId = S.logoId === m.id ? '' : m.id; changed(); refreshAll(); toast(S.logoId ? '로고로 정했습니다 (영상 설정에서 위치 조절)' : '로고를 뺐습니다'); }
     else if (act === 'listen') listen(m.buffer);
+    else if (act === 'preview') openSourcePreview(m);
   });
   $('#libList').addEventListener('dblclick', e => {
     const item = e.target.closest('.lib-item'); if (!item) return;
@@ -1075,7 +1094,12 @@ function bind() {
   $('#mobileTabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setMobile(b.dataset.m); });
 
   // 영상 설정
-  $('#aspectSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; S.aspect = b.dataset.v; changed(); refreshAll(); });
+  $('#aspectSeg').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    try { if (b.dataset.v === 'orig') { const a = setOrigAspect(); toast(`원본 비율(${a.replace(':', '×')})로 맞췄습니다`); } else S.aspect = b.dataset.v; }
+    catch (err) { toast(err.message, true); return; }
+    changed(); refreshAll();
+  });
   $('#quality').addEventListener('change', e => { S.quality = +e.target.value; changed(); refreshAll(); });
   $('#fps').addEventListener('change', e => { S.fps = +e.target.value; changed(); });
   $('#filterSel').addEventListener('change', e => { S.filter = e.target.value; changed(); requestRender(); });
@@ -1118,7 +1142,11 @@ function bind() {
     else if (e.key === 'ArrowLeft') seekTo(state.time - (e.shiftKey ? 1 : 0.1));
     else if (e.key === 'ArrowRight') seekTo(state.time + (e.shiftKey ? 1 : 0.1));
     else if (e.key === 'Home') seekTo(0);
-    else if (e.key === 's' || e.key === 'S' || e.key === 'ㄴ') { e.preventDefault(); addSubHere(); }
+    else if (e.key === 's' || e.key === 'S' || e.key === 'ㄴ') { e.preventDefault(); addSubOnStage(); }
+    else if (e.key === 'c' || e.key === 'C' || e.key === 'ㅊ') { e.preventDefault(); ACTIONS.split(); }
+    else if (e.key === '[') { e.preventDefault(); ACTIONS.trimIn(); }
+    else if (e.key === ']') { e.preventDefault(); ACTIONS.trimOut(); }
+    else if (e.key === 'f' || e.key === 'F' || e.key === 'ㄹ') { e.preventDefault(); toggleFullscreen(); }
     else if (e.key === 'Escape') $$('.modal').forEach(m => { if (m.id !== 'busyModal') m.hidden = true; });
   });
   Platform.onMenu(action => { if (ACTIONS[action] && $('#busyModal').hidden) ACTIONS[action](); });
@@ -1428,6 +1456,7 @@ function renderSubsPanel() {
         <input type="number" step="0.1" min="0" data-f="start" value="${x.start.toFixed(2)}" title="시작(초)"> ~
         <input type="number" step="0.1" min="0" data-f="end" value="${x.end.toFixed(2)}" title="끝(초)">
         <span class="sp"></span>
+        <select class="pos" data-f="pos" title="자막 위치">${[['', '기본 위치'], ['top', '위'], ['middle', '가운데'], ['bottom', '아래'], ['custom', '직접(끌어서)']].map(([v, l]) => `<option value="${v}"${(x.x != null ? (x.y < 0.3 ? 'top' : x.y > 0.7 ? 'bottom' : x.y === 0.5 ? 'middle' : 'custom') : '') === v ? ' selected' : ''}>${l}</option>`).join('')}</select>
         <button class="btn btn-sm" data-a="go" title="이 자막 위치로 이동">▶</button>
         <button class="btn btn-sm" data-a="setStart" title="시작을 지금 재생 위치로">⇤</button>
         <button class="btn btn-sm" data-a="setEnd" title="끝을 지금 재생 위치로">⇥</button>
@@ -1459,7 +1488,7 @@ async function saveSrt(name) {
   } catch (e) { toast('저장 실패: ' + e.message, true); }
 }
 function bindSubs() {
-  $('#subAddBtn').addEventListener('click', addSubHere);
+  $('#subAddBtn').addEventListener('click', addSubOnStage);
   $('#subFromVoiceBtn').addEventListener('click', () => {
     const n = subsFromNarration();
     if (!n) { toast('목소리가 붙은 장면이 없습니다. 장면 편집 → 🎙 목소리에서 내레이션을 먼저 만들어 주세요.', true); return; }
@@ -1496,7 +1525,11 @@ function bindSubs() {
     const x = subOf(e.target); if (!x) return;
     const f = e.target.dataset.f;
     if (f === 'text') x.text = e.target.value;
-    else { const v = parseFloat(e.target.value); if (!isFinite(v)) return; x[f] = Math.max(0, round2(v)); if (x.end <= x.start) x.end = round2(x.start + 0.3); }
+    else if (f === 'pos') {
+      const v = e.target.value;
+      if (!v) { delete x.x; delete x.y; } else if (v !== 'custom') { x.x = 0.5; x.y = { top: 0.15, middle: 0.5, bottom: 0.84 }[v]; }
+      else toast('화면에 보이는 자막을 마우스(손가락)로 끌어서 원하는 곳에 놓으세요.');
+    } else { const v = parseFloat(e.target.value); if (!isFinite(v)) return; x[f] = Math.max(0, round2(v)); if (x.end <= x.start) x.end = round2(x.start + 0.3); }
     changed(500); renderTimelineSoon(); requestRender();
     if (f === 'text' && document.fonts) document.fonts.load(`${fontWeight(subStyle().font)} 40px ${subStyle().font}`, x.text).catch(() => {}).finally(requestRender);
   });
@@ -1539,4 +1572,34 @@ function preloadSubs() {
   if (!document.fonts || !state.subs.length) return Promise.resolve();
   const st = subStyle();
   return document.fonts.load(`${fontWeight(st.font)} 40px ${st.font}`, state.subs.map(x => x.text).join('')).catch(() => {}).finally(requestRender);
+}
+
+
+/* ================================================================== 자르기 · 이어붙이기 */
+function editOp(fn) {
+  if (!state.clips.length) { toast('먼저 장면을 만들어 주세요.', true); return; }
+  pause();
+  try {
+    const msg = fn();
+    if (state.clips[0]) state.clips[0].transition = 'none';
+    changed(); refreshAll();
+    toast(msg + ' (Ctrl+Z 로 되돌리기)');
+  } catch (e) { toast(e.message, true); }
+}
+async function doJoin() {
+  const files = await pickFiles('video/*,image/*', true);
+  if (!files.length) return;
+  const smooth = confirm(`${files.length}개를 고른 순서대로 이어붙입니다.\n\n[확인] 부드럽게 (0.5초 겹치며 화면·소리 자연스럽게)\n[취소] 바로 이어붙이기 (끊김 없이 컷)`);
+  pause();
+  const b = busy('🔗 영상 이어붙이는 중…', '', { cancellable: false });
+  try {
+    const r = await joinVideos(files, smooth, (i, n, nm) => b.set(i / n, `${i + 1} / ${n} · ${nm}`));
+    b.close();
+    if (r.failed.length) toast(`열 수 없는 파일: ${r.failed.join(' / ')}`, true, 14000);
+    if (r.count) {
+      changed(); refreshAll();
+      if (!r.failed.length) toast(`🔗 ${r.count}개를 이어붙였습니다 — 총 ${fmt(totalDuration())}. ✂ 자르기로 필요 없는 부분을 잘라 보세요.`, false, 5000);
+      seekTo(0);
+    }
+  } catch (e) { b.close(); toast(e.message, true); }
 }

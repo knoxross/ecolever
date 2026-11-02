@@ -53,6 +53,8 @@ function fixtures() {
   if (!fs.existsSync(f('voice.wav'))) ff(['-f', 'lavfi', '-i', "aevalsrc='0.6*sin(2*PI*140*t)*(0.5+0.5*sin(2*PI*3*t))':s=24000", '-t', '3', f('voice.wav')]);
   if (!fs.existsSync(f('small.jpg'))) ff(['-i', path.join(IMGS, 'product-1color.jpg'), '-vf', 'scale=200:-1', f('small.jpg')]);
   if (!fs.existsSync(f('huge.jpg'))) ff(['-f', 'lavfi', '-i', 'testsrc2=size=6000x4000', '-frames:v', '1', f('huge.jpg')]);
+  if (!fs.existsSync(f('phone30.mp4'))) ff(['-f', 'lavfi', '-i', "testsrc2=size=1080x1920:rate=30,drawtext=text='%{pts\\:hms}':fontsize=120:fontcolor=white:box=1:boxcolor=black:x=100:y=200", '-f', 'lavfi', '-i', 'sine=frequency=300', '-t', '30', '-c:v', 'libx264', '-profile:v', 'high', '-bf', '3', '-g', '60', '-pix_fmt', 'yuv420p', '-c:a', 'aac', f('phone30.mp4')]);
+  if (!fs.existsSync(f('hevc.mp4'))) { try { ff(['-f', 'lavfi', '-i', 'testsrc2=size=1080x1920:rate=30', '-t', '3', '-c:v', 'libx265', '-tag:v', 'hvc1', '-pix_fmt', 'yuv420p', f('hevc.mp4')]); } catch (e) { /* x265 없는 환경 */ } }
   fs.writeFileSync(f('broken.mp4'), Buffer.from('this is not a video'));
   fs.writeFileSync(f('photo.heic'), Buffer.from('fake heic'));
   fs.writeFileSync(f('test.srt'), '1\n00:00:00,500 --> 00:00:02,200\n안녕하세요 *영상뚝딱* 입니다\n\n2\n00:00:02,400 --> 00:00:04,000\n두 번째 자막\n');
@@ -68,6 +70,10 @@ function probe(file) {
 function blackSegments(file) {
   const r = spawnSync('ffmpeg', ['-i', file, '-vf', 'blackdetect=d=0.25:pix_th=0.08', '-an', '-f', 'null', '-']);
   return (r.stderr.toString().match(/black_start:[\d.]+ black_end:[\d.]+/g) || []);
+}
+function freezes(file, minSec = 1.0) {
+  const r = spawnSync('ffmpeg', ['-i', file, '-vf', `freezedetect=n=0.003:d=${minSec}`, '-an', '-f', 'null', '-']);
+  return (r.stderr.toString().match(/freeze_start: [\d.]+/g) || []);
 }
 function decodeErrors(file) {
   const r = spawnSync('ffmpeg', ['-v', 'error', '-i', file, '-f', 'null', '-']);
@@ -456,6 +462,84 @@ async function functionalSuite(browser, url, F, label, opts) {
     const p = probe(out('limit1mb.mp4'));
     assert(p.size <= 1e6, `1MB 초과 ${p.size}`);
     return `${(p.size / 1e6).toFixed(2)}MB · ${p.w}×${p.h} · ${e.note.split('\n').pop()}`;
+  });
+
+  /* ---------- 휴대폰 영상 · 이어붙이기 · 자르기 · 화면 위 자막 · 비율 (v1.3) ---------- */
+  await test('HEVC(H.265) 등 재생 불가 영상 → 정확한 원인·해결 안내', async () => {
+    if (!fs.existsSync(F('hevc.mp4'))) return '시험 파일 없음 (건너뜀)';
+    await page.evaluate(() => { dirty = false; newProject(); });
+    await page.setInputFiles('#fileInput', [F('hevc.mp4')]);
+    await page.waitForFunction(() => document.querySelector('#toast').classList.contains('err'), null, { timeout: 30000 });
+    const t = await page.textContent('#toast');
+    assert(/HEVC/.test(t) && /높은 호환성/.test(t) && !/손상/.test(t), '안내 문구: ' + t);
+    return t.slice(0, 110) + '…';
+  });
+  await test('휴대폰식 30초 영상(뒤쪽 moov·B프레임): 미리보기 재생이 시간과 함께 움직임', async () => {
+    await importFiles(page, [F('phone30.mp4')]);
+    await page.waitForFunction(() => window.__ttuk.state.clips.length === 1, null, { timeout: 60000 });
+    await page.evaluate(() => { seekTo(2); play(); });
+    const sm = [];
+    for (let i = 0; i < 4; i++) { await page.waitForTimeout(1000); sm.push(await page.evaluate(() => { const v = window.__ttuk.state.clips[0]._video; return { t: window.__ttuk.state.time, v: v.currentTime, playing: window.__ttuk.state.playing }; })); }
+    await stop(page);
+    const adv = sm[3].t - sm[0].t;
+    assert(sm.every(x => x.playing), '재생이 멈춤: ' + JSON.stringify(sm));
+    assert(adv > 2.5, '시간이 거의 안 흐름 ' + adv.toFixed(2));
+    assert(sm.every(x => Math.abs(x.t - x.v) < 0.35), '영상과 시간이 어긋남 ' + JSON.stringify(sm));
+    return `3초 동안 ${adv.toFixed(2)}초 진행, 영상·시간 차이 최대 ${Math.max(...sm.map(x => Math.abs(x.t - x.v))).toFixed(2)}초`;
+  });
+  await test('✂ 자르기 · 앞부분/뒷부분 잘라내기 · 되돌리기', async () => {
+    await page.evaluate(() => seekTo(10));
+    await page.click('#splitBtn');
+    const a = await page.evaluate(() => window.__ttuk.state.clips.map(c => [c.duration, c.trimStart]));
+    await page.evaluate(() => seekTo(12)); await page.click('#trimInBtn');
+    await page.evaluate(() => seekTo(17)); await page.click('#trimOutBtn');
+    const b = await page.evaluate(() => window.__ttuk.state.clips.map(c => [c.duration, c.trimStart]));
+    assert(JSON.stringify(a) === '[[10,0],[20,10]]', '자르기 결과 ' + JSON.stringify(a));
+    assert(JSON.stringify(b) === '[[10,0],[7,12]]', '잘라내기 결과 ' + JSON.stringify(b));
+    await page.evaluate(() => { ACTIONS.undo(); ACTIONS.undo(); ACTIONS.undo(); });
+    const c = await page.evaluate(() => window.__ttuk.state.clips.map(c => [c.duration, c.trimStart]));
+    assert(JSON.stringify(c) === '[[30,0]]', '되돌리기 ' + JSON.stringify(c));
+    return `30초 → 10초+20초 → 앞 2초·뒤 3초 잘라내기 → 10초+7초 → 되돌리기 30초`;
+  });
+  await test('🔗 영상 이어붙이기 (부드럽게) + 저장 → 멈춘 화면 없음', async () => {
+    await page.evaluate(() => { dirty = false; newProject(); });
+    const fc = page.waitForEvent('filechooser'); await page.click('#joinBtn'); await (await fc).setFiles([F('phone30.mp4'), F('clip.mp4')]);
+    await page.waitForFunction(() => window.__ttuk.state.clips.length === 2, null, { timeout: 60000 });
+    const r = await page.evaluate(() => ({ aspect: S.aspect, c: window.__ttuk.state.clips.map(c => [c.transition, c.fit]) }));
+    assert(r.aspect === '9:16' && r.c[0][0] === 'none' && r.c[1][0] === 'fade' && r.c[0][1] === 'cover' && r.c[1][1] === 'blur', '이어붙이기 설정 ' + JSON.stringify(r));
+    // 저장 시간을 줄이려고 첫 영상은 앞 6초만
+    await page.evaluate(() => { const c = window.__ttuk.state.clips[0]; c.duration = 6; S.quality = 720; changed(); });
+    const e = await exportViaUI(page, out('join.mp4'));
+    assert(/검수 통과/.test(e.note), '검수: ' + e.note);
+    const fz = freezes(out('join.mp4'), 0.8);
+    assert(!fz.length, '멈춘 화면 구간: ' + fz.join(', '));
+    return checkVideo(out('join.mp4'), { w: 720, h: 1280, duration: 10 - 0.5 + 0.5, audio: true }) + ' · 멈춘 화면 0';
+  });
+  await test('💬 화면 위 자막 넣기 · 끌어서 위치 · 저장 영상에 그 위치', async () => {
+    await page.evaluate(() => seekTo(1));
+    await page.click('#subHereBtn');
+    await page.waitForSelector('#stageSubEdit:not([hidden])');
+    await page.keyboard.type('화면 위 *자막*');
+    await page.keyboard.press('Enter');
+    await page.waitForTimeout(200);
+    const box = await page.locator('#stage').boundingBox();
+    const c0 = await page.evaluate(() => subCenter(window.__ttuk.state.subs[0], subStyle()));
+    await page.mouse.move(box.x + box.width * c0.x, box.y + box.height * c0.y);
+    await page.mouse.down(); await page.mouse.move(box.x + box.width * 0.5, box.y + box.height * 0.3, { steps: 6 }); await page.mouse.up();
+    const sb = await page.evaluate(() => window.__ttuk.state.subs[0]);
+    assert(sb.text === '화면 위 *자막*', '자막 글자 ' + sb.text);
+    assert(Math.abs(sb.y - 0.3) < 0.03, '끌어서 옮긴 위치 ' + sb.y);
+    return `"${sb.text}" ${sb.start}~${sb.end}초 · 위치 (${sb.x}, ${sb.y})`;
+  });
+  await test('화면 비율 7가지 (16:9·9:16·1:1·4:5·4:3·21:9·원본)', async () => {
+    await page.evaluate(() => showTab('project'));
+    const res = [];
+    for (const v of ['16:9', '9:16', '1:1', '4:5', '4:3', '21:9', 'orig']) {
+      await page.click(`#aspectSeg [data-v="${v}"]`);
+      res.push(await page.evaluate(() => `${S.aspect}=${canvas.width}×${canvas.height}`));
+    }
+    assert(res.includes('21:9=1680×720') && res.includes('4:3=960×720') && res[6].startsWith('9:16'), res.join(' '));
+    return res.join(' · ');
   });
 
   /* ---------- AI (모의 응답) ---------- */
