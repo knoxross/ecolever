@@ -7,6 +7,8 @@ on:
   workflow_dispatch:
   push:
     tags: ['ttuk-v*']
+    branches: ['claude/video-editor-program-n911gd']
+    paths: ['studio/**', '.github/workflows/build-apps.yml']
 
 permissions:
   contents: write
