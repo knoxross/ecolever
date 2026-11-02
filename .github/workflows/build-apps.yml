@@ -58,7 +58,9 @@ jobs:
         with: { node-version: 22, cache: npm, cache-dependency-path: studio/package-lock.json }
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: '21' }
-      - uses: android-actions/setup-android@v3
+      # 자동 빌드 서버(ubuntu-latest)에는 안드로이드 개발 도구가 이미 설치되어 있음
+      - name: 안드로이드 개발 도구 확인
+        run: echo "ANDROID_HOME=$ANDROID_HOME" && ls "$ANDROID_HOME/platforms" | tail -3
       - run: npm ci
       - run: npm run android:sync
       - name: APK 만들기
