@@ -1,6 +1,7 @@
 // 견적 문의가 도착할 메일 주소
 const INQUIRY_EMAIL = 'knox@ecolever.co.kr';
-const MOQ = 100;
+const MOQ = 100;          // 로고 인쇄 없는 주문
+const PRINT_MOQ = 10000;  // 로고 인쇄 주문
 
 /* ---- scroll reveal ---- */
 (function(){
@@ -166,10 +167,17 @@ document.addEventListener('click', function(e){
   const qty = $('inqQty');
   const qtyHint = $('qtyHint');
 
-  qty.addEventListener('input', function(){
+  const print = $('inqPrint');
+  function minQty(){ return print.value === '인쇄 없음' ? MOQ : PRINT_MOQ; }
+  function updateQtyHint(){
     const n = parseInt(qty.value, 10);
-    qtyHint.hidden = !(n > 0 && n < MOQ);
-  });
+    qtyHint.textContent = minQty() === MOQ
+      ? '최소주문수량은 100개입니다. 그래도 문의는 보내실 수 있어요.'
+      : '로고 인쇄는 10,000개부터 가능합니다. 그래도 문의는 보내실 수 있어요.';
+    qtyHint.hidden = !(n > 0 && n < minQty());
+  }
+  qty.addEventListener('input', updateQtyHint);
+  print.addEventListener('change', updateQtyHint);
   form.querySelectorAll('input, select, textarea').forEach(function(el){
     el.addEventListener('input', function(){ el.classList.remove('invalid'); });
   });
@@ -205,7 +213,7 @@ document.addEventListener('click', function(e){
     if(!$('inqAgree').checked) return showError('개인정보 수집·이용에 동의해 주셔야 문의를 보낼 수 있습니다.', $('inqAgree'));
     if(form._honey && form._honey.value) return; // bot
 
-    const qtyText = d.qty ? Number(d.qty).toLocaleString('ko-KR') + '개' + (parseInt(d.qty, 10) < MOQ ? ' (MOQ 미만)' : '') : '(미입력)';
+    const qtyText = d.qty ? Number(d.qty).toLocaleString('ko-KR') + '개' + (parseInt(d.qty, 10) < minQty() ? (minQty() === MOQ ? ' (MOQ 미만)' : ' (로고 인쇄 최소수량 미만)') : '') : '(미입력)';
     const subjectText = '[에코레버 B2B 문의] ' + d.company + (d.sample ? ' · 샘플요청' : '');
     const fields = {
       '회사·기관명': d.company,
