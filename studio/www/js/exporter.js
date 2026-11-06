@@ -7,8 +7,9 @@
 class ExportCancelled extends Error { constructor() { super('취소했습니다.'); } }
 
 /** 영상 비트레이트: 기본은 화질 우선, 용량 제한이 있으면 그 안에 들어가게 */
+const VQ_FACTOR = { low: 0.06, rec: 0.12, high: 0.2 };
 function targetVideoBitrate(W, H, fps, duration, maxMB, audioBps = 160000) {
-  const quality = Math.round(W * H * fps * 0.12);
+  const quality = Math.round(W * H * fps * (VQ_FACTOR[S.vq] || 0.12) * (fps > 30 ? 0.75 : 1));
   if (!maxMB) return quality;
   const budget = (maxMB * 8e6 * 0.94) / Math.max(1, duration) - audioBps;
   return Math.max(250000, Math.min(quality, Math.round(budget)));
@@ -93,7 +94,7 @@ async function renderAudioMix(total, sampleRate, onStep) {
     else src.start(L.start, c.trimStart, Math.min(c.duration + tail, ab.duration - c.trimStart));
     any = true;
   }
-  for (const sg of voiceSegments()) {
+  for (const sg of voiceSegments().concat(sfxSegments())) {
     if (sg.start >= total) continue;
     const src = oac.createBufferSource();
     src.buffer = sg.buffer;

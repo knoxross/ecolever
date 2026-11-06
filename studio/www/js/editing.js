@@ -15,6 +15,11 @@ function splitAt(t) {
   const { L, local } = hit, c = L.clip;
   if (local < 0.15 || local > c.duration - 0.15) throw new Error('장면의 맨 앞이나 맨 끝에서는 자를 수 없습니다. 재생 위치를 장면 가운데로 옮겨 주세요.');
   const b = Object.assign(stripClip(c), { id: uid(), transition: 'none', voiceId: '', voiceSrcId: '', narration: '' });
+  if (c.kf && c.kf.length && window.clipTransformAt) { // 키프레임도 자른 위치에서 나눔
+    const mid = Object.assign(clipTransformAt(c, local), { t: 0 });
+    b.kf = [mid, ...c.kf.filter(k => k.t > local).map(k => ({ ...k, t: round2(k.t - local) }))];
+    c.kf = [...c.kf.filter(k => k.t < local), Object.assign({}, mid, { t: round2(local) })];
+  }
   b.duration = round2(c.duration - local);
   if (isVideoClip(c)) {
     const sp = clipSpeed(c);
@@ -33,6 +38,7 @@ function trimInAt(t) {
   if (local < 0.05) throw new Error('이미 장면의 시작입니다.');
   if (c.duration - local < 0.3) throw new Error('너무 짧아집니다. 재생 위치를 앞으로 옮겨 주세요.');
   if (isVideoClip(c) && !c.reverse) c.trimStart = round2(c.trimStart + local * clipSpeed(c));
+  if (c.kf && c.kf.length) c.kf = c.kf.filter(k => k.t >= local).map(k => ({ ...k, t: round2(k.t - local) }));
   c.duration = round2(c.duration - local);
   return L.start;
 }

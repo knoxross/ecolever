@@ -6,8 +6,8 @@
 /** 지금 작업을 그대로 둔 채 별도 작업 공간에서 fn 실행 */
 async function withIsolatedProject(fn) {
   pause();
-  const saved = { media: state.media, clips: state.clips, subs: state.subs, overlays: state.overlays, settings: JSON.parse(JSON.stringify(S)), selectedId: state.selectedId, time: state.time, hist: { undo: hist.undo, redo: hist.redo, last: hist.last } };
-  state.media = []; state.clips = []; state.subs = []; state.overlays = []; state.selectedId = null; state.time = 0;
+  const saved = { media: state.media, clips: state.clips, subs: state.subs, overlays: state.overlays, sfx: state.sfx, settings: JSON.parse(JSON.stringify(S)), selectedId: state.selectedId, time: state.time, hist: { undo: hist.undo, redo: hist.redo, last: hist.last } };
+  state.media = []; state.clips = []; state.subs = []; state.overlays = []; state.sfx = []; state.selectedId = null; state.time = 0;
   try {
     return await fn();
   } finally {
@@ -15,7 +15,7 @@ async function withIsolatedProject(fn) {
     state.clips.forEach(disposeClip);
     state.media.forEach(m => URL.revokeObjectURL(m.url));
     state.overlays.forEach(disposeOverlay);
-    state.media = saved.media; state.clips = saved.clips; state.subs = saved.subs; state.overlays = saved.overlays;
+    state.media = saved.media; state.clips = saved.clips; state.subs = saved.subs; state.overlays = saved.overlays; state.sfx = saved.sfx;
     Object.keys(S).forEach(k => delete S[k]);
     Object.assign(S, saved.settings);
     state.selectedId = saved.selectedId; state.time = saved.time;

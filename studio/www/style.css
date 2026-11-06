@@ -48,7 +48,7 @@ a{color:var(--brass);}
 .ai-mode b{color:#c9b8ff;}
 
 /* layout */
-.layout{flex:1;min-height:0;display:grid;grid-template-columns:230px 1fr 310px;grid-template-rows:1fr 200px;grid-template-areas:"lib stage props" "tl tl tl";}
+.layout{flex:1;min-height:0;display:grid;grid-template-columns:300px 1fr 320px;grid-template-rows:1fr 200px;grid-template-areas:"lib stage props" "tl tl tl";}
 .panel{background:var(--panel);overflow:auto;}
 .library{grid-area:lib;border-right:1px solid var(--line);}
 .props{grid-area:props;border-left:1px solid var(--line);}
@@ -311,3 +311,71 @@ hr{border:0;border-top:1px solid var(--line);margin:14px 0;}
 .ovl-row input[type=range]{width:100%;accent-color:var(--accent);}
 .ovl-row select,.ovl-row input[type=text],.ovl-row input[type=color]{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:3px;font-size:12px;}
 @media (max-width:1000px){ body[data-m="ovl"] .library{display:none;} }
+
+/* 캡컷식 자료실 */
+.asset-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:6px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel);z-index:2;}
+.asset-tabs button{display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 2px;border:0;border-radius:7px;background:none;color:var(--muted);font-size:15px;}
+.asset-tabs button span{font-size:11px;font-weight:700;}
+.asset-tabs button.on{background:var(--panel-3);color:var(--text);}
+.asset-tabs button:hover{color:var(--text);}
+.asset-body{padding:8px 10px 14px;}
+.a-sec{font-weight:700;margin:6px 2px 8px;font-size:12.5px;}
+.a-target{font-size:12px;color:var(--muted);margin:2px 2px 8px;padding:6px 8px;background:var(--panel-2);border-radius:7px;}
+.a-target b{color:var(--brass);}
+.a-list{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;}
+.a-row{display:flex;align-items:center;gap:6px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:12.5px;}
+.a-row .nm{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.a-row button{width:28px;height:28px;border-radius:6px;border:1px solid var(--line);background:var(--panel-3);}
+.a-row.on{border-color:var(--brass);}
+.card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;}
+.card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:64px;border-radius:8px;border:1px solid var(--line);background:var(--panel-2);font-size:11.5px;padding:6px 4px;text-align:center;cursor:pointer;}
+.card .ic{font-size:20px;}
+.card:hover{border-color:#6c6c80;}
+.card.on{border-color:var(--brass);box-shadow:0 0 0 1px var(--brass) inset;}
+.card-grid.thumbs .card{padding:0;overflow:hidden;min-height:0;}
+.card-grid.thumbs .card img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;background:#000;}
+.card-grid.thumbs .card span{padding:4px 2px;}
+.card.txt .pv{font-weight:900;font-size:15px;line-height:1.1;padding:4px 2px;}
+.sticker-grid.big{grid-template-columns:repeat(6,1fr);max-height:none;}
+.adj-row{margin-bottom:10px;}
+.adj-row label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:3px;}
+.adj-row input{width:100%;accent-color:var(--accent);}
+.tf-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;}
+.kf-badge{display:inline-block;background:#3a2f12;border:1px solid var(--brass);color:#ffd57a;border-radius:5px;padding:1px 6px;font-size:11px;margin-left:4px;}
+
+/* ===== 캡컷식 타임라인 ===== */
+.tl-body { display: flex; min-height: 0; flex: 1; }
+.tl-body .timeline { flex: 1; min-width: 0; }
+.tl-labels { width: 58px; flex: none; padding-top: 0; border-right: 1px solid var(--line, #2a2f3a); font-size: 11px; color: var(--muted, #9aa3b2); user-select: none; }
+.tl-labels .lb { display: flex; align-items: center; gap: 4px; padding-left: 8px; margin-top: 4px; }
+@media (max-width: 760px) { .tl-labels { display: none; } }
+.clip .h { position: absolute; top: 0; bottom: 0; width: 9px; z-index: 3; cursor: ew-resize; background: rgba(255,255,255,.0); }
+.clip .h.l { left: 0; border-radius: 6px 0 0 6px; }
+.clip .h.r { right: 0; border-radius: 0 6px 6px 0; }
+.clip:hover .h, .clip.selected .h { background: rgba(255,255,255,.85); }
+.clip.selected .h::after, .clip:hover .h::after { content: ''; position: absolute; left: 3px; top: 40%; height: 20%; width: 3px; border-radius: 2px; background: #333; }
+.clip .kfd { position: absolute; bottom: 2px; transform: translateX(-50%); color: #ffd84d; font-size: 11px; text-shadow: 0 0 2px #000; z-index: 2; pointer-events: none; }
+.clip .c-fx { position: absolute; top: 3px; right: 12px; font-size: 11px; background: rgba(0,0,0,.55); color: #fff; padding: 0 4px; border-radius: 4px; z-index: 2; pointer-events: none; }
+.sub-track .sb { position: absolute; }
+.sub-track .sb .h { position: absolute; top: 0; bottom: 0; width: 6px; cursor: ew-resize; }
+.sub-track .sb .h.l { left: 0; } .sub-track .sb .h.r { right: 0; }
+.sub-track .sb:hover .h { background: rgba(255,255,255,.6); }
+.sub-track .sb { cursor: grab; }
+.audio-track .bgm { overflow: hidden; }
+.audio-track .bgm canvas.wave { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: .8; }
+.audio-track .bgm.sfx { background: #5a3d8a; border-color: #8f6bd1; cursor: grab; z-index: 2; text-align: center; padding: 0; }
+.audio-track .bgm.sfx.sel { outline: 2px solid #ffd84d; }
+
+@media (min-width: 761px) { .layout { grid-template-rows: 1fr 252px; } }
+
+/* ===== 음악 만들기 ===== */
+.music-maker { background: var(--panel2, rgba(255,255,255,.04)); border: 1px solid var(--line, #2a2f3a); border-radius: 10px; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
+.music-maker label { font-size: 12px; color: var(--muted, #9aa3b2); display: flex; justify-content: space-between; margin-bottom: 3px; }
+.music-maker select, .music-maker input[type=number] { width: 100%; }
+.music-maker input[type=range] { width: 100%; }
+.music-maker .mm-row.two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.music-maker .mm-inst { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 8px; }
+.music-maker .mm-inst .check { font-size: 12.5px; color: inherit; justify-content: flex-start; gap: 5px; }
+.music-maker .mm-seed { display: flex; gap: 6px; }
+.music-maker .mm-seed input { flex: 1; }
+.music-maker .btn-row { display: flex; gap: 6px; flex-wrap: wrap; }

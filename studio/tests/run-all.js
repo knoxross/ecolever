@@ -196,6 +196,8 @@ async function importFiles(page, files) {
 async function exportViaUI(page, file) {
   await stop(page);
   await page.click('#exportBtn');
+  await page.waitForSelector('#exportModal:not([hidden])', { timeout: 10000 });
+  await page.click('#expGoBtn');
   await page.waitForSelector('#resultSaveBtn:not([hidden])', { timeout: 300000 });
   const title = await page.textContent('#busyTitle'), note = await page.textContent('#busyNote');
   const [dl] = await Promise.all([page.waitForEvent('download'), page.click('#resultSaveBtn')]);
@@ -590,6 +592,164 @@ async function functionalSuite(browser, url, F, label, opts) {
     const got = [[0.5, 3.5], [2.0, 2.0], [3.5, 0.5]].map(([t, exp]) => [t, exp, matchSourceTime(out('reverse.mp4'), t, F('phone30.mp4'), cands, 'crop=1080:608:0:656')]);
     assert(got.every(([, exp, g]) => Math.abs(exp - g) < 0.01), '역재생 시점 ' + JSON.stringify(got));
     return got.map(([t, , g]) => `${t}초→원본 ${g}초`).join(' · ');
+  });
+
+  /* ---------- 캡컷식 2.0 ---------- */
+  await test('캡컷식 2.0: 조정·필터·효과·키프레임 → 미리보기 화면이 실제로 바뀜', async () => {
+    await page.evaluate(() => { dirty = false; newProject(); });
+    await importFiles(page, [path.join(IMGS, 'product-1color.jpg')].map(String));
+    const r = await page.evaluate(async () => {
+      pause(); S.aspect = '16:9'; S.quality = 720; S.filter = 'none';
+      const st = window.__ttuk.state; const c = st.clips[0];
+      Object.assign(c, { duration: 4, motion: 'none', transition: 'none' }); changed(); refreshAll();
+      const avg = () => { render(1); const d = ctx.getImageData(0, 0, canvas.width, canvas.height).data; let s = 0; for (let i = 0; i < d.length; i += 16) s += d[i] + d[i + 1] + d[i + 2]; return s / (d.length / 16) / 3; };
+      const sig = t => { render(t); const d = ctx.getImageData(0, 0, canvas.width, canvas.height).data, o = []; for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) { const i = ((Math.floor((y + 0.5) * canvas.height / 8)) * canvas.width + Math.floor((x + 0.5) * canvas.width / 8)) * 4; o.push(d[i] + d[i + 1] + d[i + 2]); } return o; };
+      const diff = (a, b) => a.reduce((s, v, i) => s + Math.abs(v - b[i]), 0) / a.length;
+      const out = {};
+      out.base = avg();
+      selectClip(c.id); showAssetTab('adjust');
+      c.adj = { bright: 0.5 }; out.bright = avg(); c.adj = null;
+      c.filter = 'bw'; c.filterAmt = 1; render(1);
+      { const d = ctx.getImageData(canvas.width / 2, canvas.height / 2, 1, 1).data; out.bwGray = Math.abs(d[0] - d[1]) + Math.abs(d[1] - d[2]); }
+      c.filter = '';
+      const s0 = sig(1); showAssetTab('fx'); document.querySelector('#aFx [data-fx="cinema"]').click(); await new Promise(r => setTimeout(r, 100));
+      out.fx = c.fx; out.fxDiff = diff(s0, sig(1)); c.fx = '';
+      setKeyframe(c, 0, { s: 1, x: -0.4, y: 0, r: 0, o: 1 }); setKeyframe(c, 3, { s: 1.5, x: 0.4, y: 0, r: 20, o: 1 });
+      const mid = clipTransformAt(c, 1.5);
+      out.kf = c.kf.length; out.mid = [round2(mid.x), round2(mid.s)];
+      out.kfDiff = diff(sig(0.2), sig(2.8));
+      changed(); renderTimeline();
+      out.kfd = document.querySelectorAll('#track .clip .kfd').length;
+      return out;
+    });
+    assert(r.bright > r.base + 15, `밝기 조정 효과 없음 ${r.base.toFixed(1)}→${r.bright.toFixed(1)}`);
+    assert(r.bwGray < 6, '흑백 필터 안 됨 ' + r.bwGray);
+    assert(r.fx === 'cinema' && r.fxDiff > 3, '효과 적용 안 됨 ' + JSON.stringify(r));
+    assert(r.kf === 2 && Math.abs(r.mid[0]) < 0.05 && r.mid[1] > 1.1 && r.mid[1] < 1.4, '키프레임 보간 ' + JSON.stringify(r.mid));
+    assert(r.kfDiff > 10 && r.kfd === 2, '키프레임 움직임/표시 ' + r.kfDiff + ' / ' + r.kfd);
+    return `밝기 ${r.base.toFixed(0)}→${r.bright.toFixed(0)} · 흑백 · 효과 차이 ${r.fxDiff.toFixed(0)} · 키프레임 가운데 x=${r.mid[0]} 크기 ${r.mid[1]}`;
+  });
+  await test('캡컷식 2.0: 효과음 넣기 → 저장 영상 그 시점에 소리 + 키프레임 움직임이 저장 영상에도', async () => {
+    await page.evaluate(async () => {
+      const st = window.__ttuk.state; S.bgmId = '';
+      showAssetTab('audio'); seekTo(2);
+      document.querySelector('#aSfx [data-sfx="boom"] [data-as="add"]').click();
+      await new Promise(r => setTimeout(r, 600));
+      if (!st.sfx.length) throw new Error('효과음 안 들어감');
+      st.sfx[0].start = 2; changed(); refreshAll();
+    });
+    const n = await page.evaluate(() => [window.__ttuk.state.sfx.length, document.querySelectorAll('#audioTrack .sfx').length]);
+    assert(n[0] === 1 && n[1] === 1, '효과음 블록 ' + n);
+    const e = await exportViaUI(page, out('fx2.mp4'));
+    assert(/검수 통과/.test(e.note), '검수: ' + e.note);
+    const vol = t0 => { const r = spawnSync('ffmpeg', ['-ss', String(t0), '-t', '0.4', '-i', out('fx2.mp4'), '-vn', '-af', 'volumedetect', '-f', 'null', '-']); const m = r.stderr.toString().match(/max_volume: (-?[\d.]+|-inf) dB/); return m ? (m[1] === '-inf' ? -99 : +m[1]) : -99; };
+    const quiet = vol(0.8), loud = vol(2.0);
+    assert(loud > quiet + 15, `효과음 시점 소리 없음 (1초 ${quiet}dB, 2초 ${loud}dB)`);
+    const a = grayFrame(out('fx2.mp4'), 0.3, 'null'), b = grayFrame(out('fx2.mp4'), 2.7, 'null');
+    let d = 0; for (let i = 0; i < Math.min(a.length, b.length); i++) d += Math.abs(a[i] - b[i]);
+    d /= a.length;
+    assert(d > 8, '저장 영상에 키프레임 움직임 없음 ' + d.toFixed(1));
+    return checkVideo(out('fx2.mp4'), { w: 1280, h: 720, duration: 4, audio: true }) + ` · 효과음 ${quiet}→${loud}dB · 움직임 차이 ${d.toFixed(0)}`;
+  });
+  await test('캡컷식 2.0: 타임라인 손잡이 끌어 자르기 · 자석 · 복사/붙여넣기 · 단축키', async () => {
+    await page.evaluate(async () => {
+      const st = window.__ttuk.state; st.sfx = []; st.clips[0].kf = [];
+      const m = st.media.find(x => x.type === 'image'); addClipAt(m);
+      st.clips.forEach(c => { c.duration = 3; c.transition = 'none'; });
+      pps = 70; changed(); refreshAll(); selectClip(st.clips[0].id); seekTo(0);
+    });
+    const h = await page.$('#track .clip .h.r');
+    await h.scrollIntoViewIfNeeded();
+    const bb = await h.boundingBox();
+    await page.mouse.move(bb.x + bb.width / 2, bb.y + bb.height / 2); await page.mouse.down();
+    await page.mouse.move(bb.x - 70, bb.y + bb.height / 2, { steps: 6 }); await page.mouse.up();
+    const d1 = await page.evaluate(() => window.__ttuk.state.clips[0].duration);
+    assert(Math.abs(d1 - 2) < 0.15, '손잡이로 자르기 실패 ' + d1);
+    // 자석: 재생 위치(1.5초) 근처로 끌면 딱 붙음
+    await page.evaluate(() => { seekTo(1.5); renderTimeline(); });
+    const bb2 = await (await page.$('#track .clip .h.r')).boundingBox();
+    await page.mouse.move(bb2.x + bb2.width / 2, bb2.y + 10); await page.mouse.down();
+    await page.mouse.move(bb2.x + bb2.width / 2 - 70 * 0.5 + 4, bb2.y + 10, { steps: 5 }); await page.mouse.up();
+    const d2 = await page.evaluate(() => window.__ttuk.state.clips[0].duration);
+    assert(Math.abs(d2 - 1.5) < 0.011, '자석(재생 위치에 붙기) 안 됨 ' + d2);
+    await page.evaluate(() => { const st = window.__ttuk.state; selectClip(st.clips[0].id); document.activeElement && document.activeElement.blur && document.activeElement.blur(); });
+    await page.keyboard.press('Control+c'); await page.keyboard.press('Control+v');
+    const n = await page.evaluate(() => window.__ttuk.state.clips.map(c => c.duration));
+    assert(n.length === 3 && n[1] === n[0], '복사/붙여넣기 ' + JSON.stringify(n));
+    await page.evaluate(() => seekTo(0.5)); await page.keyboard.press('Control+b');
+    const n2 = await page.evaluate(() => window.__ttuk.state.clips.length);
+    assert(n2 === 4, 'Ctrl+B 자르기 ' + n2);
+    await page.keyboard.press('Control+z');
+    return `손잡이 3→${d1}초 · 자석 ${d2}초 · 붙여넣기 ${n.length}장면 · Ctrl+B ${n2}장면`;
+  });
+  await test('캡컷식 2.0: 내보내기 창 (1080p · 24fps · 화질 낮게 · 파일 이름)', async () => {
+    await page.evaluate(() => { const st = window.__ttuk.state; st.clips.splice(1); st.clips[0].duration = 2; changed(); refreshAll(); });
+    await stop(page);
+    await page.click('#exportBtn');
+    await page.waitForSelector('#exportModal:not([hidden])');
+    await page.click('#expRes [data-v="1080"]'); await page.click('#expFps [data-v="24"]'); await page.click('#expVq [data-v="low"]');
+    await page.fill('#expName', '내보내기시험');
+    const info = await page.textContent('#expInfo');
+    assert(/1920×1080/.test(info) && /예상 용량/.test(info), '안내 ' + info);
+    await page.click('#expGoBtn');
+    await page.waitForSelector('#resultSaveBtn:not([hidden])', { timeout: 300000 });
+    const [dl] = await Promise.all([page.waitForEvent('download'), page.click('#resultSaveBtn')]);
+    await dl.saveAs(out('export-dlg.mp4'));
+    const fname = await page.evaluate(() => lastExport.name); // (테스트용 브라우저는 한글 다운로드 이름을 'download' 로 바꿈 → 앱이 정한 이름으로 확인)
+    await page.click('#busyCancel');
+    assert(fname === '내보내기시험.mp4', '파일 이름 ' + fname);
+    const fr = execFileSync('ffprobe', ['-v', 'error', '-select_streams', 'v', '-show_entries', 'stream=r_frame_rate', '-of', 'csv=p=0', out('export-dlg.mp4')]).toString().trim();
+    assert(fr === '24/1', '초당 프레임 ' + fr);
+    const r = await page.evaluate(() => [S.quality, S.fps, S.vq]);
+    await page.evaluate(() => { S.quality = 720; S.fps = 30; S.vq = 'rec'; changed(); syncProjectForm(); });
+    return checkVideo(out('export-dlg.mp4'), { w: 1920, h: 1080, duration: 2 }) + ` · ${fr}fps · ${fname} · 설정 ${r.join('/')}`;
+  });
+
+  await test('🎼 음악 만들기: 박자 7가지(1/4·2/4·3/4·4/4·5/4·6/8·12/8) · 빠르기 · 같은 번호 = 같은 곡', async () => {
+    const r = await page.evaluate(async () => {
+      const out = [];
+      for (const meter of ['1/4', '2/4', '3/4', '4/4', '5/4', '6/8', '12/8']) {
+        const o = { style: 'bright', meter, bpm: 120, seconds: 12, seed: 5 };
+        const buf = await composeMusic(o), T = musicTiming(o);
+        const d = buf.getChannelData(0); let peak = 0, sil = 0; for (let i = 0; i < d.length; i++) { const a = Math.abs(d[i]); if (a > peak) peak = a; }
+        // 마디 첫 박(쿵)이 다른 박보다 센지: 박마다 첫 30ms 에너지
+        const sr = buf.sampleRate, e = []; const beats = Math.floor((buf.duration - 2.2) / T.beat);
+        for (let b = 0; b < beats; b++) { let s = 0; const st = Math.floor(b * T.beat * sr); for (let i = st; i < st + sr * 0.03 && i < d.length; i++) s += d[i] * d[i]; e.push(s); }
+        const per = T.M.beats; let down = 0, other = 0, nd = 0, no = 0;
+        e.forEach((v, b) => { if (b % per === 0) { down += v; nd++; } else { other += v; no++; } });
+        out.push({ meter, dur: +buf.duration.toFixed(2), bars: Math.round((buf.duration - 2.2) / T.bar), barLen: +T.bar.toFixed(3), peak: +peak.toFixed(2), accent: no ? +(down / nd / (other / no)).toFixed(2) : 1, bpm: detectBeats(buf)?.bpm });
+      }
+      const a = await composeMusic({ style: 'lofi', meter: '3/4', bpm: 90, seconds: 8, seed: 42 }), b = await composeMusic({ style: 'lofi', meter: '3/4', bpm: 90, seconds: 8, seed: 42 }), c = await composeMusic({ style: 'lofi', meter: '3/4', bpm: 90, seconds: 8, seed: 43 });
+      const diff = (x, y) => { const p = x.getChannelData(0), q = y.getChannelData(0); let s = 0; for (let i = 0; i < Math.min(p.length, q.length); i += 101) s += Math.abs(p[i] - q[i]); return s; };
+      return { out, same: diff(a, b), other: diff(a, c) };
+    });
+    for (const x of r.out) {
+      assert(x.peak > 0.5 && x.peak < 1.0, `${x.meter} 소리 크기 ${x.peak}`);
+      assert(Math.abs(x.bars * x.barLen + 2.2 - x.dur) < 0.05, `${x.meter} 마디 수가 맞지 않음`);
+      assert(x.dur >= 12, `${x.meter} 길이 ${x.dur}`);
+      if (x.meter !== '1/4') assert(x.accent > 1.0, `${x.meter} 첫 박 강세 없음 ${x.accent}`);
+    }
+    const b44 = r.out.find(x => x.meter === '4/4');
+    assert(b44 && Math.abs(b44.bpm - 120) <= 2, '4/4 빠르기 감지 ' + (b44 && b44.bpm));
+    assert(r.same === 0 && r.other > 1, `곡 번호 재현 ${r.same} / 다른 곡 ${r.other}`);
+    return r.out.map(x => `${x.meter}: ${x.bars}마디 강세×${x.accent}`).join(' · ') + ` · 4/4 감지 ${b44.bpm}BPM · 같은 번호 동일`;
+  });
+  await test('🎼 음악 만들기 화면 → 배경음악 · 저장 영상에 소리 · 명령어 "3/4박자 음악 만들어"', async () => {
+    await page.evaluate(() => { const st = window.__ttuk.state; S.bgmId = ''; st.sfx = []; st.clips.splice(1); st.clips[0].duration = 4; changed(); refreshAll(); showAssetTab('audio'); });
+    await page.selectOption('#mmStyle', 'calm');
+    await page.selectOption('#mmMeter', '3/4');
+    await page.click('#mmMake');
+    await page.waitForFunction(() => !!S.bgmId, null, { timeout: 60000 });
+    const m = await page.evaluate(() => { const m = mediaById(S.bgmId); return { name: m.name, bpm: m.beat.bpm, dur: m.duration, listed: !!document.querySelector(`#aMusic [data-mid="${m.id}"]`) }; });
+    assert(/4분의3박자/.test(m.name) && m.bpm === 78 && m.dur >= 10 && m.listed, '만든 음악 ' + JSON.stringify(m));
+    const e = await exportViaUI(page, out('music.mp4'));
+    assert(/검수 통과/.test(e.note), '검수: ' + e.note);
+    const r = spawnSync('ffmpeg', ['-i', out('music.mp4'), '-vn', '-af', 'volumedetect', '-f', 'null', '-']);
+    const mv = +(r.stderr.toString().match(/mean_volume: (-?[\d.]+) dB/) || [0, -99])[1];
+    assert(mv > -40, '저장 영상에 음악 소리 없음 ' + mv);
+    const p = await page.evaluate(() => [parseMusicCommand('3/4박자 왈츠 음악 만들어줘 100bpm'), parseMusicCommand('8분의6박자로 웅장하게 작곡'), parseMusicCommand('쇼츠 15초 신나게')]);
+    assert(p[0].meter === '3/4' && p[0].bpm === 100 && p[1].meter === '6/8' && p[1].style === 'epic' && p[2] === null, '명령어 읽기 ' + JSON.stringify(p));
+    return `${m.name} · 저장 영상 평균 소리 ${mv}dB · 명령어 ${JSON.stringify(p[0])}`;
   });
 
   /* ---------- AI (모의 응답) ---------- */

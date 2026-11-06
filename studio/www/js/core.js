@@ -64,6 +64,7 @@ const state = {
   clips: [],
   subs: [],       // 자막 줄: { id, start, end, text }
   overlays: [],   // 겹치기: 사진·영상·스티커·글자
+  sfx: [],        // 효과음: { id, mediaId, start, vol }
   selectedId: null,
   time: 0,
   playing: false,
@@ -76,6 +77,7 @@ const state = {
     progressBar: false,  // 위쪽 진행 막대 (끝까지 보게 만드는 장치)
     loopEnd: false,      // 끝 → 처음으로 자연스럽게 이어지는 반복 재생 마무리
     beatPunch: false,    // 박자마다 살짝 튕기는 줌
+    vq: 'rec',           // 내보내기 화질: low · rec · high
     maxSizeMB: 0,        // 저장 용량 제한 (0 = 제한 없음)
     sub: { font: "'Noto Sans KR'", size: 58, color: '#ffffff', hl: '#ffe14d', box: false, outline: true, pos: 'bottom', anim: 'fade' },
   },
@@ -167,12 +169,16 @@ function voiceSegments() {
   }
   return out;
 }
+/** 효과음 구간 (배경음악 줄이기에는 안 씀) */
+function sfxSegments() {
+  return (state.sfx || []).map(x => { const m = mediaById(x.mediaId); return m && m.buffer ? { start: x.start, end: x.start + m.buffer.duration, buffer: m.buffer, vol: x.vol ?? 1, sfx: x } : null; }).filter(Boolean);
+}
 let voiceNodes = [];
 function startVoices(t) {
   stopVoices();
   if (!audio.ctx) return;
   const now = audio.ctx.currentTime;
-  for (const sg of voiceSegments()) {
+  for (const sg of voiceSegments().concat(sfxSegments())) {
     if (sg.end <= t) continue;
     const src = audio.ctx.createBufferSource();
     src.buffer = sg.buffer;
@@ -361,6 +367,8 @@ function newClip(kind, extra = {}) {
     bgColor: '#2f4332', bgColor2: '',
     enhance: 0, voiceId: '', voiceVol: 1, voiceDelay: 0.3, narration: '',
     speed: 1, reverse: false, fadeIn: 0, fadeOut: 0,
+    fx: '', fxAmt: 0.6, adj: null, filter: '', filterAmt: 1,
+    tfS: 1, tfX: 0, tfY: 0, tfR: 0, tfO: 1, flipX: false, flipY: false, kf: [],
     bgStyle: 'gradient', emoji: '',
   }, extra);
 }
@@ -374,7 +382,8 @@ function clipFromMedia(m, extra = {}) {
 }
 function stripClip(c) {
   const o = {};
-  for (const k in c) if (!k.startsWith('_')) o[k] = c[k];
+  // 키프레임·조정 값은 깊은 복사 (복제한 장면끼리 값이 엮이지 않게)
+  for (const k in c) if (!k.startsWith('_')) o[k] = c[k] && typeof c[k] === 'object' ? JSON.parse(JSON.stringify(c[k])) : c[k];
   return o;
 }
 function disposeClip(c) {
@@ -512,6 +521,9 @@ function applyTransition(kind, p, W, H) {
 }
 
 function drawClip(clip, local) {
+  if (window.drawClipWithFx) drawClipWithFx(clip, local, drawClipBase); else drawClipBase(clip, local);
+}
+function drawClipBase(clip, local) {
   const W = canvas.width, H = canvas.height;
   ctx.save();
   if (clip.kind === 'text') {
@@ -529,17 +541,19 @@ function drawClip(clip, local) {
       if (src && sw && sh) {
         const p = clamp(local / Math.max(0.1, clip.duration), 0, 1);
         const mv = motionAt(clip.motion, p);
-        const fcss = filterCss(S.filter);
+        const fcss = window.clipColorCss ? clipColorCss(clip) : filterCss(S.filter);
+        const sharp = Math.max(clip.enhance || 0, (clip.adj && clip.adj.sharpen) || 0);
+        const enh = sharp ? { m, amount: sharp } : null;
         if (clip.fit === 'blur') {
           ctx.save();
           ctx.filter = `blur(${Math.round(Math.min(W, H) * 0.035)}px) brightness(0.65)` + (fcss !== 'none' ? ' ' + fcss : '');
           drawFit(src, sw, sh, 'cover', 1.12, 0, 0);
           ctx.restore();
           ctx.filter = fcss;
-          drawFit(src, sw, sh, 'contain', mv.z, mv.x, mv.y, clip.enhance ? { m, amount: clip.enhance } : null);
+          drawFit(src, sw, sh, 'contain', mv.z, mv.x, mv.y, enh);
         } else {
           ctx.filter = fcss;
-          drawFit(src, sw, sh, clip.fit, mv.z, mv.x, mv.y, clip.enhance ? { m, amount: clip.enhance } : null);
+          drawFit(src, sw, sh, clip.fit, mv.z, mv.x, mv.y, enh);
         }
         ctx.filter = 'none';
       }
@@ -902,7 +916,7 @@ function seekTo(t) {
 /* ------------------------------------------------------------------ 실행 취소 / 다시 실행 */
 const hist = { undo: [], redo: [], last: null, timer: 0 };
 function snapshot() {
-  return JSON.stringify({ clips: state.clips.map(stripClip), subs: state.subs, overlays: state.overlays.map(stripClip), settings: S, selectedId: state.selectedId });
+  return JSON.stringify({ clips: state.clips.map(stripClip), subs: state.subs, overlays: state.overlays.map(stripClip), sfx: state.sfx, settings: S, selectedId: state.selectedId });
 }
 function commit(debounceMs = 0) {
   clearTimeout(hist.timer);
@@ -932,6 +946,7 @@ function restore(json) {
   const keepLogo = mediaById(data.settings.logoId) ? data.settings.logoId : '';
   Object.assign(S, data.settings, { bgmId: keepBgm, logoId: keepLogo });
   state.subs = data.subs || [];
+  state.sfx = (data.sfx || []).filter(x => mediaById(x.mediaId));
   const oldOv = new Map(state.overlays.map(o => [o.id, o]));
   state.overlays = (data.overlays || []).filter(o => !o.mediaId || mediaById(o.mediaId)).map(o => { const p = oldOv.get(o.id); if (p && p._video && p.mediaId === o.mediaId) { o._video = p._video; oldOv.delete(o.id); } return o; });
   oldOv.forEach(o => window.disposeOverlay && disposeOverlay(o));
