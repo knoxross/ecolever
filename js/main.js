@@ -6,7 +6,7 @@ const PRINT_MOQ = 10000;  // 로고 인쇄 주문
 /* ---- scroll reveal ---- */
 (function(){
   if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const sel = '.feature-card, .lineup-card, .after-card, .doc-card, .compare-col, .channel-tile, .pain-card, .process li, .faq-list details';
+  const sel = '.feature-card, .lineup-card, .after-card, .doc-card, .compare-col, .channel-tile, .pain-card, .process li, .faq-list details, .order-card';
   const els = document.querySelectorAll(sel);
   if(!els.length || !('IntersectionObserver' in window)) return;
   els.forEach(el => el.classList.add('reveal-init'));
@@ -129,6 +129,16 @@ document.querySelectorAll('[data-sample]').forEach(function(a){
   a.addEventListener('click', function(){
     const cb = document.getElementById('inqSample');
     if(cb) cb.checked = true;
+  });
+});
+
+/* ---- 주문 방식 카드 → 로고 인쇄 선택 미리 채우기 ---- */
+document.querySelectorAll('[data-print]').forEach(function(a){
+  a.addEventListener('click', function(){
+    const sel = document.getElementById('inqPrint');
+    if(!sel) return;
+    sel.value = a.dataset.print;
+    sel.dispatchEvent(new Event('change'));
   });
 });
 

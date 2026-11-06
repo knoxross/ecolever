@@ -245,9 +245,20 @@ a{color:inherit;}
 .aside-call > a{font-size:20px;font-weight:800;color:var(--moss);text-decoration:none;}
 
 /* ---- footer / misc ---- */
-footer{padding:40px 0;font-size:11.8px;color:var(--taupe);line-height:1.9;}
-footer a{text-decoration:underline;}
-.footer-logo{height:20px;margin-bottom:8px;opacity:0.8;}
+.site-footer{background:var(--paper-deep);border-top:1px solid var(--line);padding:52px 0 0;font-size:12.5px;color:var(--muted);line-height:1.7;}
+.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.4fr;gap:32px;padding-bottom:36px;}
+.footer-brand{display:flex;flex-direction:column;align-items:flex-start;gap:14px;}
+.footer-logo{height:60px;width:auto;}
+.footer-tagline{font-size:13px;color:var(--body);}
+.footer-tagline b{font-family:'Gowun Batang',serif;font-size:15px;color:var(--ink);}
+.footer-col{display:flex;flex-direction:column;gap:7px;}
+.footer-col h5{font-size:12px;font-weight:700;color:var(--ink);letter-spacing:.02em;margin-bottom:4px;}
+.footer-col a{text-decoration:none;color:var(--muted);}
+.footer-col a:hover{color:var(--moss);text-decoration:underline;}
+.footer-col a.footer-tel{font-size:20px;font-weight:800;color:var(--moss);}
+.footer-small{font-size:11.5px;color:var(--taupe);margin-top:4px;}
+.footer-biz span{font-size:12px;}
+.footer-bottom{border-top:1px solid var(--line);padding:16px 0 22px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--taupe);}
 .to-top-btn{position:fixed;right:18px;bottom:22px;width:44px;height:44px;border-radius:50%;background:var(--moss);color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.18);opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity 0.2s,transform 0.2s,visibility 0.2s;z-index:40;}
 .to-top-btn.show{opacity:1;visibility:visible;transform:translateY(0);}
 
@@ -376,5 +387,56 @@ footer a{text-decoration:underline;}
   .inquiry-aside h4{font-size:16.5px;}
   .inquiry-aside li{font-size:14px;}
   .aside-call{font-size:13px;}
-  footer{font-size:13px;}
+  .site-footer{font-size:13.5px;}
+  .footer-tagline{font-size:14px;}
+  .footer-biz span{font-size:13px;}
+}
+
+/* ---- order guide (인쇄 없음 100개 / 로고 인쇄 10,000개) ---- */
+.order-guide{margin-bottom:34px;}
+.order-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.order-card{position:relative;border:1px solid var(--line);border-radius:14px;padding:24px 22px;background:#fff;display:flex;flex-direction:column;gap:10px;transition:transform .18s ease,box-shadow .18s ease;}
+.order-card:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(43,38,32,0.09);}
+.order-card.featured{border:1.5px solid var(--moss);background:var(--moss-soft);}
+.order-badge{position:absolute;top:-11px;right:18px;background:var(--moss);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px;}
+.order-qty{font-size:13px;color:var(--taupe);font-weight:600;}
+.order-qty b{font-family:'Gowun Batang',serif;font-size:34px;color:var(--ink);margin-right:2px;}
+.order-card.featured .order-qty b{color:var(--moss);}
+.order-card h4{font-size:15px;font-weight:700;}
+.order-card p{font-size:12.8px;color:var(--muted);line-height:1.65;}
+.order-card ul{list-style:none;display:flex;flex-direction:column;gap:5px;margin-bottom:6px;}
+.order-card li{font-size:12.5px;padding-left:18px;position:relative;color:var(--body);}
+.order-card li::before{content:'✓';position:absolute;left:0;color:var(--moss);font-weight:700;}
+.order-card .btn{margin-top:auto;align-self:flex-start;}
+
+/* ---- mid CTA band ---- */
+.cta-band{background:var(--moss-deep);color:#fff;padding:44px 0;}
+.cta-band-inner{display:flex;align-items:center;justify-content:space-between;gap:28px;}
+.cta-band-kicker{font-size:13px;color:#F2D9A8;font-weight:700;margin-bottom:8px;}
+.cta-band h2{font-size:24px;line-height:1.45;max-width:560px;}
+.cta-band-actions{display:flex;gap:10px;flex:none;flex-wrap:wrap;}
+.btn-ghost{border-color:rgba(255,255,255,.6);color:#fff;background:none;white-space:nowrap;}
+.btn-ghost:hover{background:rgba(255,255,255,.1);}
+
+@media (min-width:761px){
+  .main-photo-pair img{height:330px;}
+  .order-card h4{font-size:17px;}
+  .order-card p,.order-card li{font-size:14px;}
+  .order-qty{font-size:14px;}
+  .cta-band h2{font-size:27px;}
+  .footer-col h5{font-size:13px;}
+}
+@media (max-width:980px){
+  .footer-grid{grid-template-columns:1fr 1fr;}
+  .cta-band-inner{flex-direction:column;align-items:flex-start;}
+}
+@media (max-width:760px){
+  .order-grid{grid-template-columns:1fr;}
+  .order-card.featured{margin-top:6px;}
+  .cta-band{padding:34px 0;}
+  .cta-band h2{font-size:20px;}
+  .cta-band-actions{width:100%;}
+  .cta-band-actions .btn{flex:1;}
+  .footer-grid{grid-template-columns:1fr;gap:26px;}
+  .footer-bottom{flex-direction:column;gap:4px;}
 }
