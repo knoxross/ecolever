@@ -736,6 +736,9 @@ async function functionalSuite(browser, url, F, label, opts) {
   });
   await test('🎼 음악 만들기 화면 → 배경음악 · 저장 영상에 소리 · 명령어 "3/4박자 음악 만들어"', async () => {
     await page.evaluate(() => { const st = window.__ttuk.state; S.bgmId = ''; st.sfx = []; st.clips.splice(1); st.clips[0].duration = 4; changed(); refreshAll(); showAssetTab('audio'); });
+    if (await page.isVisible('#mobileTabs')) await page.click('#mobileTabs [data-m="library"]');
+    await page.evaluate(() => showAssetTab('audio'));
+    await page.locator('#mmStyle').scrollIntoViewIfNeeded();
     await page.selectOption('#mmStyle', 'calm');
     await page.selectOption('#mmMeter', '3/4');
     await page.click('#mmMake');
