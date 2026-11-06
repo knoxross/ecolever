@@ -34,6 +34,7 @@ a{color:inherit;}
 .masthead .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;}
 .brand-id{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0;}
 .ci-logo{height:26px;width:auto;}
+.eco-logo{height:44px;width:auto;display:block;}
 .brandline{font-family:'Gowun Batang',serif;font-size:15px;font-weight:700;}
 .brandline span{color:var(--taupe);font-weight:400;font-size:12px;margin-left:6px;}
 .masthead-right{display:flex;align-items:center;gap:22px;}

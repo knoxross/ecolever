@@ -1,6 +1,6 @@
 // 견적 문의가 도착할 메일 주소
 const INQUIRY_EMAIL = 'knox@ecolever.co.kr';
-const MOQ = 10000;
+const MOQ = 100;
 
 /* ---- scroll reveal ---- */
 (function(){
