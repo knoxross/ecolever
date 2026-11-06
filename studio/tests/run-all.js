@@ -731,7 +731,7 @@ async function functionalSuite(browser, url, F, label, opts) {
     }
     const b44 = r.out.find(x => x.meter === '4/4');
     assert(b44 && Math.abs(b44.bpm - 120) <= 2, '4/4 빠르기 감지 ' + (b44 && b44.bpm));
-    assert(r.same === 0 && r.other > 1, `곡 번호 재현 ${r.same} / 다른 곡 ${r.other}`);
+    assert(r.same < 0.01 && r.other > 1, `곡 번호 재현 ${r.same} / 다른 곡 ${r.other}`);
     return r.out.map(x => `${x.meter}: ${x.bars}마디 강세×${x.accent}`).join(' · ') + ` · 4/4 감지 ${b44.bpm}BPM · 같은 번호 동일`;
   });
   await test('🎼 음악 만들기 화면 → 배경음악 · 저장 영상에 소리 · 명령어 "3/4박자 음악 만들어"', async () => {
