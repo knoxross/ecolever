@@ -35,6 +35,7 @@ const PRINT_MOQ = 10000;  // 로고 인쇄 주문
       if(!entry.isIntersecting) return;
       links.forEach(l => l.classList.remove('active'));
       const link = map.get(entry.target);
+      if(!link) return; // 메뉴에 없는 구간(사후관리·문의 등)에서는 강조 해제
       link.classList.add('active');
       // keep the active item visible in the horizontally scrolling mobile nav
       const nav = link.parentElement;
@@ -44,6 +45,9 @@ const PRINT_MOQ = 10000;  // 로고 인쇄 주문
     });
   }, { rootMargin: '-45% 0px -50% 0px' });
   map.forEach(function(_, section){ io.observe(section); });
+  document.querySelectorAll('main > section[id]').forEach(function(section){
+    if(!map.has(section) && section.id !== 'top') io.observe(section);
+  });
 })();
 
 /* ---- back to top ---- */
