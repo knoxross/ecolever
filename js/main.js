@@ -24,7 +24,7 @@ const PRINT_MOQ = 10000;  // 로고 인쇄 주문
 /* ---- active nav link while scrolling ---- */
 (function(){
   if(!('IntersectionObserver' in window)) return;
-  const links = Array.from(document.querySelectorAll('.nav-jump a'));
+  const links = Array.from(document.querySelectorAll('.nav-jump a[href^="#"]'));
   const map = new Map();
   links.forEach(function(a){
     const target = document.querySelector(a.getAttribute('href'));
