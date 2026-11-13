@@ -1,0 +1,35 @@
+# main 브랜치에 올라오면 가이드 페이지를 다시 만들고 가비아 웹호스팅으로 자동 업로드합니다.
+# 최초 1회 설정: GitHub 저장소 Settings → Secrets and variables → Actions 에
+#   FTP_USER, FTP_PASSWORD 두 개를 등록하세요. (비밀번호는 저장소 파일에 절대 넣지 않습니다)
+name: deploy
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+concurrency: deploy
+permissions:
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build guides
+        run: python3 tools/build_guides.py
+      - name: Upload to Gabia via FTP
+        env:
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          if [ -z "$FTP_USER" ] || [ -z "$FTP_PASSWORD" ]; then
+            echo "::warning::FTP_USER / FTP_PASSWORD secrets are not set; skipping upload."; exit 0
+          fi
+          umask 077
+          printf 'machine ecolever.co.kr\nlogin %s\npassword %s\n' "$FTP_USER" "$FTP_PASSWORD" > "$RUNNER_TEMP/netrc"
+          shopt -s nullglob
+          for f in index.html .htaccess robots.txt sitemap.xml llms.txt css/* js/* imgs/* guide/*; do
+            [ -f "$f" ] || continue
+            curl -sS --netrc-file "$RUNNER_TEMP/netrc" --ftp-create-dirs -m 60 -T "$f" "ftp://ecolever.co.kr/$f"
+            echo "uploaded $f"
+          done
+          rm -f "$RUNNER_TEMP/netrc"
