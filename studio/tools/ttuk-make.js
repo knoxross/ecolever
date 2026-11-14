@@ -89,7 +89,11 @@ async function collectFiles(job, baseDir, tmp) {
 
 async function runOne(page, jobPath, outDir) {
   const baseDir = path.dirname(path.resolve(jobPath));
-  const raw = JSON.parse(fs.readFileSync(jobPath, 'utf8').replace(/^﻿/, ''));
+  let raw;
+  try { raw = JSON.parse(fs.readFileSync(jobPath, 'utf8').replace(/^\uFEFF/, '')); } catch (e) {
+    const at = (String(e.message).match(/position (\d+)/) || [])[1];
+    throw new Error('작업 파일이 올바른 JSON 형식이 아닙니다' + (at ? ` (${+at + 1}번째 글자 근처)` : '') + '. 따옴표·쉼표·괄호를 확인해 주세요.');
+  }
   const base = path.basename(jobPath).replace(/\.json$/i, '');
   if (!raw.export || typeof raw.export !== 'object') raw.export = {};
   if (!raw.export.name) raw.export.name = base;

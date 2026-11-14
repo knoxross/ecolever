@@ -30,7 +30,7 @@ const JOB_MOODS = ['clean', 'energetic', 'calm', 'luxury', 'cute'];
 
 /** 작업 파일 검사 · 기본값 채우기. 잘못된 곳은 고칠 수 있으면 고치고, 안 되면 오류 */
 function normalizeJob(raw) {
-  if (typeof raw === 'string') { try { raw = JSON.parse(raw.replace(/^﻿/, '')); } catch (e) { throw new Error('작업 파일이 올바른 JSON 형식이 아닙니다: ' + e.message); } }
+  if (typeof raw === 'string') { try { raw = JSON.parse(raw.replace(/^﻿/, '')); } catch (e) { const at = (String(e.message).match(/position (\d+)/) || [])[1]; throw new Error('작업 파일이 올바른 JSON 형식이 아닙니다' + (at ? ` (${+at + 1}번째 글자 근처)` : '') + '. 따옴표·쉼표·괄호를 확인해 주세요.'); } }
   if (!raw || typeof raw !== 'object') throw new Error('작업 파일 내용이 비어 있습니다.');
   const str = (v, n = 300) => (typeof v === 'string' ? v : v == null ? '' : String(v)).trim().slice(0, n);
   const job = {
