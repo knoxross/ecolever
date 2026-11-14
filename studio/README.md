@@ -30,9 +30,59 @@ Copyright © 2026 (주)알앤케이그린월드. All rights reserved. (사용권
 | 🔧 변형 · 키프레임 (2.0) | 크기·회전·위치·불투명도·좌우/상하 반전, 미리보기 화면에서 끌어서 위치 이동. 키프레임(◆)을 2개 이상 넣으면 그 사이가 부드럽게 움직임 |
 | 🎞 캡컷식 타임라인 (2.0) | 장면 양 끝 손잡이를 끌어서 자르기, 자석(재생 위치·장면 끝에 딱 붙기), 영상 필름 미리보기, 배경음악 파형, 효과음·자막·겹치기 블록 끌어서 옮기기·늘이기, 줄 이름, Ctrl+휠 확대. 단축키 Ctrl+B 자르기 · Q/W 앞·뒤 지우기 · Ctrl+C/V 장면 복사·붙여넣기 |
 | 💬 자막 | 💬 자막 넣기(S) → 화면 위에서 바로 입력, 화면의 자막을 끌어서 위치 이동(줄마다 위·가운데·아래·직접). 장면과 따로 움직이는 자막 줄: 원하는 시간에 넣기(단축키 S), 내레이션에 맞춘 자동 자막, AI 말소리 받아쓰기(Google 키), SRT·VTT 불러오기 / SRT 저장, `*별표*` 강조 색, 글꼴·크기·색·테두리·상자·위치·나타나기. 영상에 입혀 저장 + .srt 따로 저장. 장면 자막과 겹치면 자동으로 위로 비킴 |
+| 🤖 자동화 연결 (2.1) | 다른 프로그램(AI 자동화 수익 창출 플랫폼·뉴스 사이트 등)이 작업 파일(JSON)을 주면 화면 조작 없이 영상 제작 → mp4 + 업로드 문구 결과 파일. PC 앱은 요청 폴더 자동 감시, 서버·클라우드는 명령줄 도구 `tools/ttuk-make.js` |
 | 🔍 자동 검수 | 저장 전 오류 자동 수정 + 저장 후 장면마다 화면·길이·크기 재확인. 인코더 문제 시 다른 방식으로 자동 재시도. 긴 글자는 자동으로 크기 맞춤(잘림 없음) |
 | 🔄 자동 업데이트 | 회사 홈페이지에 새 버전을 올리면 설치된 PC 앱이 알아서 받아 설치 (`scripts/deploy-update.sh`) |
 | 기타 | 실행 취소/다시 실행, 자막 애니메이션 5종, 움직임(켄번스) 6종, 색감 필터 7종, 로고 워터마크, 세로 영상 자막 안전 영역 |
+
+## 🤖 자동화 연결 — 다른 프로그램이 영상을 주문하는 방법 (2.1)
+
+AI 자동화 수익 창출 플랫폼, 뉴스 사이트 같은 다른 프로그램이 **작업 파일(JSON)** 하나만 주면 사람 손 없이 영상을 만듭니다.
+
+**① PC 앱 (설치된 영상뚝딱)** — 위쪽 `🤖 자동화 연결` → 요청 폴더·완성 폴더 고르기 → 켜기.
+요청 폴더에 `요청이름.json`(과 사진)을 넣으면 10초 안에 집어 가서 완성 폴더에 `요청이름.mp4` + `요청이름.결과.json` 을 남깁니다. 같은 파일은 한 번만 처리하고, 하던 작업은 그대로 보관됩니다.
+
+**② 명령줄 (서버·클라우드, 화면 없이)**
+
+```bash
+cd studio && npm ci && npm run vendor          # 처음 한 번
+node tools/ttuk-make.js 요청.json -o 완성폴더   # 작업 하나
+node tools/ttuk-make.js 요청폴더/ -o 완성폴더   # 폴더 안의 *.json 모두
+node tools/ttuk-make.js 요청.json --json       # 결과 JSON 만 출력 (다른 프로그램이 읽기 좋게)
+```
+사진 칸에는 작업 파일 기준 경로·절대 경로·https 주소를 쓸 수 있습니다. 실패가 하나라도 있으면 종료 코드 1, 실패한 요청은 `.결과.json` 에 `"ok": false, "error": "…"`.
+
+**작업 파일 예시 (뉴스 쇼츠)**
+
+```json
+{
+  "title": "강서구 키즈카페 전국 우수 인증",
+  "subtitle": "11월 14일 · 서울 소식",
+  "aspect": "9:16",
+  "mood": "clean",
+  "scenes": [
+    { "text": "서울형키즈카페 시립화곡점", "image": "https://…/photo.jpg", "duration": 3 },
+    { "text": "전국 8만 5천여 곳 중 9곳만 선정", "duration": 3.5 },
+    { "text": "현장 영상", "image": "clip.mp4", "duration": 3, "narration": "읽어 줄 문장(구글 키 있을 때)" }
+  ],
+  "outro": "자세한 소식은 설명란 링크에서",
+  "music": { "style": "corp", "meter": "4/4", "bpm": 110, "seed": 7 },
+  "export": { "quality": 1080, "fps": 30, "vq": "rec", "maxSizeMB": 0, "name": "kangseo-kidscafe" },
+  "platform": "shorts",
+  "upload": { "hashtags": ["강서구", "키즈카페"], "link": "https://…/article/1", "source": "시정일보" }
+}
+```
+
+| 칸 | 값 |
+|---|---|
+| aspect | 9:16 · 16:9 · 1:1 · 4:5 · 4:3 · 21:9 (기본 9:16) |
+| mood | clean · energetic · calm · luxury · cute |
+| scenes | 문자열만 써도 됨(`["첫 문장", "둘째 문장"]`). 사진이 없거나 못 찾으면 움직이는 배경의 글자 장면으로 대신하고 `warnings` 에 적음 |
+| music | `false` = 음악 없음 · `file` = 내 음악 파일 · 그 밖에는 직접 작곡(style: bright·calm·epic·cute·lofi·corp·hiphop·edm·luxury, meter: 1/4~12/8) |
+| export | quality 480·720·1080·1440·2160 · fps 24·25·30·50·60 · vq low·rec·high · maxSizeMB · name |
+| upload | 결과 파일의 업로드 제목·설명·해시태그에 그대로 반영 |
+
+**결과 파일 (`.결과.json`)**: `ok, file, path, size_bytes, width, height, duration, codecs, qa{ok,checked,issues}, summary, warnings, upload{title,description,hashtags}`
 
 ## 설치
 

@@ -127,7 +127,7 @@ const Scheduler = (() => {
     clearInterval(timer);
     timer = setInterval(tick, 20000);
     setTimeout(tick, 5000);
-    if (window.native?.setKeepRunning) window.native.setKeepRunning(jobs.some(j => j.enabled));
+    if (window.native?.setKeepRunning) window.native.setKeepRunning(jobs.some(j => j.enabled) || (typeof AutoLink !== 'undefined' && AutoLink.config().on));
   }
   return {
     start, add, update, remove, runJob, describe, nextRun,

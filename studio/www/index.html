@@ -52,6 +52,7 @@
     <span class="st-name">자동화</span>
     <button class="btn btn-sm" id="seriesBtn" data-feature="series" title="마음에 드는 영상 컨셉으로 다음 편 계속 만들기">📺 시리즈</button>
     <button class="btn btn-sm" id="scheduleBtn" data-feature="schedule" title="분·시간·일 단위 예약 만들기">⏰ 예약</button>
+    <button class="btn btn-sm" id="autoLinkBtn" data-feature="autolink" title="다른 프로그램(자동화 플랫폼)이 작업 파일을 주면 영상을 자동으로 만들기">🤖 자동화 연결</button>
   </div>
 </nav>
 
@@ -313,6 +314,23 @@
     <div class="field"><label>용량 제한</label><select id="expLimit"><option value="0">제한 없음</option><option value="8">8MB (메신저)</option><option value="25">25MB (이메일)</option><option value="50">50MB</option><option value="100">100MB</option><option value="200">200MB</option></select></div>
     <p class="small" id="expInfo"></p>
     <div class="modal-actions"><button class="btn" data-close>취소</button><button class="btn btn-accent" id="expGoBtn">⬇ 내보내기</button></div>
+  </div>
+</div>
+
+<!-- 자동화 연결 -->
+<div class="modal" id="autoLinkModal" hidden>
+  <div class="modal-card wide">
+    <h2>🤖 자동화 연결</h2>
+    <p class="muted small">AI 자동화 수익 창출 플랫폼·뉴스 사이트 같은 다른 프로그램이 <b>작업 파일(.json)</b>을 요청 폴더에 넣으면, 영상뚝딱이 알아서 영상을 만들어 완성 폴더에 <b>.mp4</b>와 <b>결과 파일(.결과.json — 업로드 제목·해시태그 포함)</b>을 남깁니다. 지금 하던 작업은 그대로 보관됩니다.</p>
+    <p class="small warn" id="alDesktopOnly" hidden>폴더 자동 감시는 PC 앱에서 동작합니다. 여기서는 아래 '작업 파일로 바로 만들기'를 쓰세요.</p>
+    <div class="field"><label>요청 폴더 (작업 파일을 넣는 곳)</label><div class="btn-row"><button class="btn btn-sm" id="alInboxBtn">📁 고르기</button><span class="small" id="alInbox"></span></div></div>
+    <div class="field"><label>완성 폴더 (영상·결과가 저장되는 곳)</label><div class="btn-row"><button class="btn btn-sm" id="alOutboxBtn">📁 고르기</button><span class="small" id="alOutbox"></span></div></div>
+    <label class="check"><input type="checkbox" id="alOn"> 자동화 연결 켜기 (10초마다 요청 폴더 확인 · 창을 닫아도 알림 영역에서 계속)</label>
+    <div class="btn-row" style="margin-top:8px"><button class="btn btn-sm" id="alSample">📄 예시 작업 파일 만들기</button><button class="btn btn-sm btn-accent" id="alRunFile">▶ 작업 파일로 바로 만들기</button></div>
+    <details class="small" style="margin-top:10px"><summary>작업 파일 형식 보기</summary><pre class="code" id="alFormat"></pre></details>
+    <div class="a-sec">최근 처리</div>
+    <div id="autoLinkStatus" class="al-log"></div>
+    <div class="modal-actions"><button class="btn btn-accent" data-close>닫기</button></div>
   </div>
 </div>
 
@@ -585,6 +603,7 @@
         <li><b>🔧 변형 · ◆ 키프레임 (2.0)</b>: 장면 편집 탭에서 크기·회전·위치·불투명도·반전. 미리보기에서 끌어서 옮기기. 재생 위치를 바꿔 가며 ◆ 키프레임을 2개 이상 넣으면 그 사이가 부드럽게 움직입니다.</li>
         <li><b>🎞 타임라인 (2.0)</b>: 장면 양 끝을 끌어서 자르기, 자석처럼 재생 위치·장면 끝에 붙음, 효과음·자막·겹치기 블록도 끌어서 옮기기·늘이기. Ctrl+휠로 확대/축소.</li>
         <li><b>🎼 음악 만들기 (2.0)</b>: 왼쪽 '🎵 오디오' 칸에서 분위기·박자(1/4·2/4·3/4·4/4·5/4·6/8·12/8)·빠르기·조·길이·악기를 고르고 ▶ 미리 듣기 → 🎼 만들어서 배경음악으로. 앱이 직접 작곡하므로 저작권 걱정이 없습니다. 명령어에 "3/4박자 음악 만들어줘" 처럼 적어도 됩니다.</li>
+        <li><b>🤖 자동화 연결 (2.1)</b>: 위쪽 '🤖 자동화 연결'에서 요청 폴더를 정하고 켜 두면, 다른 프로그램(AI 자동화 수익 창출 플랫폼 등)이 넣은 작업 파일(.json)로 영상을 자동으로 만들어 완성 폴더에 저장합니다(업로드 제목·해시태그 결과 파일 포함). 지금 하던 작업은 그대로 보관됩니다.</li>
         <li><b>⬇ 내보내기 창 (2.0)</b>: 해상도(최대 4K)·초당 프레임·화질·용량 제한·파일 이름을 고르고 예상 용량을 확인한 뒤 저장합니다.</li>
         <li><b>💬 자막</b>: 오른쪽 '💬 자막' 탭에서 원하는 시간에 자막을 넣고 고칩니다. 내레이션으로 자동 자막, AI 말소리 받아쓰기, SRT 불러오기·저장, *별표* 강조 색. 저장하는 영상에 그대로 입혀집니다.</li>
         <li><b>🔍 자동 검수</b>: 저장 전 오류를 자동으로 고치고, 저장 후 장면마다 화면을 다시 확인합니다 (검은 화면·깨짐·길이 오류).</li>
@@ -617,6 +636,7 @@
 <script src="js/sfx.js"></script>
 <script src="js/music.js"></script>
 <script src="js/assets.js"></script>
+<script src="js/jobs.js"></script>
 <script src="js/timeline-pro.js"></script>
 <script src="js/editing.js"></script>
 <script src="js/series.js"></script>

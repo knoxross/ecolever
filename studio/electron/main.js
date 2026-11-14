@@ -154,6 +154,7 @@ function buildMenu() {
         { type: 'separator' },
         { label: '📺 시리즈 (같은 컨셉으로 다음 편)…', click: () => send('series') },
         { label: '⏰ 예약 만들기 (분·시간·일)…', click: () => send('schedule') },
+        { label: '🤖 자동화 연결 (작업 파일 → 영상)…', click: () => send('autoLink') },
         { label: '📦 용량 줄이기…', click: () => send('compress') },
         { type: 'separator' },
         { label: '✨ 효과 고르기', click: () => send('tabFx') },

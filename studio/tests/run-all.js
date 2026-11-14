@@ -755,6 +755,25 @@ async function functionalSuite(browser, url, F, label, opts) {
     return `${m.name} · 저장 영상 평균 소리 ${mv}dB · 명령어 ${JSON.stringify(p[0])}`;
   });
 
+  await test('🤖 자동화 연결 창 · 작업 파일로 영상 (앱 안에서, 지금 작업 보존)', async () => {
+    const before = await page.evaluate(() => window.__ttuk.state.clips.length);
+    await page.evaluate(() => ACTIONS.autoLink());
+    await page.waitForSelector('#autoLinkModal:not([hidden])');
+    const fmtTxt = await page.textContent('#alFormat');
+    assert(/"scenes"/.test(fmtTxt) && /"music"/.test(fmtTxt), '형식 안내 없음');
+    const r = await page.evaluate(async () => {
+      const o = await withIsolatedProject(() => makeVideoFromJob({ title: '앱 안 자동화 시험', aspect: '1:1', scenes: ['하나', '둘'], music: { style: 'cute', meter: '2/4' }, export: { quality: 480, name: 'app-job' } }, async () => null, {}));
+      let bad = ''; try { normalizeJob('{bad'); } catch (e) { bad = e.message; }
+      return { name: o.name, size: o.blob.size, w: o.result.width, h: o.result.height, qa: o.qa && o.qa.ok, summary: o.summary, bad, clipsAfter: window.__ttuk.state.clips.length };
+    });
+    await page.evaluate(() => { $('#autoLinkModal').hidden = true; });
+    assert(r.name === 'app-job.mp4' && r.size > 10000 && r.w === 480 && r.h === 480 && r.qa, JSON.stringify(r));
+    assert(/2\/4박자/.test(r.summary), '작곡 ' + r.summary);
+    assert(/JSON/.test(r.bad), '잘못된 파일 안내 ' + r.bad);
+    assert(r.clipsAfter === before, `지금 작업이 바뀜 ${before}→${r.clipsAfter}`);
+    return `${r.name} ${r.w}×${r.h} ${(r.size / 1e6).toFixed(2)}MB · 검수 통과 · 지금 작업 ${before}장면 그대로`;
+  });
+
   /* ---------- AI (모의 응답) ---------- */
   await test('AI 편집 (Claude 모의): 요청 형식 · 계획 적용 · 내레이션 목소리', async () => {
     await page.evaluate(() => { dirty = false; newProject(); AI.key = 'sk-ant-test'; AI.model = 'claude-opus-5-5'; GEN.key = 'AIza-test'; updateAiMode(); });
@@ -940,11 +959,84 @@ async function electronSuite(F) {
     assert(files.length === 1 && r.used === 3 && r.next >= 119 && r.next <= 120, `저장 ${files.length}개, 사용 ${r.used}, 다음 ${r.next}분`);
     return `${files[0]} · ${checkVideo(path.join(outDir, files[0]), { audio: true })} · 다음 실행 ${r.next}분 뒤`;
   });
+  await test('🤖 자동화 연결 폴더: 작업 파일 넣기 → 영상 + 결과 파일 (한 번만 처리)', async () => {
+    const inDir = path.join(FX, 'al_in'), outDir = path.join(OUT, 'jobs_cli', 'al_out');
+    fs.rmSync(inDir, { recursive: true, force: true }); fs.rmSync(outDir, { recursive: true, force: true });
+    fs.mkdirSync(inDir, { recursive: true }); fs.mkdirSync(outDir, { recursive: true });
+    fs.copyFileSync(F('small.jpg'), path.join(inDir, 'p.jpg'));
+    fs.writeFileSync(path.join(inDir, '요청1.json'), JSON.stringify({ title: 'PC 자동화 연결', aspect: '16:9', scenes: [{ text: '사진 장면', image: 'p.jpg', duration: 2 }, '글자 장면'], music: { style: 'bright', meter: '4/4' }, export: { quality: 480 } }));
+    const r = await page.evaluate(async ([i, o]) => {
+      const cfg = AutoLink.config(); const keep = JSON.parse(JSON.stringify(cfg));
+      Object.assign(cfg, { on: true, inbox: i, outbox: o, done: [] });
+      const before = window.__ttuk.state.clips.length;
+      await AutoLink.tick();
+      await AutoLink.tick(); // 같은 파일은 다시 처리하지 않음
+      const after = window.__ttuk.state.clips.length;
+      Object.assign(cfg, keep);
+      return { before, after, toast: document.querySelector('#toast')?.textContent || '' };
+    }, [inDir, outDir]);
+    const files = fs.readdirSync(outDir).sort();
+    assert(files.length === 2 && files.includes('요청1.mp4') && files.includes('요청1.결과.json'), '결과 파일 ' + files.join(',') + ' / ' + r.toast);
+    const res = JSON.parse(fs.readFileSync(path.join(outDir, '요청1.결과.json'), 'utf8'));
+    assert(res.ok && res.qa.ok && res.width === 852 && res.height === 480, JSON.stringify(res).slice(0, 300));
+    assert(r.before === r.after, '지금 작업이 바뀜');
+    return `${files.join(' · ')} · ${checkVideo(path.join(outDir, '요청1.mp4'), { w: 852, h: 480, audio: true })}`;
+  });
   await test('PC 앱 오류 0건', async () => { assert(!errs.length, errs.join(' | ')); return '오류 없음'; });
   await app.evaluate(({ app }) => app.exit(0)).catch(() => {});
 }
 
 /* ------------------------------------------------------------------ 설치 파일 */
+/* ------------------------------------------------------------------ 자동화 연결 (작업 파일 → 영상, 명령줄) */
+async function automationSuite(F) {
+  group = '자동화 연결 (작업 파일 → 영상)';
+  const dir = path.join(OUT, 'jobs_cli'), inDir = path.join(dir, 'in'), outDir = path.join(dir, 'out');
+  fs.rmSync(dir, { recursive: true, force: true });
+  fs.mkdirSync(inDir, { recursive: true });
+  fs.copyFileSync(path.join(IMGS, 'product-1color.jpg'), path.join(inDir, 'photo.jpg'));
+  fs.copyFileSync(F('clip.mp4'), path.join(inDir, 'clip.mp4'));
+  fs.writeFileSync(path.join(inDir, 'news.json'), JSON.stringify({
+    title: '강서구 키즈카페 전국 우수 인증', subtitle: '11월 14일 · 서울 소식', aspect: '9:16',
+    scenes: [{ text: '서울형키즈카페 시립화곡점', image: 'photo.jpg', duration: 3 }, { text: '현장 영상', image: 'clip.mp4', duration: 3 }, { text: '전국 9곳만 선정', duration: 3 }, { text: '없는 사진', image: 'nope.jpg', duration: 2 }],
+    outro: '자세한 소식은 설명란 링크에서', music: { style: 'corp', meter: '4/4', bpm: 110, seed: 7 },
+    export: { quality: 720 }, upload: { hashtags: ['강서구', '키즈카페'], link: 'https://example.com/a/1', source: '시정일보' },
+  }));
+  fs.writeFileSync(path.join(inDir, 'waltz.json'), JSON.stringify({ title: '왈츠 테스트', aspect: '16:9', scenes: ['첫 문장', '둘째 문장'], music: { style: 'calm', meter: '3/4' }, export: { quality: 480, name: 'waltz-out' } }));
+  fs.writeFileSync(path.join(inDir, 'broken.json'), '{ 이건 JSON 이 아님');
+  let res = null, code = 0;
+  await test('명령줄 도구: 요청 폴더의 작업 파일 3개 처리 (정상 2 · 잘못된 파일 1)', async () => {
+    const r = spawnSync(process.execPath, [path.join(ROOT, 'tools', 'ttuk-make.js'), inDir, '-o', outDir, '--json'], { encoding: 'utf8', timeout: 600000 });
+    code = r.status;
+    res = JSON.parse(r.stdout.trim().split('\n').pop());
+    assert(Array.isArray(res) && res.length === 3, '결과 개수 ' + r.stdout.slice(0, 300) + r.stderr.slice(-300));
+    const bad = res.find(x => x.request === 'broken.json');
+    assert(bad && !bad.ok && /JSON/.test(bad.error), '잘못된 파일 처리 ' + JSON.stringify(bad));
+    assert(code === 1, '실패가 있으면 종료 코드 1 이어야 함: ' + code);
+    assert(fs.existsSync(path.join(outDir, 'broken.결과.json')), '실패 결과 파일 없음');
+    return `정상 ${res.filter(x => x.ok).length} · 실패 ${res.filter(x => !x.ok).length} (오류 안내: ${bad.error.slice(0, 40)}…)`;
+  });
+  await test('뉴스 쇼츠: 9:16 · 사진·영상·글자 장면 · 작곡 음악 · 업로드 문구 · 검수', async () => {
+    const n = res && res.find(x => x.request === 'news.json');
+    assert(n && n.ok, '실패: ' + JSON.stringify(n));
+    assert(n.qa && n.qa.ok, '검수 ' + JSON.stringify(n.qa));
+    assert(n.warnings.some(w => /nope\.jpg/.test(w)), '없는 사진 안내 없음');
+    assert(n.upload.hashtags === '#강서구 #키즈카페' && /example\.com/.test(n.upload.description) && /출처: 시정일보/.test(n.upload.description), '업로드 문구 ' + JSON.stringify(n.upload));
+    assert(/작곡/.test(n.summary), '음악 작곡 안 됨 ' + n.summary);
+    const file = path.join(outDir, 'news.mp4');
+    const v = checkVideo(file, { w: 720, h: 1280, duration: n.duration, audio: true });
+    const r = spawnSync('ffmpeg', ['-i', file, '-vn', '-af', 'volumedetect', '-f', 'null', '-']);
+    const mv = +(r.stderr.toString().match(/mean_volume: (-?[\d.]+) dB/) || [0, -99])[1];
+    assert(mv > -40, '음악 소리 없음 ' + mv);
+    return `${v} · 평균 소리 ${mv}dB · ${n.summary.trim()}`;
+  });
+  await test('가로 영상 · 3/4박자 · 파일 이름 지정', async () => {
+    const w = res && res.find(x => x.request === 'waltz.json');
+    assert(w && w.ok && w.file === 'waltz-out.mp4', JSON.stringify(w));
+    assert(/3\/4박자/.test(w.summary), w.summary);
+    return checkVideo(path.join(outDir, 'waltz-out.mp4'), { w: 852, h: 480, duration: w.duration, audio: true });
+  });
+}
+
 async function installerSuite() {
   group = '윈도우 설치 파일';
   const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
@@ -998,6 +1090,7 @@ ${groups.map(g => `<h2>${esc(g)}</h2><table>${results.filter(r => r.group === g)
     await functionalSuite(browser, url, F, 'PC 화면 (1440×900)', { viewport: { width: 1440, height: 900 } });
     await functionalSuite(browser, url, F, '휴대폰 화면 (Pixel 7 흉내, 터치)', Object.assign({}, devices['Pixel 7']));
   } finally { await browser.close(); }
+  await automationSuite(F);
   if (!process.env.SKIP_ELECTRON) await electronSuite(F);
   await installerSuite();
   srv.close();

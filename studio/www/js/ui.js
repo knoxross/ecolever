@@ -1090,7 +1090,7 @@ const ACTIONS = {
   overlay: () => { showTab('ovl'); },
   addSub: () => addSubOnStage(),
   fullscreen: () => toggleFullscreen(),
-  series: () => openSeries(), compress: () => openCompress(), schedule: () => openSchedule(), about: () => openAbout(),
+  series: () => openSeries(), compress: () => openCompress(), schedule: () => openSchedule(), autoLink: () => { $('#alFormat').textContent = JSON.stringify(SAMPLE_JOB, null, 2); $('#autoLinkModal').hidden = false; }, about: () => openAbout(),
   publish: () => openPublish(),
   enhanceAll: () => { state.clips.forEach(x => { if (x.kind === 'media') x.enhance = 0.6; }); changed(); refreshAll(); toast('모든 장면에 화질 향상(60%)을 적용했습니다'); },
 };
@@ -1135,6 +1135,8 @@ function bind() {
   bindStageSubs();
   $('#compressBtn').addEventListener('click', ACTIONS.compress);
   $('#scheduleBtn').addEventListener('click', ACTIONS.schedule);
+  $('#autoLinkBtn').addEventListener('click', ACTIONS.autoLink);
+  AutoLink.bind();
   $$('#steps .step[data-step="2"]').forEach(el => el.addEventListener('click', () => $('#cmdInput').focus()));
   bindAutomation();
   bindSubs();
@@ -1590,7 +1592,7 @@ function bindSchedule() {
     else if (b.dataset.j === 'toggle') Scheduler.update(id, { enabled: !j.enabled });
     else if (b.dataset.j === 'del' && confirm(`'${j.name}' 예약을 지울까요?`)) Scheduler.remove(id);
     renderJobs(); updateScheduleBadge();
-    window.native?.setKeepRunning?.(Scheduler.activeCount() > 0);
+    window.native?.setKeepRunning?.(Scheduler.activeCount() > 0 || AutoLink.config().on);
   });
 }
 

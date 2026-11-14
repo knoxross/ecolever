@@ -11,7 +11,7 @@ const BRAND = {
   companyEn: 'R&K GREENWORLD Co., Ltd.',
   copyright: '© (주)알앤케이그린월드. All rights reserved.',
   website: 'https://www.ecolever.co.kr',
-  version: '2.0.0',
+  version: '2.1.0',
 };
 
 const FEATURES = {
@@ -23,6 +23,8 @@ const FEATURES = {
   series: true,       // 📺 시리즈 (컨셉 그대로 새 편 만들기)
   compress: true,     // 📦 용량 줄이기
   schedule: true,     // ⏰ 예약 만들기
+  autolink: true,     // 🤖 자동화 연결 (작업 파일 → 영상, 다른 프로그램과 연결)
+  music: true,        // 🎼 음악 만들기 (직접 작곡)
   project: true,      // 💾 프로젝트 저장 / 열기
   qa: true,           // 🔍 저장 전후 자동 검수
 };
