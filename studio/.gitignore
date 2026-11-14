@@ -1,0 +1,15 @@
+node_modules/
+dist/
+www/vendor/
+www/fonts/
+android/app/build/
+android/build/
+android/.gradle/
+android/app/src/main/assets/public/
+android/capacitor-cordova-android-plugins/
+android/local.properties
+tests/.fixtures/
+tests/report/*.mp4
+tests/report/jobs_out/
+build/ffmpeg/
+tests/report/jobs_cli/

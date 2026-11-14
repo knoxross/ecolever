@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">영상뚝딱</string>
+    <string name="title_activity_main">영상뚝딱</string>
+    <string name="package_name">kr.co.ecolever.ttukttak</string>
+    <string name="custom_url_scheme">kr.co.ecolever.ttukttak</string>
+</resources>
