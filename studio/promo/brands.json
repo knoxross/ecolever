@@ -1,0 +1,110 @@
+{
+  "ecolever": {
+    "name": "ECOLEVER 에코레버",
+    "site": "https://www.ecolever.co.kr/",
+    "colors": {
+      "moss": "#3E5641",
+      "mossDeep": "#2F4332",
+      "paper": "#EFE9DC",
+      "clay": "#C0603C",
+      "brass": "#A8823C",
+      "tea": "#6E4527"
+    },
+    "assets": {
+      "logo": "assets/ecolever/logo.png",
+      "product1": "assets/ecolever/product-1color.jpg",
+      "product2": "assets/ecolever/product-2color.jpg",
+      "fiti": "assets/ecolever/doc-fiti-test.jpg",
+      "womenBiz": "assets/ecolever/doc-women-business.jpg",
+      "qrInstagram": "assets/ecolever/qr-instagram.png",
+      "site": [
+        "assets/ecolever/site-0.png",
+        "assets/ecolever/site-1.png",
+        "assets/ecolever/site-2.png",
+        "assets/ecolever/site-3.png",
+        "assets/ecolever/site-4.png"
+      ]
+    },
+    "audience": "서점·출판사, 전시회·컨퍼런스, 기업 행사·ESG 담당자, 공공기관·지자체 구매 담당자, 학교",
+    "tone": "차분하고 믿음직한 B2B. 과장 없이 근거(서류·재고·수량)로 말한다. 쉬운 말.",
+    "facts": [
+      "면·황마 혼방 친환경 에코백 대량 맞춤제작(로고 인쇄)",
+      "FITI 시험성적서 혼용률: 면 85.2% · 황마 10.9% · 레이온 3.9% → 모두 식물성(셀룰로스) 섬유, 플라스틱 섬유 0%",
+      "핵심 메시지: 잘 썩는 가방 — 식물성 섬유라 땅에서 분해됨 (분해 기간 숫자·'생분해 인증'은 성적서에 없으므로 말하지 않음)",
+      "여성기업 확인서 보유 ((주)알앤케이그린월드)",
+      "1칼라 실물 재고 보유 → 샘플 바로 확인 / 2칼라는 주문 즉시 생산",
+      "사이즈 40×37cm, 손잡이 40cm",
+      "로고 인쇄 없는 주문 100개부터, 로고 인쇄 10,000개부터",
+      "견적서·세금계산서 발행, 통신판매업 신고 완료",
+      "문의 02-6368-9989 · knox@ecolever.co.kr · ecolever.co.kr"
+    ],
+    "avoid": [
+      "'완전 친환경'·'탄소중립' 같은 근거 없는 주장",
+      "가격 숫자(견적마다 다름)",
+      "납기 일수 약속"
+    ],
+    "hashtags": [
+      "에코백",
+      "에코백제작",
+      "단체에코백",
+      "행사굿즈",
+      "기업굿즈",
+      "ESG굿즈",
+      "판촉물",
+      "친환경굿즈",
+      "에코레버"
+    ],
+    "model": "김국화 대표 — 영상 모델 출연 가능(초상권 문제 없음, 사용자 확인 2026-11-16). 사진·영상은 assets/ecolever/model/ 에 넣으면 사용"
+  },
+  "gmadang": {
+    "name": "지마당",
+    "site": "https://www.gmadang.com/",
+    "colors": {
+      "green": "#1E5A37",
+      "greenLight": "#2A8A50",
+      "accent": "#E8A33D",
+      "red": "#D93A2F",
+      "white": "#FFFFFF"
+    },
+    "assets": {
+      "logo": "assets/gmadang/icon-192.png",
+      "og": "assets/gmadang/og.png",
+      "site": [
+        "assets/gmadang/site-0.png",
+        "assets/gmadang/site-1.png",
+        "assets/gmadang/site-2.png",
+        "assets/gmadang/site-3.png",
+        "assets/gmadang/site-4.png"
+      ]
+    },
+    "audience": "서울 25개 구 주민 — 동네 소식이 궁금한 30~60대, 부모님 세대(큰 글자·쉬운 화면), 지원금·행사 정보를 찾는 사람",
+    "tone": "친근한 동네 신문. '우리 구', '오늘 아침', '놓치면 아쉬운'. 정치색 없이 생활 정보 중심.",
+    "facts": [
+      "서울 25개 구 구정소식을 매일 정리하는 AI 동네 신문",
+      "2026년 11월 15일 창간",
+      "웹·안드로이드·아이폰 앱",
+      "마당이(AI 안내원)가 소식을 읽어 줌 — 'AI 앵커 뉴스 브리핑', 자막과 함께",
+      "큰 글자 · 쉬운 화면 지원",
+      "관심 분야·지역(최대 5곳) 고르면 그 소식부터",
+      "모든 기사에 'AI 작성'과 원문 출처 표시",
+      "지원·복지 / 행사·교육 / 생활정보 / 동네 이야기 지면",
+      "운영 (주)알앤케이그린월드 · 발행·편집인 김국화 · gmadang.com"
+    ],
+    "avoid": [
+      "특정 정당·정치인 홍보",
+      "확인 안 된 기사 내용",
+      "AI가 쓴 사실을 숨기기"
+    ],
+    "hashtags": [
+      "지마당",
+      "동네신문",
+      "서울소식",
+      "우리구소식",
+      "구정소식",
+      "서울생활",
+      "지원금",
+      "동네소식"
+    ],
+    "model": "김국화 (발행·편집인) — 영상 출연 가능(사용자 확인 2026-11-16)"
+  }
+}

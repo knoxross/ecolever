@@ -66,6 +66,9 @@ async function collectFiles(job, baseDir, tmp) {
   const refs = new Set();
   (job.scenes || []).forEach(s => { const r = s && typeof s === 'object' && (s.image || s.photo || s.video); if (r) refs.add(String(r)); });
   if (job.music && job.music.file) refs.add(String(job.music.file));
+  const lg = typeof job.logo === 'string' ? job.logo : job.logo && job.logo.image; if (lg) refs.add(String(lg));
+  if (job.endcard && job.endcard.image) refs.add(String(job.endcard.image));
+  (job.overlays || []).forEach(o => { if (o && o.type === 'image' && o.image) refs.add(String(o.image)); });
   const map = {}; let k = 0;
   for (const ref of refs) {
     try {

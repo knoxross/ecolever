@@ -1,0 +1,130 @@
+{
+  "brand": "gmadang",
+  "topic": "창간 소개 — 서울 사는데 우리 구 소식 어디서 봐요?",
+  "trend": "질문형 훅 + 실제 앱 화면 스크롤(휴대폰 틀) + '이거 모르면 손해' 정보형",
+  "aspect": "9:16",
+  "mood": "energetic",
+  "scenes": [
+    {
+      "text": "서울 사는 분,\n우리 구 소식\n어디서 보세요?",
+      "emoji": "📰",
+      "bg": [
+        "#1E5A37",
+        "#2A8A50"
+      ],
+      "bgStyle": "grid",
+      "fx": "punch",
+      "duration": 2.4,
+      "transition": "none"
+    },
+    {
+      "text": "11월 15일 창간\n동네 신문 '지마당'",
+      "sub": "서울 25개 구 구정소식",
+      "image": "../../assets/gmadang/site-0.png",
+      "fit": "phone",
+      "bg": [
+        "#1E5A37",
+        "#2A8A50"
+      ],
+      "bgStyle": "aurora",
+      "textPos": "top",
+      "sticker": "🎉",
+      "duration": 3.0
+    },
+    {
+      "text": "오늘 꼭 알아야 할 3가지\n매일 아침 정리",
+      "image": "../../assets/gmadang/site-1.png",
+      "fit": "phone",
+      "motion": "scrollDown",
+      "bg": [
+        "#2A8A50",
+        "#1E5A37"
+      ],
+      "bgStyle": "aurora",
+      "textPos": "top",
+      "duration": 3.2
+    },
+    {
+      "text": "지원·복지 마감일까지\n한눈에",
+      "sub": "D-day로 놓치지 않게",
+      "image": "../../assets/gmadang/site-2.png",
+      "fit": "phone",
+      "motion": "scrollDown",
+      "bg": [
+        "#E8A33D",
+        "#B9741E"
+      ],
+      "bgStyle": "bokeh",
+      "textPos": "top",
+      "sticker": "⏰",
+      "duration": 3.0,
+      "transition": "slide"
+    },
+    {
+      "text": "AI 마당이가 읽어 주고\n큰 글자 화면도 OK",
+      "sub": "부모님께도 보여 드리세요",
+      "image": "../../assets/gmadang/site-0.png",
+      "fit": "phone",
+      "motion": "scrollDown",
+      "bg": [
+        "#1E5A37",
+        "#2A8A50"
+      ],
+      "bgStyle": "aurora",
+      "textPos": "top",
+      "sticker": "👵",
+      "duration": 3.0
+    },
+    {
+      "text": "우리 구 고르고\n매일 아침 받아보기",
+      "sub": "웹 · 안드로이드 · 아이폰",
+      "emoji": "📍",
+      "bg": [
+        "#D93A2F",
+        "#8E1F18"
+      ],
+      "bgStyle": "rays",
+      "duration": 2.6,
+      "transition": "zoom"
+    }
+  ],
+  "outro": "gmadang.com",
+  "outro_sub": "지마당 — 서울 25개 구 동네 신문",
+  "logo": {
+    "image": "../../assets/gmadang/icon-192.png",
+    "pos": "tr",
+    "size": 0.1
+  },
+  "endcard": {
+    "image": "../../assets/gmadang/og.png",
+    "size": 0.62
+  },
+  "music": {
+    "style": "bright",
+    "meter": "4/4",
+    "bpm": 120,
+    "seed": 1115
+  },
+  "upload": {
+    "title": "서울 사는데 우리 구 소식, 어디서 보세요? | 지마당 창간",
+    "hashtags": [
+      "지마당",
+      "동네신문",
+      "서울소식",
+      "우리구소식",
+      "구정소식",
+      "서울생활",
+      "지원금",
+      "창간"
+    ],
+    "link": "https://www.gmadang.com/"
+  },
+  "card": {
+    "bg": [
+      "#1E5A37",
+      "#2A8A50"
+    ],
+    "bgStyle": "aurora",
+    "color": "#FFFFFF"
+  }
+}

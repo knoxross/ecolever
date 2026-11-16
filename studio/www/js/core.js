@@ -40,6 +40,8 @@ const MOTIONS = [
   { v: 'panLeft', label: '왼쪽으로 이동' },
   { v: 'panRight', label: '오른쪽으로 이동' },
   { v: 'panUp', label: '위로 이동' },
+  { v: 'scrollDown', label: '아래로 스크롤 (화면 캡처용)' },
+  { v: 'scrollUp', label: '위로 스크롤' },
 ];
 const TEXT_ANIMS = [
   { v: 'none', label: '없음' },
@@ -544,7 +546,9 @@ function drawClipBase(clip, local) {
         const fcss = window.clipColorCss ? clipColorCss(clip) : filterCss(S.filter);
         const sharp = Math.max(clip.enhance || 0, (clip.adj && clip.adj.sharpen) || 0);
         const enh = sharp ? { m, amount: sharp } : null;
-        if (clip.fit === 'blur') {
+        if (clip.fit === 'phone' || clip.fit === 'card') {
+          drawShowcase(clip, local, src, sw, sh, p, fcss);
+        } else if (clip.fit === 'blur') {
           ctx.save();
           ctx.filter = `blur(${Math.round(Math.min(W, H) * 0.035)}px) brightness(0.65)` + (fcss !== 'none' ? ' ' + fcss : '');
           drawFit(src, sw, sh, 'cover', 1.12, 0, 0);
@@ -625,6 +629,52 @@ function drawTextBackground(clip, t) {
   const v = ctx.createRadialGradient(W / 2, H / 2, M * 0.3, W / 2, H / 2, Math.hypot(W, H) * 0.6);
   v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,0.28)');
   ctx.fillStyle = v; ctx.fillRect(0, 0, W, H);
+}
+/* ---------- 홍보물용 화면: 📱 휴대폰 화면 틀 · 🃏 제품 카드 (브랜드 색 배경 위) ---------- */
+function drawShowcase(clip, local, src, sw, sh, p, fcss) {
+  const W = canvas.width, H = canvas.height, M = Math.min(W, H);
+  drawTextBackground(clip.bgColor2 || clip.bgStyle !== 'gradient' ? clip : Object.assign({}, clip, { bgColor2: mixHex(clip.bgColor || '#2f4332', '#000000', 0.45) }), local);
+  const enter = clamp(local / 0.45, 0, 1), ease = 1 - Math.pow(1 - enter, 3);
+  const float = Math.sin(local * 1.6) * M * 0.006;
+  ctx.save();
+  if (clip.fit === 'phone') {
+    const capTop = clip.textPos === 'top' && (clip.text || '').trim();
+    const lines = capTop ? (clip.text || '').split('\n').length + ((clip.sub || '').trim() ? 1 : 0) : 0;
+    const phH = lines >= 3 ? 0.68 : lines === 2 ? 0.72 : capTop ? 0.76 : 0.8;
+    const ph = Math.min(H * (H > W ? phH : (capTop ? 0.74 : 0.88)), W * 0.9 / 0.49), pw = ph * 0.49, r = pw * 0.13, bez = pw * 0.035;
+    const cx = W / 2, cy = H * (H > W ? (capTop ? 0.97 - phH / 2 - 0.03 : 0.47) : (capTop ? 0.56 : 0.5)) + float + (1 - ease) * H * 0.08;
+    ctx.translate(cx, cy); ctx.scale(0.9 + 0.1 * ease, 0.9 + 0.1 * ease); ctx.globalAlpha = ease;
+    ctx.shadowColor = 'rgba(0,0,0,0.45)'; ctx.shadowBlur = M * 0.06; ctx.shadowOffsetY = M * 0.02;
+    ctx.fillStyle = '#111317'; ctx.beginPath(); ctx.roundRect(-pw / 2, -ph / 2, pw, ph, r); ctx.fill();
+    ctx.shadowColor = 'transparent';
+    ctx.strokeStyle = 'rgba(255,255,255,0.18)'; ctx.lineWidth = Math.max(1, M * 0.003); ctx.stroke();
+    const sx = -pw / 2 + bez, sy = -ph / 2 + bez, sW = pw - bez * 2, sH = ph - bez * 2;
+    ctx.beginPath(); ctx.roundRect(sx, sy, sW, sH, r * 0.8); ctx.clip();
+    const k = sW / sw, ih = sh * k;
+    const e = easeInOut(clamp((p - 0.12) / 0.8, 0, 1));
+    const room = Math.max(0, ih - sH);
+    const off = clip.motion === 'scrollDown' ? room * e : clip.motion === 'scrollUp' ? room * (1 - e) : 0;
+    ctx.filter = fcss;
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(sx, sy, sW, sH);
+    ctx.drawImage(src, sx, sy - off + (ih < sH ? (sH - ih) / 2 : 0), sW, ih);
+    ctx.filter = 'none';
+    // 카메라 구멍
+    ctx.fillStyle = '#111317'; ctx.beginPath(); ctx.roundRect(-pw * 0.13, sy + bez * 0.6, pw * 0.26, bez * 1.6, bez); ctx.fill();
+  } else {
+    const box = Math.min(W, H) * 0.72, ar = sw / sh;
+    let bw = ar >= 1 ? box : box * ar, bh = ar >= 1 ? box / ar : box;
+    if (ar > 1.6) { bw = W * 0.84; bh = bw / ar; if (bh < H * 0.22) { bh = Math.min(H * 0.3, bh * 1.6); bw = bh * ar; if (bw > W * 0.92) { bw = W * 0.92; bh = bw / ar; } } }
+    const pad = M * 0.035;
+    const z = 0.94 + 0.06 * ease + 0.03 * easeInOut(p);
+    const cx = W / 2, cy = H * (H > W ? 0.44 : 0.47) + float + (1 - ease) * H * 0.05;
+    ctx.translate(cx, cy); ctx.scale(z, z); ctx.rotate((1 - ease) * -0.05); ctx.globalAlpha = ease;
+    ctx.shadowColor = 'rgba(0,0,0,0.35)'; ctx.shadowBlur = M * 0.05; ctx.shadowOffsetY = M * 0.018;
+    ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.roundRect(-bw / 2 - pad, -bh / 2 - pad, bw + pad * 2, bh + pad * 2, M * 0.035); ctx.fill();
+    ctx.shadowColor = 'transparent';
+    ctx.beginPath(); ctx.roundRect(-bw / 2, -bh / 2, bw, bh, M * 0.02); ctx.clip();
+    ctx.filter = fcss; ctx.drawImage(src, -bw / 2, -bh / 2, bw, bh); ctx.filter = 'none';
+  }
+  ctx.restore();
 }
 function motionAt(kind, p) {
   const e = easeInOut(p) * 0.6 + p * 0.4;

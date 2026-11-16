@@ -50,6 +50,23 @@ function normalizeJob(raw) {
     if (typeof s === 'string') { if (s.trim()) job.scenes.push({ text: str(s), image: '', duration: 0, narration: '' }); continue; }
     if (!s || typeof s !== 'object') continue;
     const sc = { text: str(s.text || s.caption, 200), image: str(s.image || s.photo || s.video, 2000), duration: clamp(+s.duration || 0, 0, 60), narration: str(s.narration, 400) };
+    // 장면별 꾸미기 (홍보물용): 효과 · 필터 · 전환 · 움직임 · 이모지 · 스티커 · 배경색 · 글자색 · 강조색
+    const look = {};
+    if (EFFECTS.some(f => f.v === s.fx)) { look.fx = s.fx; look.fxAmt = clamp(+s.fxAmt || 0.6, 0, 1); }
+    if (FILTERS.some(f => f.v === s.filter)) look.filter = s.filter === 'none' ? '' : s.filter;
+    if (TRANSITIONS.some(t => t.v === s.transition)) look.transition = s.transition;
+    if (MOTIONS.some(m => m.v === s.motion)) look.motion = s.motion;
+    if (typeof s.emoji === 'string') look.emoji = s.emoji.slice(0, 8);
+    if (typeof s.sticker === 'string' && s.sticker) look.sticker = s.sticker.slice(0, 8);
+    if (Array.isArray(s.bg) && /^#[0-9a-f]{6}$/i.test(s.bg[0] || '')) { look.bgColor = s.bg[0]; look.bgColor2 = /^#[0-9a-f]{6}$/i.test(s.bg[1] || '') ? s.bg[1] : ''; }
+    if (BG_STYLES.some(b => b.v === s.bgStyle)) look.bgStyle = s.bgStyle;
+    if (/^#[0-9a-f]{6}$/i.test(s.color || '')) look.textColor = s.color;
+    if (typeof s.sub === 'string') look.sub = s.sub.slice(0, 120);
+    if (['cover', 'contain', 'blur', 'phone', 'card'].includes(s.fit)) look.fit = s.fit;
+    if (['top', 'center', 'bottom'].includes(s.textPos)) look.textPos = s.textPos;
+    if (TEXT_ANIMS.some(a => a.v === s.textAnim)) look.textAnim = s.textAnim;
+    if (+s.fontSize > 10) look.fontSize = clamp(+s.fontSize, 20, 200);
+    sc.look = look;
     if (sc.text || sc.image) job.scenes.push(sc);
   }
   if (!job.title && !job.scenes.length) throw new Error('작업 파일에 제목(title)이나 장면(scenes)이 하나도 없습니다.');
@@ -66,6 +83,21 @@ function normalizeJob(raw) {
     };
   }
   const ex = raw.export && typeof raw.export === 'object' ? raw.export : {};
+  // 제목·마무리 화면 색 (브랜드 색)
+  const cd = raw.card && typeof raw.card === 'object' ? raw.card : null;
+  job.card = null;
+  if (cd && Array.isArray(cd.bg) && /^#[0-9a-f]{6}$/i.test(cd.bg[0] || '')) job.card = { bgColor: cd.bg[0], bgColor2: /^#[0-9a-f]{6}$/i.test(cd.bg[1] || '') ? cd.bg[1] : cd.bg[0], bgStyle: BG_STYLES.some(b => b.v === cd.bgStyle) ? cd.bgStyle : 'aurora', textColor: /^#[0-9a-f]{6}$/i.test(cd.color || '') ? cd.color : '#ffffff' };
+  // 로고(워터마크) · 끝 화면 그림(QR 등) · 자유 겹치기
+  const lg = typeof raw.logo === 'string' ? { image: raw.logo } : (raw.logo && typeof raw.logo === 'object' ? raw.logo : null);
+  job.logo = lg && lg.image ? { image: str(lg.image, 2000), pos: ['tl', 'tr', 'bl', 'br'].includes(lg.pos) ? lg.pos : 'tr', size: clamp(+lg.size || 0.16, 0.05, 0.4) } : null;
+  const ec = raw.endcard && typeof raw.endcard === 'object' ? raw.endcard : null;
+  job.endcard = ec && (ec.image || ec.text) ? { image: str(ec.image, 2000), text: str(ec.text, 60), size: clamp(+ec.size || 0.32, 0.1, 0.7) } : null;
+  job.overlays = (Array.isArray(raw.overlays) ? raw.overlays : []).slice(0, 30).filter(o => o && typeof o === 'object' && ['text', 'sticker', 'image'].includes(o.type)).map(o => ({
+    type: o.type, text: str(o.text, 120), image: str(o.image, 2000), start: Math.max(0, +o.start || 0), end: +o.end || 0,
+    x: clamp(+o.x || 0.5, 0, 1), y: clamp(+o.y || 0.3, 0, 1), w: clamp(+o.w || 0.3, 0.03, 1),
+    tpl: TEXT_TPLS.some(t => t.v === o.tpl) ? o.tpl : 'basic', color: /^#[0-9a-f]{6}$/i.test(o.color || '') ? o.color : '#ffffff',
+    anim: OV_ANIMS.some(a => a.v === o.anim) ? o.anim : 'pop',
+  }));
   job.export = {
     quality: [480, 720, 1080, 1440, 2160].includes(+ex.quality) ? +ex.quality : 1080,
     fps: [24, 25, 30, 50, 60].includes(+ex.fps) ? +ex.fps : 30,
@@ -112,13 +144,75 @@ async function buildFromJob(job, getFile, onStatus) {
     outro: job.outro ? { text: job.outro, sub: job.outroSub } : null,
     clips: job.scenes.map((sc, i) => ({ media: mediaIdx[i], caption: sc.text, narration: sc.narration, duration: sc.duration || undefined, motion: i % 2 ? 'zoomOut' : 'zoomIn' })),
     music: job.music !== false,
+    card_style: job.card || undefined,
   };
   if (!plan.clips.length && plan.title) plan.clips.push({ media: -1, caption: plan.title.text, duration: 3 });
-  // 4) 작곡은 장면 길이가 정해진 뒤 (길이 맞춤)
-  let summary = applyPlan(plan);
+  // 4) 작곡을 먼저 해 두면 장면 바뀜이 음악 박자에 맞춰짐 (자동 편집의 박자 맞춤)
+  let composed = false;
   if (job.music && !S.bgmId) {
     onStatus?.('🎼 배경음악 작곡 중…');
-    await addComposedMusic({ ...job.music, seconds: Math.max(8, totalDuration()), drums: true, bass: true, chords: true, melody: true });
+    const est = job.scenes.reduce((a, sc) => a + (sc.duration || 2.6), 0) + (plan.title ? 1.4 : 0) + (plan.outro ? 2.8 : 0) + 3;
+    await addComposedMusic({ ...job.music, seconds: Math.max(8, est), drums: true, bass: true, chords: true, melody: true });
+    composed = true;
+  }
+  let summary = applyPlan(plan);
+  // 3-1) 장면별 꾸미기 적용 (제목·마무리 화면을 뺀 장면을 순서대로 맞춤)
+  {
+    let list = state.clips.slice();
+    if (plan.outro && list.length > 1) list.pop();
+    if (plan.title && list[0] && list[0].kind === 'text' && list[0].text === plan.title.text && list.length > job.scenes.filter(sc => sc.text || sc.image).length) list.shift();
+    const scenes = job.scenes.filter((sc, i) => sc.text || mediaIdx[i] >= 0);
+    scenes.forEach((sc, k) => {
+      const c = list[k]; if (!c || !sc.look) return;
+      const { sticker, ...rest } = sc.look;
+      if (c.kind !== 'text') { delete rest.emoji; if (!['phone', 'card'].includes(rest.fit || c.fit)) { delete rest.bgColor; delete rest.bgColor2; delete rest.bgStyle; } }
+      else delete rest.fit;
+      if (k === 0 && !plan.title) delete rest.transition;
+      Object.assign(c, rest);
+      // 카드·휴대폰 화면 위 설명은 크게 (훅이 잘 보이게)
+      if (c.kind !== 'text' && ['phone', 'card'].includes(c.fit) && !rest.fontSize) c.fontSize = Math.round(c.fontSize * 1.3);
+      if (sticker) c._jobSticker = sticker;
+    });
+  }
+  // 3-2) 로고 · 끝 화면 · 겹치기 · 스티커 (시간은 장면이 정해진 뒤에)
+  const lay = layout();
+  if (job.logo) {
+    const f = await getFile(job.logo.image).catch(() => null);
+    const m = f ? (await loadFiles([f])).added[0] : null;
+    if (m && m.type === 'image') { m.role = 'logo'; Object.assign(S, { logoId: m.id, logoPos: job.logo.pos, logoSize: job.logo.size }); }
+    else warn.push(`로고 파일을 찾지 못함(${job.logo.image})`);
+  }
+  for (const L of lay) if (L.clip._jobSticker) { addOverlay({ type: 'sticker', text: L.clip._jobSticker, start: L.start + 0.15, end: L.end - 0.05, w: 0.18, x: 0.84, y: L.clip.kind === 'text' ? 0.2 : 0.42, anim: 'pop' }); delete L.clip._jobSticker; }
+  if (job.endcard && lay.length) {
+    const last = lay[lay.length - 1];
+    if (job.endcard.image) {
+      const f = await getFile(job.endcard.image).catch(() => null);
+      const m = f ? (await loadFiles([f])).added[0] : null;
+      if (m && m.type === 'image') addOverlay({ type: 'image', mediaId: m.id, start: last.start + 0.2, end: last.end, w: job.endcard.size, x: 0.5, y: 0.72, anim: 'pop' });
+      else warn.push(`끝 화면 그림을 찾지 못함(${job.endcard.image})`);
+    }
+    if (job.endcard.text) addOverlay({ type: 'text', text: job.endcard.text, start: last.start + 0.3, end: last.end, w: 0.22, x: 0.5, y: job.endcard.image ? 0.9 : 0.75, tpl: 'basic', color: '#ffffff', anim: 'fade' });
+  }
+  const total = totalDuration();
+  for (const o of job.overlays) {
+    const ov = { type: o.type, text: o.text, start: Math.min(o.start, Math.max(0, total - 0.3)), end: o.end > o.start ? Math.min(o.end, total) : Math.min(total, o.start + 3), x: o.x, y: o.y, w: o.w, tpl: o.tpl, color: o.color, anim: o.anim };
+    if (o.type === 'image') {
+      const f = await getFile(o.image).catch(() => null);
+      const m = f ? (await loadFiles([f])).added[0] : null;
+      if (!m) { warn.push(`겹치기 그림을 찾지 못함(${o.image})`); continue; }
+      ov.mediaId = m.id;
+    }
+    addOverlay(ov);
+  }
+  selOverlayId = null;
+  if (composed) {
+    // 장면이 예상보다 길어졌으면 길이에 맞춰 다시 작곡 (같은 곡 번호 → 같은 느낌)
+    const bgm = mediaById(S.bgmId);
+    if (!bgm || bgm.duration < totalDuration() + 0.5) {
+      const old = bgm; S.bgmId = '';
+      await addComposedMusic({ ...job.music, seconds: totalDuration() + 1, drums: true, bass: true, chords: true, melody: true });
+      if (old) { state.media = state.media.filter(m => m !== old); URL.revokeObjectURL(old.url); }
+    }
     summary += ` · 🎼 ${job.music.meter}박자 ${job.music.bpm}BPM 작곡`;
   }
   if (job.music && job.music.volume != null) S.bgmVolume = job.music.volume;

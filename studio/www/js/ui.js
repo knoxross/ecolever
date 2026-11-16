@@ -314,7 +314,7 @@ function renderClipPanel() {
     ${c.kind === 'media' ? `
       <div class="row2">
         <div class="field"><label>화면 맞춤</label>
-          <select data-k="fit">${opt([{ v: 'cover', label: '꽉 채우기' }, { v: 'contain', label: '전체 보이기' }, { v: 'blur', label: '전체 + 흐린 배경' }], c.fit)}</select></div>
+          <select data-k="fit">${opt([{ v: 'cover', label: '꽉 채우기' }, { v: 'contain', label: '전체 보이기' }, { v: 'blur', label: '전체 + 흐린 배경' }, { v: 'phone', label: '📱 휴대폰 화면 틀 (앱·사이트 캡처)' }, { v: 'card', label: '🃏 제품 카드 (색 배경 위)' }], c.fit)}</select></div>
         <div class="field"><label>움직임</label><select data-k="motion">${opt(MOTIONS, c.motion)}</select></div>
       </div>
       <div class="field" data-feature="enhance"><label>✨ 화질 향상 (밝기·선명도·노이즈) <output>${Math.round(c.enhance * 100)}%</output></label><input type="range" data-k="enhance" min="0" max="1" step="0.05" value="${c.enhance}"></div>
