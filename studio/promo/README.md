@@ -29,6 +29,16 @@
    - 사용자 PC 저장 위치: 에코레버 → `C:\Work\ecolever\홍보동영상`, 지마당 → `C:\Work\gmadang\지마당 동영상홍보`. PC 폴더 연결이 되면 그곳에 저장한다.
    - `history.json` 에 기록하고, 커밋·푸시한다.
 
+## 화면 원칙 — 실사·영화 같은 고퀄리티 (2026-11-16 사용자 요청)
+- 만화·그림·그래픽 느낌 말고 **실제 영상·실제 화면처럼**.
+- 소재 우선순위:
+  1. 실제 촬영 영상·사진 (`assets/<브랜드>/footage/`, `model/` 김국화 대표)
+  2. AI 실사 영상·사진 (구글 키가 있을 때 Veo·Imagen, 'photorealistic, cinematic, 35mm' 지시)
+  3. 실제 사이트 화면 캡처
+- 이모지·스티커·움직이는 그래픽 배경(aurora·bokeh·rays·grid)은 쓰지 않거나 최소로 쓴다.
+- 글자는 영화 자막처럼 작고 단정하게. 영상 색감은 필름 톤으로(filter: film·warm, fx: grain·cinema·leak 약하게).
+- 화면 전환: fade·blur 위주. 실사 장면은 천천히 확대·이동(켄번스).
+
 ## 영상뚝딱으로 쓰는 홍보물 기법
 - `fit: "phone"` + `motion: "scrollDown"`: 사이트·앱 화면을 휴대폰 틀 안에서 스크롤 (`assets/*/site-*.png`)
 - `fit: "card"`: 제품 사진을 브랜드 색 배경 위 카드로 (흰 배경 제품 사진에 좋음)
