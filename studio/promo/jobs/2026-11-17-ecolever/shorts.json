@@ -1,0 +1,176 @@
+{
+  "aspect": "9:16",
+  "mood": "luxury",
+  "scenes": [
+    {
+      "text": "이 가방,\n버려지면\n어떻게 될까요?",
+      "bg": [
+        "#14110E",
+        "#14110E"
+      ],
+      "bgStyle": "solid",
+      "font": "serif",
+      "color": "#EFE9DC",
+      "fx": "grain",
+      "fxAmt": 0.35,
+      "textAnim": "fade",
+      "duration": 2.6,
+      "transition": "none",
+      "energy": 1,
+      "hit": false
+    },
+    {
+      "text": "ECOLEVER 에코백",
+      "image": "../../assets/ecolever/product-1color.jpg",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "filter": "cine",
+      "fx": "grain",
+      "fxAmt": 0.3,
+      "font": "serif",
+      "textBg": true,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 2.8,
+      "transition": "fade",
+      "energy": 2,
+      "hit": true,
+      "fontSize": 80
+    },
+    {
+      "text": "플라스틱 섬유가 아니라",
+      "bg": [
+        "#14110E",
+        "#14110E"
+      ],
+      "bgStyle": "solid",
+      "font": "serif",
+      "color": "#EFE9DC",
+      "fx": "grain",
+      "fxAmt": 0.35,
+      "textAnim": "fade",
+      "duration": 2.2,
+      "transition": "fade",
+      "energy": 1
+    },
+    {
+      "text": "면 · 황마 · 레이온",
+      "sub": "FITI 시험성적서 혼용률 85.2 · 10.9 · 3.9 %",
+      "image": "../../assets/ecolever/doc-fiti-test.jpg",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "filter": "cine",
+      "fx": "grain",
+      "fxAmt": 0.3,
+      "font": "serif",
+      "textBg": true,
+      "textPos": "top",
+      "duration": 3,
+      "transition": "fade",
+      "energy": 1,
+      "fontSize": 80
+    },
+    {
+      "text": "식물성 섬유 100%\n그래서, 잘 썩습니다",
+      "sub": "플라스틱 섬유 0% · FITI 시험성적서",
+      "bg": [
+        "#2F4332",
+        "#14110E"
+      ],
+      "bgStyle": "gradient",
+      "font": "serif",
+      "color": "#FFFFFF",
+      "fx": "grain",
+      "fxAmt": 0.35,
+      "textAnim": "up",
+      "duration": 3,
+      "transition": "fade",
+      "energy": 3,
+      "hit": true,
+      "musicStop": true
+    },
+    {
+      "text": "행사가 끝나도\n일상에서 다시 드는 가방",
+      "image": "../../assets/ecolever/product-2color.jpg",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "filter": "cine",
+      "fx": "grain",
+      "fxAmt": 0.3,
+      "font": "serif",
+      "textBg": true,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3,
+      "transition": "fade",
+      "energy": 2,
+      "fontSize": 80
+    },
+    {
+      "text": "로고 없이 100개부터\n로고 인쇄는 1만 개부터",
+      "image": "../../assets/ecolever/site-0.png",
+      "fit": "phone",
+      "motion": "scrollDown",
+      "bg": [
+        "#2F4332",
+        "#14110E"
+      ],
+      "bgStyle": "gradient",
+      "filter": "cine",
+      "font": "serif",
+      "textPos": "top",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3
+    }
+  ],
+  "outro": "ecolever.co.kr",
+  "outro_sub": "단체 에코백 견적 · 02-6368-9989",
+  "card": {
+    "bg": [
+      "#14110E",
+      "#2F4332"
+    ],
+    "bgStyle": "gradient",
+    "color": "#EFE9DC"
+  },
+  "logo": {
+    "image": "../../assets/ecolever/logo.png",
+    "pos": "tr",
+    "size": 0.1
+  },
+  "endcard": {
+    "image": "../../assets/ecolever/qr-instagram.png",
+    "text": "QR · 인스타그램",
+    "size": 0.2
+  },
+  "music": {
+    "style": "corp",
+    "meter": "4/4",
+    "bpm": 96,
+    "seed": 1117
+  },
+  "upload": {
+    "title": "이 가방, 버려지면 어떻게 될까요? | 잘 썩는 에코백",
+    "hashtags": [
+      "에코백",
+      "잘썩는에코백",
+      "식물성섬유",
+      "친환경굿즈",
+      "단체에코백",
+      "행사굿즈",
+      "ESG굿즈",
+      "에코레버"
+    ],
+    "link": "https://www.ecolever.co.kr/"
+  },
+  "emoji": false,
+  "platform": "shorts",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 9.5,
+    "name": "2026-11-17-ecolever-shorts"
+  }
+}

@@ -58,6 +58,7 @@ const FILTERS = [
   { v: 'film', label: '빈티지 필름', css: 'sepia(0.4) contrast(0.95) brightness(1.05) saturate(0.85)' },
   { v: 'bw', label: '흑백', css: 'grayscale(1) contrast(1.12)' },
   { v: 'soft', label: '부드럽게', css: 'brightness(1.06) contrast(0.92) saturate(0.95)' },
+  { v: 'cine', label: '영화 색감', css: 'contrast(1.1) saturate(0.88) sepia(0.14) brightness(0.97)' },
 ];
 const filterCss = v => FILTERS.find(f => f.v === v)?.css || 'none';
 

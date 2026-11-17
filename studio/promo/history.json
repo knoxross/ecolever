@@ -1,4 +1,33 @@
 [
-  { "date": "2026-11-16", "brand": "ecolever", "topic": "연말 행사 굿즈 담당자 POV — 잘 썩는 에코백(식물성 섬유 100%) + 서류로 증명", "trend": "POV 훅 + 체크리스트형 빠른 컷", "files": ["2026-11-16-ecolever-shorts.mp4", "2026-11-16-ecolever-feed.mp4"] },
-  { "date": "2026-11-16", "brand": "gmadang", "topic": "창간 소개 — 서울 사는데 우리 구 소식 어디서 봐요?", "trend": "질문형 훅 + 실제 앱 화면 스크롤", "files": ["2026-11-16-gmadang-shorts.mp4", "2026-11-16-gmadang-feed.mp4"] }
+  {
+    "date": "2026-11-16",
+    "brand": "ecolever",
+    "topic": "연말 행사 굿즈 담당자 POV — 잘 썩는 에코백(식물성 섬유 100%) + 서류로 증명",
+    "trend": "POV 훅 + 체크리스트형 빠른 컷",
+    "files": [
+      "2026-11-16-ecolever-shorts.mp4",
+      "2026-11-16-ecolever-feed.mp4"
+    ]
+  },
+  {
+    "date": "2026-11-16",
+    "brand": "gmadang",
+    "topic": "창간 소개 — 서울 사는데 우리 구 소식 어디서 봐요?",
+    "trend": "질문형 훅 + 실제 앱 화면 스크롤",
+    "files": [
+      "2026-11-16-gmadang-shorts.mp4",
+      "2026-11-16-gmadang-feed.mp4"
+    ]
+  },
+  {
+    "date": "2026-11-17",
+    "brand": "ecolever",
+    "topic": "이 가방, 버려지면 어떻게 될까? — 잘 썩는 가방, 식물성 섬유 100%",
+    "trend": "질문형 훅 + 폰 퍼스트 시네마틱(필름 톤·그레인·느린 이동) + 공개 직전 정적",
+    "music": "기업홍보(어쿠스틱 기타·피아노·현악) 96BPM 영상 맞춤: 1→2→1→1→3(정적 후 강조)→2→3→3",
+    "files": [
+      "2026-11-17-ecolever-shorts.mp4",
+      "2026-11-17-ecolever-feed.mp4"
+    ]
+  }
 ]
