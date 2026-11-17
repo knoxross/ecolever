@@ -1,6 +1,6 @@
 // 견적 문의가 도착할 메일 주소
 const INQUIRY_EMAIL = 'knox@ecolever.co.kr';
-const MOQ = 100;          // 로고 인쇄 없는 주문
+const MOQ = 50;           // 로고 인쇄 없는 주문
 const PRINT_MOQ = 10000;  // 로고 인쇄 주문
 
 /* ---- scroll reveal ---- */
@@ -186,7 +186,7 @@ document.addEventListener('click', function(e){
   function updateQtyHint(){
     const n = parseInt(qty.value, 10);
     qtyHint.textContent = minQty() === MOQ
-      ? '최소주문수량은 100개입니다. 그래도 문의는 보내실 수 있어요.'
+      ? '최소주문수량은 50개입니다. 그래도 문의는 보내실 수 있어요.'
       : '로고 인쇄는 10,000개부터 가능합니다. 그래도 문의는 보내실 수 있어요.';
     qtyHint.hidden = !(n > 0 && n < minQty());
   }
