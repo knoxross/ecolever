@@ -1,0 +1,150 @@
+{
+  "aspect": "9:16",
+  "mood": "clean",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "월 145만 원\n동작구가\n233명 뽑습니다",
+      "bg": [
+        "#123A24",
+        "#123A24"
+      ],
+      "bgStyle": "solid",
+      "color": "#FFFFFF",
+      "fontSize": 120,
+      "textAnim": "pop",
+      "fx": "punch",
+      "duration": 2.6,
+      "transition": "none",
+      "energy": 2,
+      "hit": true
+    },
+    {
+      "text": "동행일자리 233명 모집\n하루 최대 6시간 · 4대 보험",
+      "sub": "11월 27일까지 · 출처 동작구 발표(시정일보 보도)",
+      "image": "../../assets/gmadang/today-2026-11-18-1.png",
+      "fit": "phone",
+      "bg": [
+        "#1E5A37",
+        "#123A24"
+      ],
+      "bgStyle": "gradient",
+      "textPos": "top",
+      "duration": 3.6,
+      "transition": "fade",
+      "energy": 1
+    },
+    {
+      "text": "겨울 대책도 나왔어요\n저소득층 난방비 10만 원",
+      "sub": "경로당 15곳 한파쉼터 · 출처 동작구 발표",
+      "image": "../../assets/gmadang/today-2026-11-18-2.png",
+      "fit": "phone",
+      "motion": "scrollDown",
+      "bg": [
+        "#1E5A37",
+        "#123A24"
+      ],
+      "bgStyle": "gradient",
+      "textPos": "top",
+      "duration": 3.4,
+      "transition": "slideup",
+      "energy": 2
+    },
+    {
+      "text": "서울시 숏폼 공모\n총상금 1천만 원",
+      "sub": "'내가 소개하는 서울' · 11월 27일까지",
+      "bg": [
+        "#B9741E",
+        "#7A4A12"
+      ],
+      "bgStyle": "solid",
+      "color": "#FFFFFF",
+      "fontSize": 112,
+      "textAnim": "up",
+      "duration": 2.6,
+      "transition": "fade",
+      "energy": 2
+    },
+    {
+      "text": "이런 소식,\n매일 아침\n우리 구만 골라서",
+      "sub": "서울 25개 구 동네 신문 · 지마당",
+      "bg": [
+        "#1E5A37",
+        "#123A24"
+      ],
+      "bgStyle": "solid",
+      "color": "#FFFFFF",
+      "fontSize": 112,
+      "textAnim": "up",
+      "duration": 3,
+      "transition": "fade",
+      "energy": 3,
+      "hit": true,
+      "musicStop": true
+    },
+    {
+      "text": "마당이가 읽어 주고\n원문 출처까지",
+      "sub": "모든 기사에 'AI 작성' 표시",
+      "image": "../../assets/gmadang/today-2026-11-18-6.png",
+      "fit": "phone",
+      "motion": "scrollDown",
+      "bg": [
+        "#1E5A37",
+        "#123A24"
+      ],
+      "bgStyle": "gradient",
+      "textPos": "top",
+      "duration": 3,
+      "transition": "fade",
+      "energy": 3
+    }
+  ],
+  "outro": "gmadang.com",
+  "outro_sub": "우리 구 고르고 매일 아침 받아보기",
+  "card": {
+    "bg": [
+      "#123A24",
+      "#1E5A37"
+    ],
+    "bgStyle": "gradient",
+    "color": "#FFFFFF"
+  },
+  "logo": {
+    "image": "../../assets/gmadang/icon-192.png",
+    "pos": "tr",
+    "size": 0.09
+  },
+  "endcard": {
+    "image": "../../assets/gmadang/og.png",
+    "size": 0.62
+  },
+  "music": {
+    "style": "bright",
+    "meter": "4/4",
+    "bpm": 112,
+    "seed": 1118
+  },
+  "upload": {
+    "title": "월 145만 원, 동작구가 233명 뽑습니다 | 오늘의 우리 구 소식",
+    "hashtags": [
+      "지마당",
+      "동작구",
+      "동행일자리",
+      "서울소식",
+      "우리구소식",
+      "겨울대책",
+      "숏폼공모",
+      "동네신문"
+    ],
+    "link": "https://www.gmadang.com/",
+    "source": "동작구 발표(시정일보 보도) · 서울시 · 지마당 AI 작성"
+  },
+  "platform": "shorts",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 9.5,
+    "name": "2026-11-18-gmadang-shorts"
+  }
+}
