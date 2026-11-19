@@ -459,3 +459,10 @@ a{color:inherit;}
 
 /* 4칸(사이즈·최소수량·장당 가격·로고 인쇄): 2×2로 가지런히 */
 .split-stats{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 24px}
+
+/* 사이즈별 사양 표(라인업 추가 대비) */
+.size-table thead th{width:auto;background:var(--paper);font-size:12.5px}
+.size-table td{white-space:nowrap}
+.size-cap{caption-side:top;text-align:left;font-weight:800;font-size:15px;padding:0 0 8px}
+.size-cap small{font-weight:400;color:var(--body);font-size:12px;margin-left:6px}
+@media (max-width:600px){.size-table th,.size-table td{white-space:normal;padding:9px 8px;font-size:12.5px}}

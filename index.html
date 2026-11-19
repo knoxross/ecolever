@@ -134,7 +134,7 @@
   "https://www.ecolever.co.kr/imgs/product-1color.jpg",
   "https://www.ecolever.co.kr/imgs/product-2color.jpg"
  ],
- "description": "면 85.2%·황마 10.9% 혼방 원단(FITI 시험성적서), 40×37cm, 손잡이 40cm, 무게 약 70g. 최소주문 50개(인쇄 없음, 장당 1칼라 1,000원·2칼라 1,200원 부가세 별도), 로고 인쇄 10,000개부터. 서점·전시회·기업 행사·공공기관용.",
+ "description": "면 85.2%·황마 10.9% 혼방 원단(FITI 시험성적서), 40×37cm(손잡이 40cm, 약 70g) — 사이즈 추가 예정. 최소주문 50개(인쇄 없음, 장당 1칼라 1,000원·2칼라 1,200원 부가세 별도), 로고 인쇄 10,000개부터. 서점·전시회·기업 행사·공공기관용.",
  "material": "면·황마 혼방",
  "offers": {"@type": "AggregateOffer", "priceCurrency": "KRW", "lowPrice": "1100", "highPrice": "1320", "offerCount": "2", "availability": "https://schema.org/InStock", "seller": {"@type": "Organization", "name": "(주)알앤케이그린월드"}},
  "manufacturer": {
@@ -277,7 +277,7 @@
       <div class="feature-card">
         <div class="ico" aria-hidden="true">📏</div>
         <h4>일상에 맞는 크기</h4>
-        <p>가로 40cm × 세로 37cm, 손잡이 40cm, 무게 약 70g. 책이나 장본 물건을 넣고 어깨에 메기 좋은 크기입니다.</p>
+        <p>지금 라인업은 가로 40cm × 세로 37cm, 손잡이 40cm, 무게 약 70g입니다. 책이나 장본 물건을 넣고 어깨에 메기 좋은 크기입니다.</p>
       </div>
       <div class="feature-card">
         <div class="ico" aria-hidden="true">📄</div>
@@ -356,12 +356,22 @@
       <table class="spec-table">
         <caption class="sr-only">에코레버 기본 사양</caption>
         <tbody>
-          <tr><th scope="row">사이즈</th><td>가로 40cm × 세로 37cm, 손잡이 길이 40cm (1칼라·2칼라 공통)</td></tr>
-          <tr><th scope="row">무게</th><td>장당 약 70g</td></tr>
+          <tr><th scope="row">사이즈·무게</th><td>사이즈마다 다릅니다 — 아래 <a href="#size-table">사이즈별 사양</a> 표를 보세요</td></tr>
           <tr><th scope="row">원단</th><td>면·황마 혼방 (FITI 시험성적서 기준 면 85.2% · 황마 10.9%)</td></tr>
           <tr><th scope="row">맞춤 제작</th><td>브랜드 로고 인쇄 — 10,000개부터 (인쇄 방식·색상 수는 시안 확인 후 협의)</td></tr>
           <tr><th scope="row">최소주문수량</th><td>로고 인쇄 없는 주문 50개부터 · 로고 인쇄 주문은 1회 생산 10,000개부터</td></tr>
           <tr><th scope="row">가격</th><td><b>로고 인쇄 없음: 1칼라 장당 1,000원 · 2칼라 장당 1,200원</b> (부가세 별도, 수량과 관계없이 같은 가격) · 로고 인쇄는 별도 견적</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 사이즈별 사양: 라인업이 늘면 <tr> 한 줄만 더합니다(docs 기준: gmadang docs/brand-facts.md 라인업 표) -->
+    <div class="spec-table-wrap" id="size-table">
+      <table class="spec-table size-table">
+        <caption class="size-cap">사이즈별 사양 <small>사이즈가 늘어나면 이 표에 더합니다</small></caption>
+        <thead><tr><th scope="col">사이즈 (가로×세로)</th><th scope="col">손잡이</th><th scope="col">무게</th><th scope="col">칼라</th><th scope="col">상태</th></tr></thead>
+        <tbody>
+          <tr data-size="40x37"><td>40 × 37cm</td><td>40cm</td><td>장당 약 70g</td><td>1칼라 · 2칼라</td><td>판매 중</td></tr>
         </tbody>
       </table>
     </div>
@@ -702,6 +712,13 @@
               <option value="1칼라 (단색 원단)">1칼라 (단색 원단)</option>
               <option value="2칼라 (투톤 원단)">2칼라 (투톤 원단)</option>
               <option value="미정 / 상담 필요">미정 / 상담 필요</option>
+            </select>
+          </div>
+          <div class="inquiry-field">
+            <label for="inqSize">희망 사이즈</label>
+            <select id="inqSize" name="size">
+              <option value="40×37cm (약 70g)">40×37cm (약 70g)</option>
+              <option value="다른 사이즈 문의">다른 사이즈 문의</option>
             </select>
           </div>
           <div class="inquiry-field">
