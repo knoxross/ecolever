@@ -1,0 +1,161 @@
+{
+  "aspect": "9:16",
+  "mood": "luxury",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "오늘, 수능 끝.\n고3에게 줄\n졸업 선물은?",
+      "bg": [
+        "#14110E",
+        "#14110E"
+      ],
+      "bgStyle": "solid",
+      "font": "serif",
+      "color": "#EFE9DC",
+      "fx": "grain",
+      "fxAmt": 0.35,
+      "textAnim": "fade",
+      "duration": 2.8,
+      "transition": "none",
+      "energy": 1
+    },
+    {
+      "text": "서랍에 들어가는 기념품 말고\n매일 드는 가방",
+      "image": "../../assets/ecolever/product-1color.jpg",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "filter": "cine",
+      "fx": "grain",
+      "fxAmt": 0.3,
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 76,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3,
+      "transition": "fade",
+      "energy": 2,
+      "hit": true
+    },
+    {
+      "text": "교재·노트북 넣고\n캠퍼스까지",
+      "sub": "가로 40 × 세로 37cm · 손잡이 40cm",
+      "image": "../../assets/ecolever/site-3.png",
+      "fit": "phone",
+      "motion": "scrollDown",
+      "bg": [
+        "#2F4332",
+        "#14110E"
+      ],
+      "bgStyle": "gradient",
+      "filter": "cine",
+      "font": "serif",
+      "textPos": "top",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2
+    },
+    {
+      "text": "졸업 뒤 버려져도\n흙으로 돌아가는 가방",
+      "sub": "식물성 섬유 100% · FITI 시험성적서",
+      "image": "../../assets/ecolever/site-2.png",
+      "fit": "phone",
+      "motion": "scrollDown",
+      "bg": [
+        "#3E5641",
+        "#14110E"
+      ],
+      "bgStyle": "gradient",
+      "filter": "cine",
+      "font": "serif",
+      "textPos": "top",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2
+    },
+    {
+      "text": "학교 단체 주문\n로고 없이 100개부터",
+      "sub": "견적서 · 세금계산서 · 여성기업",
+      "bg": [
+        "#2F4332",
+        "#14110E"
+      ],
+      "bgStyle": "gradient",
+      "font": "serif",
+      "color": "#FFFFFF",
+      "fx": "grain",
+      "fxAmt": 0.35,
+      "textAnim": "up",
+      "duration": 3,
+      "transition": "fade",
+      "energy": 3,
+      "hit": true,
+      "musicStop": true
+    },
+    {
+      "text": "3년의 마지막 날\n오래 남는 선물로",
+      "image": "../../assets/ecolever/product-2color.jpg",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "filter": "cine",
+      "fx": "grain",
+      "fxAmt": 0.3,
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 76,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3,
+      "transition": "fade",
+      "energy": 3
+    }
+  ],
+  "outro": "ecolever.co.kr",
+  "outro_sub": "단체 견적 02-6368-9989",
+  "card": {
+    "bg": [
+      "#14110E",
+      "#2F4332"
+    ],
+    "bgStyle": "gradient",
+    "color": "#EFE9DC"
+  },
+  "logo": {
+    "image": "../../assets/ecolever/logo.png",
+    "pos": "tr",
+    "size": 0.1
+  },
+  "endcard": {
+    "image": "../../assets/ecolever/qr-instagram.png",
+    "text": "QR · 인스타그램",
+    "size": 0.2
+  },
+  "music": {
+    "style": "calm",
+    "meter": "4/4",
+    "bpm": 84,
+    "seed": 1119
+  },
+  "upload": {
+    "title": "수능 끝난 고3, 졸업 선물은 매일 드는 가방으로",
+    "hashtags": [
+      "수능끝",
+      "졸업선물",
+      "단체에코백",
+      "학교굿즈",
+      "에코백",
+      "잘썩는에코백",
+      "친환경굿즈",
+      "에코레버"
+    ],
+    "link": "https://www.ecolever.co.kr/"
+  },
+  "platform": "shorts",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 9.5,
+    "name": "2026-11-19-ecolever-shorts"
+  }
+}
