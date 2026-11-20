@@ -21,12 +21,18 @@ if (-not (Test-Path $netrc)) {
   $pw = $null
 }
 
-& curl.exe -s -S --netrc-file $netrc --list-only -m 30 "$hostUrl/" | Out-Null
+$rootList = & curl.exe -s -S --netrc-file $netrc --list-only -m 30 "$hostUrl/"
 if ($LASTEXITCODE -ne 0) {
   Remove-Item $netrc -Force
   Write-Host "FTP login failed (curl $LASTEXITCODE). Check the FTP ID/password in My Gabia and run again." -ForegroundColor Red
   return
 }
+# Gabia web hosting usually serves the site from the 'www' folder (some products: html, public_html). Upload there if it exists.
+$names = @($rootList -split "`r?`n" | ForEach-Object { ($_.Trim() -split '/')[-1] } | Where-Object { $_ })
+$webroot = ''
+foreach ($cand in 'www', 'public_html', 'html', 'htdocs') { if ($names -contains $cand) { $webroot = $cand; break } }
+if ($webroot) { $hostUrl = "$hostUrl/$webroot"; Write-Host "Web folder: /$webroot" } else { Write-Host 'Web folder: / (FTP top)' }
+Write-Host ('FTP top has: ' + (($names | Select-Object -First 12) -join ', '))
 
 $work = Join-Path $env:TEMP ('ecolever-' + [guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Force $work | Out-Null
