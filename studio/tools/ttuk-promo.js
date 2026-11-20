@@ -52,6 +52,13 @@ for (const x of res) {
 
 // 4) 올릴 문구
 const up = res[0].upload || {};
+// 성과 측정 링크: 에코레버 utm, 지마당 ?src=video-MMDD
+const mmdd = (slug.match(/\d{4}-(\d{2})-(\d{2})/) || []).slice(1).join('');
+const baseLink = (spec.upload && spec.upload.link) || brand.site || '';
+const trackLink = !baseLink || /[?&](utm_|src=)/.test(baseLink) ? baseLink
+  : spec.brand === 'gmadang' ? `${baseLink}${baseLink.includes('?') ? '&' : '?'}src=video-${mmdd}`
+  : `${baseLink}${baseLink.includes('?') ? '&' : '?'}utm_source=instagram&utm_medium=social&utm_campaign=${mmdd}-${spec.brand}`;
+if (spec.upload) spec.upload.link = trackLink;
 const tags = (spec.upload && spec.upload.hashtags ? spec.upload.hashtags : brand.hashtags || []).map(t => '#' + String(t).replace(/^#/, ''));
 const lines = spec.scenes.map(s => (typeof s === 'string' ? s : s.text || '').replace(/\n/g, ' ')).filter(Boolean);
 const md = `# ${brand.name || spec.brand} 홍보물 — ${slug}

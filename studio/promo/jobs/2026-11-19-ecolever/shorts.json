@@ -39,7 +39,7 @@
     },
     {
       "text": "교재·노트북 넣고\n캠퍼스까지",
-      "sub": "가로 40 × 세로 37cm · 손잡이 40cm",
+      "sub": "40 × 37cm · 손잡이 40cm · 약 70g",
       "image": "../../assets/ecolever/site-3.png",
       "fit": "phone",
       "motion": "scrollDown",
@@ -56,8 +56,8 @@
       "energy": 2
     },
     {
-      "text": "졸업 뒤 버려져도\n흙으로 돌아가는 가방",
-      "sub": "식물성 섬유 100% · FITI 시험성적서",
+      "text": "졸업하고도\n다시 들고 다니는 가방",
+      "sub": "면·황마 혼방 · FITI 면 85.2%·황마 10.9%",
       "image": "../../assets/ecolever/site-2.png",
       "fit": "phone",
       "motion": "scrollDown",
@@ -74,8 +74,8 @@
       "energy": 2
     },
     {
-      "text": "학교 단체 주문\n로고 없이 100개부터",
-      "sub": "견적서 · 세금계산서 · 여성기업",
+      "text": "학교 단체 주문\n로고 없이 50개부터",
+      "sub": "장당 1,000원(부가세 별도)",
       "bg": [
         "#2F4332",
         "#14110E"
@@ -144,11 +144,11 @@
       "단체에코백",
       "학교굿즈",
       "에코백",
-      "잘썩는에코백",
-      "친환경굿즈",
+      "면황마에코백",
+      "행사굿즈",
       "에코레버"
     ],
-    "link": "https://www.ecolever.co.kr/"
+    "link": "https://www.ecolever.co.kr/?utm_source=instagram&utm_medium=social&utm_campaign=1119-graduation"
   },
   "platform": "shorts",
   "export": {

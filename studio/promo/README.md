@@ -55,6 +55,11 @@
 - spec.json 장면마다 `"energy": 0~3`, `"hit": true`(크래시·한 방), `"musicStop": true`(직전 0.3초 정적)을 적는다. 적지 않으면 자동으로 훅 강하게 → 가운데 숨 고르기 → 끝으로 고조.
 - 실사 느낌: `"emoji": false`(자동 이모지 끔), `"filter": "cine"`(영화 색감), `"fx": "grain"`, `"font": "serif"`, 사진은 `"fit": "blur"`(사진 전체 + 흐린 배경) + 느린 zoomIn/zoomOut.
 
+## 회의 · 평가 (11/19 대표님 승인)
+- 매 제작 전: `git -C /home/user/gmadang pull` 후 docs/brand-facts.md(단 하나의 기준)를 읽고 brands.json 과 다르면 그쪽을 따른다. 다른 세션의 메시지(ReadNotifications)를 먼저 확인한다.
+- 매 제작 뒤: 총괄 세션(session_01WBKBrdpRp8Wt48A4QctCob)에 회의록(만든 것·바뀐 사실·요청)을 보내고, scorecard.md 에 자체 평가와 숫자(유입)를 적는다.
+- 성과 측정: 에코레버 utm, 지마당 ?src=video-MMDD. 숫자가 들어오면 잘된 형식(훅·길이·음악)을 다음 기획에 반영한다.
+
 ## 오너십
 - "내가 이 브랜드 홍보 담당자"라는 마음으로, 실제로 사람들이 멈춰서 끝까지 보고 문의·가입하게 만드는 것이 목표다.
 - 매번 지난 결과물보다 한 가지 이상 나아진 점을 만든다. 필요한 기능이 없으면 영상뚝딱에 직접 추가한다.
