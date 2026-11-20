@@ -102,6 +102,27 @@ async function runOne(page, jobPath, outDir) {
   if (!raw.export.name) raw.export.name = base;
   const tmp = fs.mkdtempSync(path.join(require('os').tmpdir(), 'ttuk-'));
   try {
+    // AI 실사 장면: scene.ai = { type: 'video'|'image', prompt } → 생성해서 scene.image 로 (실패하면 글자 장면으로, 경고에 기록)
+    const aiWarn = [];
+    const ai = require('./ttuk-ai.js');
+    const cacheDir = path.join(baseDir, 'ai-cache'); 
+    for (let i = 0; i < (raw.scenes || []).length; i++) {
+      const s = raw.scenes[i];
+      if (!s || typeof s !== 'object' || !s.ai || !s.ai.prompt || s.image) continue;
+      const kind = s.ai.type === 'image' ? 'image' : 'video';
+      fs.mkdirSync(cacheDir, { recursive: true });
+      const key = require('crypto').createHash('sha1').update(kind + '|' + (raw.aspect || '9:16') + '|' + s.ai.prompt).digest('hex').slice(0, 12);
+      const outF = path.join(cacheDir, `${key}.${kind === 'image' ? 'png' : 'mp4'}`);
+      try {
+        if (!fs.existsSync(outF)) {
+          log(`  🎬 ${i + 1}번 장면 AI 실사 ${kind === 'image' ? '사진' : '영상'} 만드는 중…`);
+          if (kind === 'image') ai.genImage({ prompt: s.ai.prompt, aspect: raw.aspect, out: outF, tmpDir: tmp });
+          else ai.genVideo({ prompt: s.ai.prompt, aspect: raw.aspect, out: outF, tmpDir: tmp, log });
+        }
+        s.image = outF; s.aiLabel = true;
+      } catch (e) { aiWarn.push(`${i + 1}번 장면 AI 실사 생성 실패: ${e.message}`); log('  ⚠️ ' + e.message); }
+    }
+    raw.__aiWarn = aiWarn;
     const files = await collectFiles(raw, baseDir, tmp);
     // 파일들을 화면의 파일 입력칸으로 넘겨 두기 (작업이 이름으로 찾아 씀)
     const list = Object.values(files);

@@ -66,6 +66,7 @@ function normalizeJob(raw) {
     if (BG_STYLES.some(b => b.v === s.bgStyle)) look.bgStyle = s.bgStyle;
     if (/^#[0-9a-f]{6}$/i.test(s.color || '')) look.textColor = s.color;
     if (typeof s.sub === 'string') look.sub = s.sub.slice(0, 120);
+    if (s.aiLabel) look.aiLabel = true;   // AI 실사 장면: 화면에 'AI 제작' 표시
     if (['cover', 'contain', 'blur', 'phone', 'card'].includes(s.fit)) look.fit = s.fit;
     if (['top', 'center', 'bottom'].includes(s.textPos)) look.textPos = s.textPos;
     if (TEXT_ANIMS.some(a => a.v === s.textAnim)) look.textAnim = s.textAnim;
@@ -121,6 +122,7 @@ function normalizeJob(raw) {
  * getFile(ref) → File | null : 장면의 image·음악 file 을 실제 파일로 바꿔 주는 함수
  */
 async function buildFromJob(job, getFile, onStatus) {
+  const preWarn = job && typeof job === 'object' && Array.isArray(job.__aiWarn) ? job.__aiWarn : [];
   job = normalizeJob(job);
   onStatus?.('재료 불러오는 중…');
   // 1) 사진·영상 불러오기
@@ -172,7 +174,8 @@ async function buildFromJob(job, getFile, onStatus) {
     const scenes = job.scenes.filter((sc, i) => sc.text || mediaIdx[i] >= 0);
     scenes.forEach((sc, k) => {
       const c = list[k]; if (!c || !sc.look) return;
-      const { sticker, ...rest } = sc.look;
+      const { sticker, aiLabel, ...rest } = sc.look;
+      if (aiLabel) c._aiLabel = true;
       if (c.kind !== 'text') { delete rest.emoji; if (!['phone', 'card'].includes(rest.fit || c.fit)) { delete rest.bgColor; delete rest.bgColor2; delete rest.bgStyle; } }
       else delete rest.fit;
       if (k === 0 && !plan.title) delete rest.transition;
@@ -201,6 +204,7 @@ async function buildFromJob(job, getFile, onStatus) {
     if (m && m.type === 'image') { m.role = 'logo'; Object.assign(S, { logoId: m.id, logoPos: job.logo.pos, logoSize: job.logo.size }); }
     else warn.push(`로고 파일을 찾지 못함(${job.logo.image})`);
   }
+  for (const L of lay) if (L.clip._aiLabel) { addOverlay({ type: 'text', text: 'AI 제작', start: L.start, end: L.end, w: 0.1, x: 0.12, y: 0.965, tpl: 'basic', color: '#ffffff', anim: 'none' }); delete L.clip._aiLabel; }
   for (const L of lay) if (L.clip._jobSticker) { addOverlay({ type: 'sticker', text: L.clip._jobSticker, start: L.start + 0.15, end: L.end - 0.05, w: 0.18, x: 0.84, y: L.clip.kind === 'text' ? 0.2 : 0.42, anim: 'pop' }); delete L.clip._jobSticker; }
   if (job.endcard && lay.length) {
     const last = lay[lay.length - 1];
@@ -243,6 +247,7 @@ async function buildFromJob(job, getFile, onStatus) {
   }
   // 6) 내보내기 설정
   Object.assign(S, { quality: job.export.quality, fps: job.export.fps, vq: job.export.vq, maxSizeMB: job.export.maxSizeMB });
+  warn.push(...preWarn);
   return { job, summary, warnings: warn };
 }
 
