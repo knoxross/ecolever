@@ -26,16 +26,16 @@ jobs:
           fi
           umask 077
           printf 'machine ecolever.co.kr\nlogin %s\npassword %s\n' "$FTP_USER" "$FTP_PASSWORD" > "$RUNNER_TEMP/netrc"
-          LIST=$(curl -sS --netrc-file "$RUNNER_TEMP/netrc" --list-only -m 30 "ftp://ecolever.co.kr/" || true)
+          LIST=$(curl -sS --disable-epsv --retry 2 --retry-delay 3 --netrc-file "$RUNNER_TEMP/netrc" --list-only -m 30 "ftp://ecolever.co.kr/" || true)
           WEB=""
           for c in www public_html html htdocs; do if printf '%s\n' "$LIST" | sed 's#.*/##' | grep -qx "$c"; then WEB="$c/"; break; fi; done
           echo "web folder: /$WEB"
           shopt -s nullglob
           for f in index.html .htaccess robots.txt sitemap.xml llms.txt css/* js/* imgs/* guide/*; do
             [ -f "$f" ] || continue
-            curl -sS --netrc-file "$RUNNER_TEMP/netrc" --ftp-create-dirs -m 60 -T "$f" "ftp://ecolever.co.kr/$WEB$f"
+            curl -sS --disable-epsv --retry 2 --retry-delay 3 --netrc-file "$RUNNER_TEMP/netrc" --ftp-create-dirs -m 60 -T "$f" "ftp://ecolever.co.kr/$WEB$f"
             echo "uploaded $f"
           done
           printf "actions %s %s\n" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$GITHUB_SHA" > "$RUNNER_TEMP/deploy-stamp.txt"
-          curl -sS --netrc-file "$RUNNER_TEMP/netrc" -m 30 -T "$RUNNER_TEMP/deploy-stamp.txt" "ftp://ecolever.co.kr/${WEB}deploy-stamp.txt" || true
+          curl -sS --disable-epsv --retry 2 --retry-delay 3 --netrc-file "$RUNNER_TEMP/netrc" -m 30 -T "$RUNNER_TEMP/deploy-stamp.txt" "ftp://ecolever.co.kr/${WEB}deploy-stamp.txt" || true
           rm -f "$RUNNER_TEMP/netrc"

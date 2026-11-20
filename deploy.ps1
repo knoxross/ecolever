@@ -21,7 +21,7 @@ if (-not (Test-Path $netrc)) {
   $pw = $null
 }
 
-$rootList = & curl.exe -s -S --netrc-file $netrc --list-only -m 30 "$hostUrl/"
+$rootList = & curl.exe -s -S --disable-epsv --netrc-file $netrc --list-only -m 30 "$hostUrl/"
 if ($LASTEXITCODE -ne 0) {
   Remove-Item $netrc -Force
   Write-Host "FTP login failed (curl $LASTEXITCODE). Check the FTP ID/password in My Gabia and run again." -ForegroundColor Red
@@ -51,13 +51,13 @@ $ok = 0; $fail = 0
 foreach ($f in $items) {
   $local = Join-Path $src $f
   if (-not (Test-Path $local)) { continue }
-  & curl.exe -s -S --netrc-file $netrc --ftp-create-dirs -m 60 -T $local "$hostUrl/$f"
+  & curl.exe -s -S --disable-epsv --netrc-file $netrc --ftp-create-dirs -m 60 -T $local "$hostUrl/$f"
   if ($LASTEXITCODE -eq 0) { $ok++; Write-Host "uploaded $f" } else { $fail++; Write-Host "FAILED $f" -ForegroundColor Red }
 }
 # Stamp so Claude can check from outside that the upload reached the live site
 $stamp = Join-Path $env:TEMP 'deploy-stamp.txt'
 [IO.File]::WriteAllText($stamp, ("pc " + (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ') + " ok=$ok fail=$fail`n"), (New-Object Text.UTF8Encoding($false)))
-& curl.exe -s -S --netrc-file $netrc -m 30 -T $stamp "$hostUrl/deploy-stamp.txt" | Out-Null
+& curl.exe -s -S --disable-epsv --netrc-file $netrc -m 30 -T $stamp "$hostUrl/deploy-stamp.txt" | Out-Null
 Remove-Item $work -Recurse -Force
 if ($fail -eq 0) {
   Write-Host "DONE: $ok files uploaded. Open https://www.ecolever.co.kr (Ctrl+F5 to refresh)." -ForegroundColor Green
