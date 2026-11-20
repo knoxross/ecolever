@@ -1,12 +1,12 @@
 {
   "brand": "ecolever",
-  "topic": "이 가방, 버려지면 어떻게 될까? — 잘 썩는 가방, 식물성 섬유 100%",
+  "topic": "성적서로 보는 에코백 — 합성섬유 0%, 50장부터 (11/17 '잘 썩는 가방' 대체판)",
   "trend": "질문형 훅 + 폰 퍼스트 시네마틱(필름 톤·느린 카메라 이동·옅은 그레인) + 정답 공개 직전 정적",
   "aspect": "9:16",
   "mood": "luxury",
   "scenes": [
     {
-      "text": "이 가방,\n버려지면\n어떻게 될까요?",
+      "text": "에코백,\n'친환경'이라는데\n근거 있나요?",
       "bg": [
         "#14110E",
         "#14110E"
@@ -41,24 +41,8 @@
       "fontSize": 80
     },
     {
-      "text": "플라스틱 섬유가 아니라",
-      "bg": [
-        "#14110E",
-        "#14110E"
-      ],
-      "bgStyle": "solid",
-      "font": "serif",
-      "color": "#EFE9DC",
-      "fx": "grain",
-      "fxAmt": 0.35,
-      "textAnim": "fade",
-      "duration": 2.2,
-      "transition": "fade",
-      "energy": 1
-    },
-    {
-      "text": "면 · 황마 · 레이온",
-      "sub": "FITI 시험성적서 혼용률 85.2 · 10.9 · 3.9 %",
+      "text": "성적서로 확인하세요",
+      "sub": "면 85.2% · 황마 10.9% · 레이온 3.9% (FITI)",
       "image": "../../assets/ecolever/doc-fiti-test.jpg",
       "fit": "blur",
       "motion": "zoomIn",
@@ -74,8 +58,8 @@
       "fontSize": 80
     },
     {
-      "text": "식물성 섬유 100%\n그래서, 잘 썩습니다",
-      "sub": "플라스틱 섬유 0% · FITI 시험성적서",
+      "text": "합성섬유 0%",
+      "sub": "FITI 시험성적서 혼용률 기준",
       "bg": [
         "#2F4332",
         "#14110E"
@@ -93,7 +77,7 @@
       "musicStop": true
     },
     {
-      "text": "행사가 끝나도\n일상에서 다시 드는 가방",
+      "text": "행사가 끝나도\n다시 들고 다니는 가방",
       "image": "../../assets/ecolever/product-2color.jpg",
       "fit": "blur",
       "motion": "zoomOut",
@@ -110,8 +94,8 @@
       "fontSize": 80
     },
     {
-      "text": "로고 없이 100개부터\n로고 인쇄는 1만 개부터",
-      "image": "../../assets/ecolever/site-0.png",
+      "text": "인쇄 없이 50장부터\n장당 1,000원",
+      "image": "../../assets/ecolever/site-3.png",
       "fit": "phone",
       "motion": "scrollDown",
       "bg": [
@@ -124,11 +108,12 @@
       "textPos": "top",
       "duration": 3.2,
       "transition": "fade",
-      "energy": 3
+      "energy": 3,
+      "sub": "부가세 별도"
     }
   ],
   "outro": "ecolever.co.kr",
-  "outro_sub": "단체 에코백 견적 · 02-6368-9989",
+  "outro_sub": "샘플 먼저 받아 보세요",
   "card": {
     "bg": [
       "#14110E",
@@ -144,7 +129,7 @@
   },
   "endcard": {
     "image": "../../assets/ecolever/qr-instagram.png",
-    "text": "QR · 인스타그램",
+    "text": "02-6368-9989",
     "size": 0.2
   },
   "music": {
@@ -154,12 +139,12 @@
     "seed": 1117
   },
   "upload": {
-    "title": "이 가방, 버려지면 어떻게 될까요? | 잘 썩는 에코백",
+    "title": "에코백, '친환경'이라는데 근거 있나요? | 성적서로 확인하세요",
     "hashtags": [
       "에코백",
-      "잘썩는에코백",
-      "식물성섬유",
-      "친환경굿즈",
+      "에코백제작",
+      "시험성적서",
+      "면황마에코백",
       "단체에코백",
       "행사굿즈",
       "ESG굿즈",
