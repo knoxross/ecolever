@@ -32,7 +32,7 @@ jobs:
           for c in www public_html html htdocs; do if printf '%s\n' "$LIST" | sed 's#.*/##' | grep -qx "$c"; then WEB="$c/"; break; fi; done
           echo "web folder: /$WEB"
           shopt -s nullglob
-          for f in index.html .htaccess robots.txt sitemap.xml llms.txt css/* js/* imgs/* guide/*; do
+          for f in index.html .htaccess robots.txt sitemap.xml llms.txt abf0e43b3caf459fadaf9491a62b47d9.txt css/* js/* imgs/* guide/*; do
             [ -f "$f" ] || continue
             curl -sS --disable-epsv --retry 2 --retry-delay 3 --netrc-file "$RUNNER_TEMP/netrc" --ftp-create-dirs -m 60 -T "$f" "ftp://211.47.74.75/$WEB$f"
             echo "uploaded $f"
@@ -40,3 +40,11 @@ jobs:
           printf "actions %s %s\n" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$GITHUB_SHA" > "$RUNNER_TEMP/deploy-stamp.txt"
           curl -sS --disable-epsv --retry 2 --retry-delay 3 --netrc-file "$RUNNER_TEMP/netrc" -m 30 -T "$RUNNER_TEMP/deploy-stamp.txt" "ftp://211.47.74.75/${WEB}deploy-stamp.txt" || true
           rm -f "$RUNNER_TEMP/netrc"
+      - name: IndexNow ping (Bing·Naver·Yandex 등에 새 주소 알림)
+        run: |
+          KEY=abf0e43b3caf459fadaf9491a62b47d9
+          URLS=$(curl -s -m 30 https://www.ecolever.co.kr/sitemap.xml | grep -o '<loc>[^<]*</loc>' | sed 's#</\?loc>##g' | head -200 | python3 -c 'import sys,json;print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))')
+          BODY=$(python3 -c 'import json,sys;print(json.dumps({"host":"www.ecolever.co.kr","key":sys.argv[1],"keyLocation":"https://www.ecolever.co.kr/"+sys.argv[1]+".txt","urlList":json.loads(sys.argv[2])}))' "$KEY" "$URLS")
+          for ep in https://api.indexnow.org/indexnow https://searchadvisor.naver.com/indexnow; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' -m 30 -X POST -H 'Content-Type: application/json; charset=utf-8' --data "$BODY" "$ep" || true); echo "$ep -> $code"
+          done
