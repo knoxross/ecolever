@@ -26,10 +26,14 @@ jobs:
           fi
           umask 077
           printf 'machine ecolever.co.kr\nlogin %s\npassword %s\n' "$FTP_USER" "$FTP_PASSWORD" > "$RUNNER_TEMP/netrc"
+          LIST=$(curl -sS --netrc-file "$RUNNER_TEMP/netrc" --list-only -m 30 "ftp://ecolever.co.kr/" || true)
+          WEB=""
+          for c in www public_html html htdocs; do if printf '%s\n' "$LIST" | sed 's#.*/##' | grep -qx "$c"; then WEB="$c/"; break; fi; done
+          echo "web folder: /$WEB"
           shopt -s nullglob
           for f in index.html .htaccess robots.txt sitemap.xml llms.txt css/* js/* imgs/* guide/*; do
             [ -f "$f" ] || continue
-            curl -sS --netrc-file "$RUNNER_TEMP/netrc" --ftp-create-dirs -m 60 -T "$f" "ftp://ecolever.co.kr/$f"
+            curl -sS --netrc-file "$RUNNER_TEMP/netrc" --ftp-create-dirs -m 60 -T "$f" "ftp://ecolever.co.kr/$WEB$f"
             echo "uploaded $f"
           done
           rm -f "$RUNNER_TEMP/netrc"
