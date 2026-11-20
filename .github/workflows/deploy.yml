@@ -25,17 +25,18 @@ jobs:
             echo "::warning::FTP_USER / FTP_PASSWORD secrets are not set; skipping upload."; exit 0
           fi
           umask 077
-          printf 'machine ecolever.co.kr\nlogin %s\npassword %s\n' "$FTP_USER" "$FTP_PASSWORD" > "$RUNNER_TEMP/netrc"
-          LIST=$(curl -sS --disable-epsv --retry 2 --retry-delay 3 --netrc-file "$RUNNER_TEMP/netrc" --list-only -m 30 "ftp://ecolever.co.kr/" || true)
+          printf 'machine 211.47.74.75\nlogin %s\npassword %s\n' "$FTP_USER" "$FTP_PASSWORD" > "$RUNNER_TEMP/netrc"
+          echo "--- FTP 접속 진단(비밀번호는 GitHub가 가림) ---"; curl -v --disable-epsv --netrc-file "$RUNNER_TEMP/netrc" --list-only -m 30 "ftp://211.47.74.75/" 2>&1 | grep -E "^(<|\* (Connected|Trying|Recv|Closing|connect))" | grep -v "PASS" | head -20 || true
+          LIST=$(curl -sS --disable-epsv --retry 2 --retry-delay 3 --netrc-file "$RUNNER_TEMP/netrc" --list-only -m 30 "ftp://211.47.74.75/" || true)
           WEB=""
           for c in www public_html html htdocs; do if printf '%s\n' "$LIST" | sed 's#.*/##' | grep -qx "$c"; then WEB="$c/"; break; fi; done
           echo "web folder: /$WEB"
           shopt -s nullglob
           for f in index.html .htaccess robots.txt sitemap.xml llms.txt css/* js/* imgs/* guide/*; do
             [ -f "$f" ] || continue
-            curl -sS --disable-epsv --retry 2 --retry-delay 3 --netrc-file "$RUNNER_TEMP/netrc" --ftp-create-dirs -m 60 -T "$f" "ftp://ecolever.co.kr/$WEB$f"
+            curl -sS --disable-epsv --retry 2 --retry-delay 3 --netrc-file "$RUNNER_TEMP/netrc" --ftp-create-dirs -m 60 -T "$f" "ftp://211.47.74.75/$WEB$f"
             echo "uploaded $f"
           done
           printf "actions %s %s\n" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$GITHUB_SHA" > "$RUNNER_TEMP/deploy-stamp.txt"
-          curl -sS --disable-epsv --retry 2 --retry-delay 3 --netrc-file "$RUNNER_TEMP/netrc" -m 30 -T "$RUNNER_TEMP/deploy-stamp.txt" "ftp://ecolever.co.kr/${WEB}deploy-stamp.txt" || true
+          curl -sS --disable-epsv --retry 2 --retry-delay 3 --netrc-file "$RUNNER_TEMP/netrc" -m 30 -T "$RUNNER_TEMP/deploy-stamp.txt" "ftp://211.47.74.75/${WEB}deploy-stamp.txt" || true
           rm -f "$RUNNER_TEMP/netrc"
