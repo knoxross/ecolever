@@ -36,4 +36,6 @@ jobs:
             curl -sS --netrc-file "$RUNNER_TEMP/netrc" --ftp-create-dirs -m 60 -T "$f" "ftp://ecolever.co.kr/$WEB$f"
             echo "uploaded $f"
           done
+          printf "actions %s %s\n" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$GITHUB_SHA" > "$RUNNER_TEMP/deploy-stamp.txt"
+          curl -sS --netrc-file "$RUNNER_TEMP/netrc" -m 30 -T "$RUNNER_TEMP/deploy-stamp.txt" "ftp://ecolever.co.kr/${WEB}deploy-stamp.txt" || true
           rm -f "$RUNNER_TEMP/netrc"
