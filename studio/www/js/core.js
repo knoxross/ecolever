@@ -544,6 +544,8 @@ function drawClipBase(clip, local) {
       if (src && sw && sh) {
         const p = clamp(local / Math.max(0.1, clip.duration), 0, 1);
         const mv = motionAt(clip.motion, p);
+        // 클로즈업(인서트 컷): 사진 한 장에서 손잡이·원단 같은 부분만 크게 — 자막은 그대로
+        if (clip.focus && clip.focus.s > 1) { mv.z *= clip.focus.s; mv.x = clamp((clip.focus.x || 0) + mv.x * 0.25, -1, 1); mv.y = clamp((clip.focus.y || 0) + mv.y * 0.25, -1, 1); }
         const fcss = window.clipColorCss ? clipColorCss(clip) : filterCss(S.filter);
         const sharp = Math.max(clip.enhance || 0, (clip.adj && clip.adj.sharpen) || 0);
         const enh = sharp ? { m, amount: sharp } : null;
@@ -694,8 +696,8 @@ function drawFit(src, sw, sh, fit, z, x, y, enh) {
   const base = fit === 'contain' ? Math.min(W / sw, H / sh) : Math.max(W / sw, H / sh);
   const dw = sw * base * z, dh = sh * base * z;
   // 이동 가능한 여유: 꽉 채우기면 화면 밖으로 넘친 부분 전체, 전체 보이기면 확대로 커진 만큼
-  const exW = fit === 'contain' ? (dw - sw * base) / 2 : Math.min(Math.max(0, (dw - W) / 2), W * 0.22);
-  const exH = fit === 'contain' ? (dh - sh * base) / 2 : Math.min(Math.max(0, (dh - H) / 2), H * 0.22);
+  const exW = fit === 'contain' ? (dw - sw * base) / 2 : Math.min(Math.max(0, (dw - W) / 2), W * (z > 1.3 ? 10 : 0.22));
+  const exH = fit === 'contain' ? (dh - sh * base) / 2 : Math.min(Math.max(0, (dh - H) / 2), H * (z > 1.3 ? 10 : 0.22));
   const dx = (W - dw) / 2 + x * exW, dy = (H - dh) / 2 + y * exH;
   if (enh && window.Enhancer) {
     const out = Enhancer.process(src, sw, sh, dw, dh, enh.m, enh.amount);
