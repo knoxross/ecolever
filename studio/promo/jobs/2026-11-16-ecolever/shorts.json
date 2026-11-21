@@ -1,0 +1,151 @@
+{
+  "aspect": "9:16",
+  "mood": "clean",
+  "scenes": [
+    {
+      "text": "POV: 연말 행사 굿즈\n담당자가 됐다",
+      "image": "../../assets/ecolever/product-1color.jpg",
+      "fit": "card",
+      "bg": [
+        "#3E5641",
+        "#2F4332"
+      ],
+      "bgStyle": "aurora",
+      "textPos": "top",
+      "fx": "punch",
+      "sticker": "😵",
+      "duration": 2.6,
+      "transition": "none"
+    },
+    {
+      "text": "받자마자 서랍행\n플라스틱 판촉물 말고",
+      "sub": "다시 들고 다니는 가방",
+      "emoji": "🌱",
+      "bg": [
+        "#C0603C",
+        "#6E4527"
+      ],
+      "bgStyle": "rays",
+      "duration": 2.6,
+      "transition": "slide"
+    },
+    {
+      "text": "근거는\n성적서에 있어요",
+      "sub": "면 85.2% · 황마 10.9% · 레이온 3.9%",
+      "image": "../../assets/ecolever/doc-fiti-test.jpg",
+      "fit": "card",
+      "bg": [
+        "#2F4332",
+        "#3E5641"
+      ],
+      "bgStyle": "gradient",
+      "textPos": "top",
+      "sticker": "🔍",
+      "duration": 3.2
+    },
+    {
+      "text": "합성섬유 0%",
+      "sub": "FITI 시험성적서 혼용률 기준",
+      "emoji": "🌿",
+      "bg": [
+        "#3E5641",
+        "#A8823C"
+      ],
+      "bgStyle": "aurora",
+      "fx": "punch",
+      "duration": 2.6,
+      "transition": "zoom"
+    },
+    {
+      "text": "공공기관 구매도 OK",
+      "sub": "여성기업 확인서 보유",
+      "image": "../../assets/ecolever/doc-women-business.jpg",
+      "fit": "card",
+      "bg": [
+        "#A8823C",
+        "#6E4527"
+      ],
+      "bgStyle": "gradient",
+      "textPos": "top",
+      "duration": 2.8,
+      "transition": "zoom"
+    },
+    {
+      "text": "1칼라는 실물 재고",
+      "sub": "샘플을 바로 확인하세요",
+      "image": "../../assets/ecolever/product-1color.jpg",
+      "fit": "card",
+      "bg": [
+        "#3E5641",
+        "#2F4332"
+      ],
+      "bgStyle": "bokeh",
+      "textPos": "top",
+      "sticker": "👀",
+      "duration": 2.6
+    },
+    {
+      "text": "인쇄 없이 50장부터\n장당 1,000원",
+      "image": "../../assets/ecolever/site-0.png",
+      "fit": "phone",
+      "motion": "scrollDown",
+      "bg": [
+        "#EFE9DC",
+        "#C0603C"
+      ],
+      "bgStyle": "aurora",
+      "textPos": "top",
+      "duration": 3.4,
+      "sub": "부가세 별도 · 샘플 먼저 받아 보세요"
+    }
+  ],
+  "outro": "견적은 ecolever.co.kr",
+  "outro_sub": "02-6368-9989",
+  "logo": {
+    "image": "../../assets/ecolever/logo.png",
+    "pos": "tr",
+    "size": 0.12
+  },
+  "endcard": {
+    "image": "../../assets/ecolever/qr-instagram.png",
+    "text": "QR로 인스타그램 보기",
+    "size": 0.26
+  },
+  "music": {
+    "style": "corp",
+    "meter": "4/4",
+    "bpm": 112,
+    "seed": 1116
+  },
+  "upload": {
+    "title": "연말 행사 굿즈, 성적서로 고르는 에코백 | 50장부터",
+    "hashtags": [
+      "에코백",
+      "에코백제작",
+      "행사굿즈",
+      "기업굿즈",
+      "ESG굿즈",
+      "연말행사",
+      "판촉물",
+      "친환경굿즈",
+      "에코레버"
+    ],
+    "link": "https://www.ecolever.co.kr/"
+  },
+  "card": {
+    "bg": [
+      "#2F4332",
+      "#3E5641"
+    ],
+    "bgStyle": "aurora",
+    "color": "#FFFFFF"
+  },
+  "platform": "shorts",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 9.5,
+    "name": "2026-11-16-ecolever-shorts"
+  }
+}

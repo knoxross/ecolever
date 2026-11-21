@@ -1,0 +1,161 @@
+{
+  "aspect": "1:1",
+  "mood": "luxury",
+  "scenes": [
+    {
+      "text": "에코백,\n'친환경'이라는데\n근거 있나요?",
+      "bg": [
+        "#14110E",
+        "#14110E"
+      ],
+      "bgStyle": "solid",
+      "font": "serif",
+      "color": "#EFE9DC",
+      "fx": "grain",
+      "fxAmt": 0.35,
+      "textAnim": "fade",
+      "duration": 2.6,
+      "transition": "none",
+      "energy": 1,
+      "hit": false
+    },
+    {
+      "text": "ECOLEVER 에코백",
+      "image": "../../assets/ecolever/product-1color.jpg",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "filter": "cine",
+      "fx": "grain",
+      "fxAmt": 0.3,
+      "font": "serif",
+      "textBg": true,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 2.8,
+      "transition": "fade",
+      "energy": 2,
+      "hit": true,
+      "fontSize": 80
+    },
+    {
+      "text": "성적서로 확인하세요",
+      "sub": "면 85.2% · 황마 10.9% · 레이온 3.9% (FITI)",
+      "image": "../../assets/ecolever/doc-fiti-test.jpg",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "filter": "cine",
+      "fx": "grain",
+      "fxAmt": 0.3,
+      "font": "serif",
+      "textBg": true,
+      "textPos": "top",
+      "duration": 3,
+      "transition": "fade",
+      "energy": 1,
+      "fontSize": 80
+    },
+    {
+      "text": "합성섬유 0%",
+      "sub": "FITI 시험성적서 혼용률 기준",
+      "bg": [
+        "#2F4332",
+        "#14110E"
+      ],
+      "bgStyle": "gradient",
+      "font": "serif",
+      "color": "#FFFFFF",
+      "fx": "grain",
+      "fxAmt": 0.35,
+      "textAnim": "up",
+      "duration": 3,
+      "transition": "fade",
+      "energy": 3,
+      "hit": true,
+      "musicStop": true
+    },
+    {
+      "text": "행사가 끝나도\n다시 들고 다니는 가방",
+      "image": "../../assets/ecolever/product-2color.jpg",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "filter": "cine",
+      "fx": "grain",
+      "fxAmt": 0.3,
+      "font": "serif",
+      "textBg": true,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3,
+      "transition": "fade",
+      "energy": 2,
+      "fontSize": 80
+    },
+    {
+      "text": "인쇄 없이 50장부터\n장당 1,000원",
+      "image": "../../assets/ecolever/site-3.png",
+      "fit": "phone",
+      "motion": "scrollDown",
+      "bg": [
+        "#2F4332",
+        "#14110E"
+      ],
+      "bgStyle": "gradient",
+      "filter": "cine",
+      "font": "serif",
+      "textPos": "top",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "sub": "부가세 별도"
+    }
+  ],
+  "outro": "ecolever.co.kr",
+  "outro_sub": "샘플 먼저 받아 보세요",
+  "card": {
+    "bg": [
+      "#14110E",
+      "#2F4332"
+    ],
+    "bgStyle": "gradient",
+    "color": "#EFE9DC"
+  },
+  "logo": {
+    "image": "../../assets/ecolever/logo.png",
+    "pos": "tr",
+    "size": 0.1
+  },
+  "endcard": {
+    "image": "../../assets/ecolever/qr-instagram.png",
+    "text": "02-6368-9989",
+    "size": 0.2
+  },
+  "music": {
+    "style": "corp",
+    "meter": "4/4",
+    "bpm": 96,
+    "seed": 1117
+  },
+  "upload": {
+    "title": "에코백, '친환경'이라는데 근거 있나요? | 성적서로 확인하세요",
+    "hashtags": [
+      "에코백",
+      "에코백제작",
+      "시험성적서",
+      "면황마에코백",
+      "단체에코백",
+      "행사굿즈",
+      "ESG굿즈",
+      "에코레버"
+    ],
+    "link": "https://www.ecolever.co.kr/"
+  },
+  "emoji": false,
+  "platform": "reels",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 9.5,
+    "name": "2026-11-17-ecolever-feed"
+  }
+}
