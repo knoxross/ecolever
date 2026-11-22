@@ -566,7 +566,11 @@ function drawClipBase(clip, local) {
       }
     }
   }
-  if ((clip.text || '').trim() || (clip.sub || '').trim()) drawText(clip, local);
+  if ((clip.text || '').trim() || (clip.sub || '').trim()) {
+    // 숫자 카운트업: 큰 숫자가 0에서 빠르게 올라가 멈춤 (정보형 영상의 '저장하고 싶은' 순간)
+    if (clip.countUp && local < 0.9) { const orig = clip.text; clip.text = countUpText(orig, local / 0.9); drawText(clip, local); clip.text = orig; }
+    else drawText(clip, local);
+  }
   ctx.restore();
 }
 /* ---------- 글자 화면 배경 (사진 없이도 영상 제작) ---------- */
@@ -632,6 +636,14 @@ function drawTextBackground(clip, t) {
   const v = ctx.createRadialGradient(W / 2, H / 2, M * 0.3, W / 2, H / 2, Math.hypot(W, H) * 0.6);
   v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,0.28)');
   ctx.fillStyle = v; ctx.fillRect(0, 0, W, H);
+}
+function countUpText(text, p) {
+  const e = 1 - Math.pow(1 - clamp(p, 0, 1), 3);
+  return String(text).replace(/\d[\d,]*(\.\d+)?/g, m => {
+    const n = parseFloat(m.replace(/,/g, '')); if (!isFinite(n)) return m;
+    const v = Math.round(n * e);
+    return m.includes(',') || v >= 1000 ? v.toLocaleString('en-US') : String(v);
+  });
 }
 /* ---------- 홍보물용 화면: 📱 휴대폰 화면 틀 · 🃏 제품 카드 (브랜드 색 배경 위) ---------- */
 function drawShowcase(clip, local, src, sw, sh, p, fcss) {

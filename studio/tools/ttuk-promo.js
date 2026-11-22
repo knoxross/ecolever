@@ -60,6 +60,7 @@ const trackLink = !baseLink || /[?&](utm_|src=)/.test(baseLink) ? baseLink
   : `${baseLink}${baseLink.includes('?') ? '&' : '?'}utm_source=instagram&utm_medium=social&utm_campaign=${mmdd}-${spec.brand}`;
 if (spec.upload) spec.upload.link = trackLink;
 const tags = (spec.upload && spec.upload.hashtags ? spec.upload.hashtags : brand.hashtags || []).map(t => '#' + String(t).replace(/^#/, ''));
+const srcLine = spec.upload && spec.upload.source ? `출처: ${spec.upload.source}` : '';
 const lines = spec.scenes.map(s => (typeof s === 'string' ? s : s.text || '').replace(/\n/g, ' ')).filter(Boolean);
 const md = `# ${brand.name || spec.brand} 홍보물 — ${slug}
 
@@ -72,7 +73,7 @@ const md = `# ${brand.name || spec.brand} 홍보물 — ${slug}
 설명:
 ${lines.join('\n')}
 ${spec.outro || ''}${spec.outro_sub ? ' · ' + spec.outro_sub : ''}
-${(spec.upload && spec.upload.link) || brand.site || ''}
+${(spec.upload && spec.upload.link) || brand.site || ''}${srcLine ? '\n' + srcLine : ''}
 ${tags.slice(0, 5).join(' ')} #Shorts
 
 ## 인스타그램 릴스 · 피드
@@ -80,7 +81,7 @@ ${lines[0] || ''} 👇
 ${lines.slice(1).map(l => '✔ ' + l).join('\n')}
 
 ${spec.outro || ''}${spec.outro_sub ? '\n' + spec.outro_sub : ''}
-🔗 프로필 링크 · ${(spec.upload && spec.upload.link) || brand.site || ''}
+🔗 프로필 링크 · ${(spec.upload && spec.upload.link) || brand.site || ''}${srcLine ? '\n' + srcLine : ''}
 
 ${tags.join(' ')}
 

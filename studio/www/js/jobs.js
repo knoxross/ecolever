@@ -67,6 +67,7 @@ function normalizeJob(raw) {
     if (/^#[0-9a-f]{6}$/i.test(s.color || '')) look.textColor = s.color;
     if (typeof s.sub === 'string') look.sub = s.sub.slice(0, 120);
     if (s.aiLabel) look.aiLabel = true;
+    if (s.countUp) look.countUp = true;
     if (s.focus && typeof s.focus === 'object' && +s.focus.s > 1) look.focus = { s: clamp(+s.focus.s, 1, 4), x: clamp(+s.focus.x || 0, -1, 1), y: clamp(+s.focus.y || 0, -1, 1) };   // AI 실사 장면: 화면에 'AI 제작' 표시
     if (['cover', 'contain', 'blur', 'phone', 'card'].includes(s.fit)) look.fit = s.fit;
     if (['top', 'center', 'bottom'].includes(s.textPos)) look.textPos = s.textPos;
