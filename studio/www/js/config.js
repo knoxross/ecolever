@@ -11,7 +11,7 @@ const BRAND = {
   companyEn: 'R&K GREENWORLD Co., Ltd.',
   copyright: '© (주)알앤케이그린월드. All rights reserved.',
   website: 'https://www.ecolever.co.kr',
-  version: '2.2.3',
+  version: '2.2.4',
 };
 
 const FEATURES = {

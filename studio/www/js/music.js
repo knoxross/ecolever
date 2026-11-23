@@ -414,7 +414,7 @@ async function composeMusic(o) {
     let bassRoot = 36 + ((r % 12) + 12) % 12; if (bassRoot > 47) bassRoot -= 12;
     chords.push({ deg, q, root: r, pcs, v, gv, bass: bassRoot });
   }
-  const lv = e => [0.3, 0.5, 0.74, 1][e];   // 에너지별 세기
+  const lv = e => [0.36, 0.58, 0.78, 1][e];   // 에너지별 세기 (조용한 구간도 소리가 끊긴 듯 들리지 않게)
 
   // ---------- 정적(stop) · 강조(hit)
   for (const c of cues) if (c.stop && c.t > 0.4) { pre.gain.setValueAtTime(1, c.t - 0.36); pre.gain.linearRampToValueAtTime(0.0001, c.t - 0.3); pre.gain.setValueAtTime(0.0001, c.t - 0.02); pre.gain.linearRampToValueAtTime(1, c.t); }
@@ -484,10 +484,10 @@ async function composeMusic(o) {
       }
     }
     // 현악·패드 (지속음) — 에너지가 오르면 들어옴
-    if (o.chords && st.pad && chordStart && (e >= 2 || st.v === 'epic' || isLast)) {
+    if (o.chords && st.pad && chordStart && (e >= 1 || st.v === 'epic' || isLast)) {
       const dur = isLast ? T.bar + 1.2 : cyc;
       const v = e >= 3 ? ch.v.concat([ch.v[0] + 12]) : ch.v;
-      if (st.pad === 'strings') { v.forEach(m => note('strings', m, t0, dur, L * 0.8)); if (st.v === 'epic' || e >= 3) note('strings', ch.bass + 12, t0, dur, L * 0.8); }
+      if (st.pad === 'strings') { v.forEach(m => note('strings', m, t0, dur, L * (e === 1 ? 0.5 : 0.8))); if (st.v === 'epic' || e >= 3) note('strings', ch.bass + 12, t0, dur, L * 0.8); }
       else if (st.pad === 'saw' && e >= 3) v.forEach(m => note('saw', m + 12, t0, dur, L * 0.35));
     }
 

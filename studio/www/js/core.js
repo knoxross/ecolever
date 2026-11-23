@@ -571,6 +571,7 @@ function drawClipBase(clip, local) {
     if (clip.countUp && local < 0.9) { const orig = clip.text; clip.text = countUpText(orig, local / 0.9); drawText(clip, local); clip.text = orig; }
     else drawText(clip, local);
   }
+  if (Array.isArray(clip.list) && clip.list.length) drawChecklist(clip, local);
   ctx.restore();
 }
 /* ---------- 글자 화면 배경 (사진 없이도 영상 제작) ---------- */
@@ -636,6 +637,55 @@ function drawTextBackground(clip, t) {
   const v = ctx.createRadialGradient(W / 2, H / 2, M * 0.3, W / 2, H / 2, Math.hypot(W, H) * 0.6);
   v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,0.28)');
   ctx.fillStyle = v; ctx.fillRect(0, 0, W, H);
+}
+/* ---------- 체크리스트: 항목이 한 줄씩 나타나며 체크 표시가 그려짐 (서류·준비물·조건 정리용) ---------- */
+function drawChecklist(clip, local) {
+  const W = canvas.width, H = canvas.height, sc = Math.min(W, H) / 1080;
+  const items = clip.list, n = items.length;
+  let fs = 64 * sc;
+  ctx.save();
+  ctx.font = textFont(clip, fs);
+  const maxW = W * 0.8;
+  let tw = Math.max(...items.map(t => ctx.measureText(t).width));
+  if (tw > maxW) { fs *= maxW / tw; ctx.font = textFont(clip, fs); tw = maxW; }
+  const box = fs * 0.9, gapX = fs * 0.55, rowH = fs * 1.75;
+  const blockW = box + gapX + tw, x0 = (W - blockW) / 2;
+  const blockH = rowH * n;
+  // 제목이 위에 있으면 그 아래, 아니면 가운데보다 조금 아래
+  const y0 = clip.textPos === 'top' ? Math.max(H * 0.36, (H - blockH) / 2 + H * 0.06) : (H - blockH) / 2 + H * 0.04;
+  const start = 0.45, step = Math.min(0.6, Math.max(0.28, (clip.duration - 1.2) / n));
+  const color = clip.textColor || '#FFFFFF';
+  // 뒤 판: 반투명 어둠 (실사·사진 위에서도 읽히게)
+  ctx.fillStyle = 'rgba(0,0,0,0.38)';
+  roundRect(x0 - fs * 0.7, y0 - fs * 0.45, blockW + fs * 1.4, blockH + fs * 0.6, fs * 0.35); ctx.fill();
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  items.forEach((t, i) => {
+    const p = clamp((local - start - i * step) / 0.35, 0, 1);
+    if (p <= 0) return;
+    const e = 1 - Math.pow(1 - p, 3);
+    const cy = y0 + rowH * i + rowH / 2 - fs * 0.15;
+    ctx.save();
+    ctx.globalAlpha *= e;
+    ctx.translate((1 - e) * -fs * 0.6, 0);
+    // 네모 칸
+    ctx.lineWidth = Math.max(2, fs * 0.07); ctx.strokeStyle = rgba(color.startsWith('#') ? color : '#FFFFFF', 0.85);
+    roundRect(x0, cy - box / 2, box, box, box * 0.18); ctx.stroke();
+    // 체크 표시: 선이 그려지듯 (두 번째 획까지)
+    const c = clamp((local - start - i * step - 0.15) / 0.3, 0, 1);
+    if (c > 0) {
+      const pts = [[x0 + box * 0.2, cy + box * 0.02], [x0 + box * 0.42, cy + box * 0.24], [x0 + box * 0.86, cy - box * 0.3]];
+      const l1 = Math.hypot(pts[1][0] - pts[0][0], pts[1][1] - pts[0][1]), l2 = Math.hypot(pts[2][0] - pts[1][0], pts[2][1] - pts[1][1]);
+      let d = c * (l1 + l2);
+      ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
+      const k1 = Math.min(1, d / l1); ctx.lineTo(pts[0][0] + (pts[1][0] - pts[0][0]) * k1, pts[0][1] + (pts[1][1] - pts[0][1]) * k1);
+      if (d > l1) { const k2 = (d - l1) / l2; ctx.lineTo(pts[1][0] + (pts[2][0] - pts[1][0]) * k2, pts[1][1] + (pts[2][1] - pts[1][1]) * k2); }
+      ctx.lineWidth = fs * 0.13; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = clip.listColor || '#E8C27A'; ctx.stroke();
+    }
+    ctx.fillStyle = color; ctx.font = textFont(clip, fs);
+    ctx.fillText(t, x0 + box + gapX, cy + fs * 0.04);
+    ctx.restore();
+  });
+  ctx.restore();
 }
 function countUpText(text, p) {
   const e = 1 - Math.pow(1 - clamp(p, 0, 1), 3);
