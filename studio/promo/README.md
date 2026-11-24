@@ -55,9 +55,14 @@
 - spec.json 장면마다 `"energy": 0~3`, `"hit": true`(크래시·한 방), `"musicStop": true`(직전 0.3초 정적)을 적는다. 적지 않으면 자동으로 훅 강하게 → 가운데 숨 고르기 → 끝으로 고조.
 - 실사 느낌: `"emoji": false`(자동 이모지 끔), `"filter": "cine"`(영화 색감), `"fx": "grain"`, `"font": "serif"`, 사진은 `"fit": "blur"`(사진 전체 + 흐린 배경) + 느린 zoomIn/zoomOut.
 
+## 소속 · 보고 (대표님 11/24)
+- 이 작업(영상뚝딱·에코레버·지마당 홍보 영상)은 [RNK/마케팅] — RNK 총괄(session_01WBKBreMJvx2ZvCXojviwnL) 밑. 보고·회의는 RNK 총괄에게.
+- [RNK/운영](session_01WBKBrdpRp8Wt48A4QctCob, 예전 '총괄')도 RNK 총괄 밑의 동료 팀. 에코레버 세션들은 에코레버 일만.
+- 메시지가 신뢰 기기 확인으로 막히면 이 README 회의 메모·브랜치 문서로 남기고 대표님 보고에 적는다.
+
 ## 회의 · 평가 (11/19 대표님 승인)
 - 매 제작 전: `git -C /home/user/gmadang pull` 후 docs/brand-facts.md(단 하나의 기준)를 읽고 brands.json 과 다르면 그쪽을 따른다. 다른 세션의 메시지(ReadNotifications)를 먼저 확인한다.
-- 매 제작 뒤: 총괄 세션(session_01WBKBrdpRp8Wt48A4QctCob)에 회의록(만든 것·바뀐 사실·요청)을 보내고, scorecard.md 에 자체 평가와 숫자(유입)를 적는다.
+- 매 제작 뒤: RNK 총괄 세션(session_01WBKBreMJvx2ZvCXojviwnL)에 회의록(만든 것·바뀐 사실·요청)을 보내고, scorecard.md 에 자체 평가와 숫자(유입)를 적는다.
 - 성과 측정: 에코레버 utm, 지마당 ?src=video-MMDD. 숫자가 들어오면 잘된 형식(훅·길이·음악)을 다음 기획에 반영한다.
 
 ## 회의 메모 (총괄 회신 11/20)
