@@ -65,6 +65,7 @@ const EXT = { 'image/jpeg': '.jpg', 'image/png': '.png', 'image/webp': '.webp', 
 async function collectFiles(job, baseDir, tmp) {
   const refs = new Set();
   (job.scenes || []).forEach(s => { const r = s && typeof s === 'object' && (s.image || s.photo || s.video); if (r) refs.add(String(r)); });
+  (job.scenes || []).forEach(s => { if (s && typeof s === 'object' && typeof s.voice === 'string' && s.voice) refs.add(s.voice); });
   if (job.music && job.music.file) refs.add(String(job.music.file));
   const lg = typeof job.logo === 'string' ? job.logo : job.logo && job.logo.image; if (lg) refs.add(String(lg));
   if (job.endcard && job.endcard.image) refs.add(String(job.endcard.image));

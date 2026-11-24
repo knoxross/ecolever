@@ -70,6 +70,21 @@ function checkSpec(spec) {
   }
   if (up.link && kit.site && !has(up.link, kit.site)) errors.push(`링크가 이 브랜드 사이트가 아닙니다: ${up.link}`);
   if (ex && ex.sourceLabel && !(up.source && has(up.source, ex.sourceLabel))) errors.push(`증정 영상은 출처를 '${ex.sourceLabel}'로 표시해야 합니다(upload.source)`);
+  // 3) '자연스러움' 기준: 화면 시간의 80% 이상이 실사(사진·영상 전체 화면). 휴대폰·카드 틀 안 사진은 절반만 인정, 글자 화면·끝 화면은 0
+  if (fixed.look === 'natural') {
+    let real = 0, total = 0;
+    for (const sc of fixed.scenes || []) {
+      if (typeof sc !== 'object') continue;
+      const d = +sc.duration || 3; total += d;
+      if (sc.image || sc.video || sc.ai) real += ['phone', 'card'].includes(sc.fit) ? d * 0.5 : d;
+      if (sc.transition && !['none', 'fade'].includes(sc.transition)) errors.push(`자연스러움 기준: 화려한 전환 '${sc.transition}' 대신 바로/페이드`);
+      if (d < 2 || d > 4) errors.push(`자연스러움 기준: 컷 길이는 2~4초(지금 ${d}초 — "${String(sc.text || '').slice(0, 12)}")`);
+    }
+    if (fixed.outro) total += 2.5;
+    const ratio = total ? real / total : 0;
+    if (ratio < 0.8) errors.push(`자연스러움 기준: 실사 화면 비율 ${Math.round(ratio * 100)}% (80% 이상 필요)`);
+    fixed.__realRatio = Math.round(ratio * 100);
+  }
   return { kit, errors, fixed };
 }
 module.exports = { checkSpec, loadKits };

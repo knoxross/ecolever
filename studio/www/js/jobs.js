@@ -68,6 +68,7 @@ function normalizeJob(raw) {
     if (typeof s.sub === 'string') look.sub = s.sub.slice(0, 120);
     if (s.aiLabel) look.aiLabel = true;
     if (s.countUp) look.countUp = true;
+    if (typeof s.voice === 'string' && s.voice.trim()) sc.voiceFile = str(s.voice, 2000);   // 대표님 녹음 등 목소리 파일 (장면 시작에 맞춤)
     if (/^#[0-9a-f]{6}$/i.test(s.listColor || '')) look.listColor = s.listColor;
     if (Array.isArray(s.list)) { const li = s.list.map(x => String(x || '').trim().slice(0, 40)).filter(Boolean).slice(0, 6); if (li.length) look.list = li; }
     if (s.focus && typeof s.focus === 'object' && +s.focus.s > 1) look.focus = { s: clamp(+s.focus.s, 1, 4), x: clamp(+s.focus.x || 0, -1, 1), y: clamp(+s.focus.y || 0, -1, 1) };   // AI 실사 장면: 화면에 'AI 제작' 표시
@@ -103,6 +104,24 @@ function normalizeJob(raw) {
   job.ad = raw.ad ? (typeof raw.ad === 'string' ? str(raw.ad, 12) : '광고') : '';
   // 끝 화면 아래 작은 글씨 한 줄 (회사 표기: 다른 브랜드 로고 대신 글자로만)
   job.footer = str(raw.footer, 60);
+  // '자연스러움' 기준(11/24): 실사 위주 · 전환은 바로/페이드만 · 효과음·움직이는 그래픽 없음 · 컷 2~4초 · 음악은 어쿠스틱 결로 낮게, 끝은 페이드아웃
+  job.natural = raw.look === 'natural';
+  if (job.natural) {
+    raw.emoji = false;
+    for (const sc of job.scenes) {
+      const L = sc.look || (sc.look = {});
+      if (L.transition && !['none', 'fade'].includes(L.transition)) L.transition = 'fade';
+      if (L.fx && L.fx !== 'grain') delete L.fx;
+      if (L.fx === 'grain') L.fxAmt = Math.min(L.fxAmt || 0.2, 0.25);
+      if (L.bgStyle && !['solid', 'gradient'].includes(L.bgStyle)) L.bgStyle = 'solid';
+      if (L.textAnim && !['none', 'fade'].includes(L.textAnim)) L.textAnim = 'fade';
+      delete L.sticker; delete L.emoji;
+      if (sc.image && !L.filter) L.filter = 'cine';
+      if (sc.duration) sc.duration = clamp(sc.duration, 2, 4);
+    }
+    if (job.music && !job.music.file && !raw.music?.style) job.music.style = 'acoustic';
+    if (job.music && job.music.volume == null) job.music.volume = 0.55;
+  }
   job.noEmoji = raw.emoji === false;   // 실사·영화 느낌: 글자 화면에 자동 이모지를 넣지 않음
   // 로고(워터마크) · 끝 화면 그림(QR 등) · 자유 겹치기
   const lg = typeof raw.logo === 'string' ? { image: raw.logo } : (raw.logo && typeof raw.logo === 'object' ? raw.logo : null);
@@ -211,6 +230,18 @@ async function buildFromJob(job, getFile, onStatus) {
     const m = f ? (await loadFiles([f])).added[0] : null;
     if (m && m.type === 'image') { m.role = 'logo'; Object.assign(S, { logoId: m.id, logoPos: job.logo.pos, logoSize: job.logo.size }); }
     else warn.push(`로고 파일을 찾지 못함(${job.logo.image})`);
+  }
+  // 장면 목소리 파일(녹음): 장면 시작에 맞춰 넣고, 배경음악은 그동안 자동으로 낮춤(더킹)
+  {
+    const scenesV = job.scenes.filter((sc, i) => sc.text || mediaIdx[i] >= 0);
+    for (let k = 0; k < scenesV.length; k++) {
+      const sc = scenesV[k], L = lay[k + (plan.title ? 1 : 0)];
+      if (!sc.voiceFile || !L) continue;
+      const f = await getFile(sc.voiceFile).catch(() => null);
+      const m = f ? (await loadFiles([f])).added[0] : null;
+      if (m && m.type === 'audio' && m.buffer) { m.role = 'voice'; L.clip.voiceId = m.id; L.clip.voiceDelay = 0.15; }
+      else warn.push(`목소리 파일을 찾지 못함(${sc.voiceFile})`);
+    }
   }
   if (job.ad && lay.length) { const T = lay[lay.length - 1].end; addOverlay({ type: 'text', text: job.ad, start: 0, end: T, w: 0.13, x: 0.1, y: 0.045, tpl: 'badge', color: '#1d1d1d', hl: '#F2C14E', font: "'Noto Sans KR'", anim: 'none' }); }
   for (const L of lay) if (L.clip._aiLabel) { addOverlay({ type: 'text', text: 'AI 제작', start: L.start, end: L.end, w: 0.1, x: 0.12, y: 0.965, tpl: 'basic', color: '#ffffff', anim: 'none' }); delete L.clip._aiLabel; }

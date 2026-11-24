@@ -1,0 +1,147 @@
+{
+  "brand": "ecolever",
+  "topic": "[견본] 자연스러움 기준 — 다시 들고 다니는 가방 (실사 위주·어쿠스틱·절제된 전환)",
+  "trend": "실사 클로즈업 위주 무드형 숏폼(브이로그 톤) · 자막만으로 이야기 · 음악은 어쿠스틱 핑거피킹",
+  "source": "brand-facts.md · FITI 시험성적서 · 에코레버 제품 사진",
+  "aspect": "9:16",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "행사 끝나고도\n다시 드는 가방",
+      "image": "../../assets/ecolever/product-1color.jpg",
+      "fit": "cover",
+      "focus": {
+        "s": 2.4,
+        "x": 0.15,
+        "y": 0.95
+      },
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 66,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 1
+    },
+    {
+      "text": "면 · 황마 혼방,\n손에 닿는 결",
+      "image": "../../assets/ecolever/product-2color.jpg",
+      "fit": "cover",
+      "focus": {
+        "s": 2.3,
+        "x": -0.3,
+        "y": -0.4
+      },
+      "motion": "panLeft",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 66,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.0,
+      "transition": "fade",
+      "energy": 1
+    },
+    {
+      "text": "40×37cm · 약 70g",
+      "sub": "손잡이 40cm",
+      "image": "../../assets/ecolever/product-2color.jpg",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.0,
+      "transition": "fade",
+      "energy": 2
+    },
+    {
+      "text": "근거는 성적서에",
+      "sub": "면 85.2% · 황마 10.9% · 레이온 3.9% (FITI)",
+      "image": "../../assets/ecolever/doc-fiti-test.jpg",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.4,
+      "transition": "fade",
+      "energy": 2
+    },
+    {
+      "text": "로고 인쇄 없이\n50장부터, 장당 1,000원",
+      "sub": "1칼라 · 부가세 별도",
+      "image": "../../assets/ecolever/product-1color.jpg",
+      "fit": "cover",
+      "focus": {
+        "s": 2.6,
+        "x": 0.55,
+        "y": 0.95
+      },
+      "motion": "panRight",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.4,
+      "transition": "fade",
+      "energy": 3
+    },
+    {
+      "text": "샘플 먼저\n받아 보세요",
+      "sub": "1칼라 실물 재고",
+      "image": "../../assets/ecolever/product-1color.jpg",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 66,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2
+    }
+  ],
+  "outro": "ecolever.co.kr",
+  "outro_sub": "02-6368-9989",
+  "card": {
+    "bg": [
+      "#1F2A21",
+      "#1F2A21"
+    ],
+    "bgStyle": "solid",
+    "color": "#EFE9DC"
+  },
+  "logo": {
+    "image": "../../assets/ecolever/symbol-ecolever-light.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "music": {
+    "style": "acoustic",
+    "meter": "4/4",
+    "bpm": 84,
+    "seed": 2411
+  },
+  "upload": {
+    "title": "다시 들고 다니는 가방 | 에코레버 에코백 50장부터",
+    "hashtags": [
+      "에코백",
+      "단체에코백",
+      "행사굿즈",
+      "기업굿즈",
+      "에코레버"
+    ],
+    "link": "https://www.ecolever.co.kr/",
+    "source": "FITI 시험성적서 · 에코레버 제품 사진 · 음악: 영상뚝딱 자체 작곡(저작권 없음)"
+  }
+}

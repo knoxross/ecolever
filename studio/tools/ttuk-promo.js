@@ -31,7 +31,7 @@ const slug = path.basename(dir);
 
 // 1) 작업 파일 두 개 (세로 쇼츠 · 정사각 피드)
 const base = { ...spec };
-delete base.brand; delete base.topic; delete base.trend; delete base.event;
+delete base.brand; delete base.topic; delete base.trend; delete base.event; delete base.__realRatio;
 const shorts = { ...base, aspect: '9:16', platform: 'shorts', export: { quality: 1080, fps: 30, vq: 'high', maxSizeMB: 9.5, name: `${slug}-shorts` } };
 const feed = { ...base, aspect: '1:1', platform: 'reels', export: { quality: 1080, fps: 30, vq: 'high', maxSizeMB: 9.5, name: `${slug}-feed` } };
 fs.writeFileSync(path.join(dir, 'shorts.json'), JSON.stringify(shorts, null, 2));

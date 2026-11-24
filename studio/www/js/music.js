@@ -33,6 +33,7 @@ const MUSIC_STYLES = [
   { v: 'corp', label: '💼 기업 홍보', bpm: 110, minor: false, prog: [[0, 'M'], [5, 'M'], [9, 'm'], [7, 'M']], prog2: [[5, 'M'], [0, 'M'], [7, 'M'], [9, 'm']], kit: 'pop', comp: ['pluckOst', 'pianoBlock'], bass: 'bass', lead: 'piano', lead2: 'glock', pad: 'strings', swing: 0, verb: 0.22, room: 2.0 },
   { v: 'hiphop', label: '🎧 힙합 그루브', bpm: 90, minor: true, prog: [[0, 'm7'], [5, 'm7'], [10, 'M'], [8, 'M7']], prog2: [[8, 'M7'], [10, 'M'], [0, 'm7'], [7, 'm7']], kit: 'hiphop', comp: ['rhodes'], bass: 'sub', lead: 'rhodes', lead2: 'flute', pad: null, swing: 0.12, verb: 0.18, room: 1.5 },
   { v: 'edm', label: '⚡ 신나는 EDM', bpm: 126, minor: true, prog: [[0, 'm'], [8, 'M'], [3, 'M'], [10, 'M']], prog2: [[8, 'M'], [10, 'M'], [0, 'm'], [7, 'm']], kit: 'edm', comp: ['saw'], bass: 'sub', lead: 'saw', lead2: 'glock', pad: 'saw', swing: 0, verb: 0.2, room: 1.8, sidechain: true },
+  { v: 'acoustic', label: '🎸 어쿠스틱 (자연스러운)', bpm: 84, minor: false, prog: [[0, 'add9'], [7, 'sus'], [9, 'm7'], [5, 'M7']], prog2: [[5, 'M7'], [0, 'add9'], [7, 'sus'], [9, 'm7']], kit: 'none', comp: ['fingerpick'], bass: 'upright', lead: 'piano', lead2: 'strings', pad: 'strings', swing: 0.04, verb: 0.26, room: 2.2 },
   { v: 'luxury', label: '💎 고급 피아노', bpm: 72, minor: false, prog: [[0, 'M9'], [4, 'm7'], [9, 'm7'], [5, 'M7']], prog2: [[2, 'm7'], [7, '7'], [4, 'm7'], [9, 'm7']], kit: 'none', comp: ['pianoArp'], bass: 'upright', lead: 'piano', lead2: 'strings', pad: 'strings', swing: 0, verb: 0.36, room: 3.0 },
 ];
 const MUSIC_KEYS = [['C', 0], ['C#', 1], ['D', 2], ['Eb', 3], ['E', 4], ['F', 5], ['F#', 6], ['G', 7], ['Ab', 8], ['A', 9], ['Bb', 10], ['B', 11]];
@@ -470,6 +471,16 @@ async function composeMusic(o) {
         } else if (kind === 'pianoOst') { // 영화식 8분음 반복
           for (let s = 0; s < sub; s++) { const m = s % 2 ? ch.v[2] : ch.v[0]; note('piano', m, tb + s * subLen + human(0.004), subLen * 0.9, L * (s === 0 ? 0.5 : 0.36)); }
           if (bt === 0) note('piano', ch.bass, tb, cyc * 0.95, L * 0.55);
+        } else if (kind === 'fingerpick') { // 어쿠스틱 기타 핑거피킹: 엄지는 베이스(1·3박), 손가락은 높은 줄을 번갈아
+          const thumb = bt % 2 === 0 ? ch.gv[0] : ch.gv[Math.min(1, ch.gv.length - 1)];
+          note('guitar', thumb, tb + human(0.006), T.beat * 1.6, L * 0.6 * av);
+          const hi = ch.gv.slice(-3);
+          for (let s = 1; s < Math.max(2, sub); s++) {
+            if (e <= 1 && (s > 1 || bt % 2)) continue;
+            const m = hi[(bt + s) % hi.length];
+            note('guitar', m, tb + s * (T.beat / Math.max(2, sub)) + swingAt(s) + human(0.008), T.beat * 1.2, L * (e >= 3 ? 0.5 : 0.42) * av);
+          }
+          if (e >= 3 && bt === beats - 1) note('guitar', hi[hi.length - 1] + 12, tb + T.beat * 0.5, T.beat, L * 0.35);
         } else if (kind === 'pluckOst') { // 어쿠스틱 기타 아르페지오
           if (e < 1) continue;
           const pat = [0, 2, 1, 3, 2, 1];
@@ -682,7 +693,7 @@ function parseMusicCommand(t) {
   if (/행진/.test(t)) o.meter = o.meter || '2/4';
   if (o.meter && !METERS.some(x => x.v === o.meter)) o.meter = '4/4';
   m = t.match(/(\d{2,3})\s*bpm/i); if (m) o.bpm = clamp(+m[1], 40, 200);
-  const styleRules = [['edm', /edm|클럽|일렉/i], ['hiphop', /힙합|랩|그루브/], ['lofi', /로파이|lo-?fi|카페/i], ['epic', /웅장|영화|장엄|트레일러|비장/], ['luxury', /고급|럭셔리|피아노|우아/], ['cute', /귀엽|동요|발랄|키즈/], ['calm', /잔잔|감성|차분|힐링/], ['corp', /기업|회사|홍보/], ['bright', /신나|경쾌|밝게|팝/]];
+  const styleRules = [['acoustic', /어쿠스틱|통기타|자연스러/], ['edm', /edm|클럽|일렉/i], ['hiphop', /힙합|랩|그루브/], ['lofi', /로파이|lo-?fi|카페/i], ['epic', /웅장|영화|장엄|트레일러|비장/], ['luxury', /고급|럭셔리|피아노|우아/], ['cute', /귀엽|동요|발랄|키즈/], ['calm', /잔잔|감성|차분|힐링/], ['corp', /기업|회사|홍보/], ['bright', /신나|경쾌|밝게|팝/]];
   for (const [k, re] of styleRules) if (re.test(t)) { o.style = k; break; }
   return o;
 }
