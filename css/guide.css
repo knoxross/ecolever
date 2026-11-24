@@ -21,3 +21,5 @@
 .g-list b{display:block;font-size:17px;margin-bottom:4px;color:var(--ink);}
 .g-list span{font-size:14px;color:var(--muted);}
 @media(max-width:600px){.wrap{padding:0 16px;}.g-nav{display:none;}.g-cta{margin-left:auto;}}
+/* 본 사이트 머리와 폭 맞춤: 넓은 화면에서 본문 + 오른쪽 견적 상자(고정) */
+@media(min-width:1000px){.g-main{max-width:1080px;display:grid;grid-template-columns:minmax(0,1fr) 300px;column-gap:44px;align-items:start}.g-main>*{grid-column:1}.g-main>.g-box{grid-column:2;grid-row:1/span 8;position:sticky;top:110px;margin-top:0}.g-list{grid-template-columns:1fr 1fr}}
