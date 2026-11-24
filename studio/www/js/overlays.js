@@ -13,6 +13,7 @@ const TEXT_TPLS = [
   { v: 'neon', label: '네온 (빛나는 글자)' },
   { v: 'bubble', label: '말풍선' },
   { v: 'cinema', label: '영화 자막 (명조)' },
+  { v: 'badge', label: '표시 배지 (광고·AI 제작)' },
 ];
 const STICKERS = ['😀', '😂', '😍', '🥰', '😎', '🤩', '😮', '😢', '👍', '👏', '🙌', '🔥', '✨', '💯', '❤️', '💚', '💛', '⭐', '🎉', '🎁', '🛍️', '👜', '🌿', '🍀', '☀️', '🌈', '📢', '📌', '✅', '❗', '❓', '👉', '👈', '👆', '👇', '💰', '🏷️', '🆕', '🔝', '⏰', '📞', '📍', '🚚', '🛒', '💡', '🎵', '📸', '🎬'];
 const OV_ANIMS = [{ v: 'none', label: '바로' }, { v: 'fade', label: '부드럽게' }, { v: 'pop', label: '톡 튀어나오기' }, { v: 'slide', label: '옆에서 들어오기' }, { v: 'float', label: '둥둥 떠 있기' }];
@@ -143,6 +144,17 @@ function drawTemplateText(lines, cx, y0, fs, tpl, color, hl, font, centered = tr
       x += ctx.measureText(r.text).width;
     }
   };
+  if (tpl === 'badge') { // 작은 표시 배지: '광고' 같은 법정 표시 — 어떤 화면 위에서도 또렷하게
+    const pad = fs * 0.42;
+    const w = mw + pad * 2, h = blockH + pad * 0.9, left = cx - w / 2;
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,0.35)'; ctx.shadowBlur = fs * 0.25;
+    ctx.fillStyle = hl || '#F2C14E';
+    roundRect(left, y0 - pad * 0.45, w, h, h * 0.3); ctx.fill();
+    ctx.restore();
+    lines.forEach((l, k) => { ctx.fillStyle = color || '#1d1d1d'; ctx.fillText(plain(l), left + pad, y0 + lh * k + lh / 2); });
+    return;
+  }
   if (tpl === 'news') {
     const pad = fs * 0.45;
     const left = centered ? cx - mw / 2 - pad * 1.6 : W * 0.04;

@@ -99,6 +99,8 @@ function normalizeJob(raw) {
   const cd = raw.card && typeof raw.card === 'object' ? raw.card : null;
   job.card = null;
   if (cd && Array.isArray(cd.bg) && /^#[0-9a-f]{6}$/i.test(cd.bg[0] || '')) job.card = { bgColor: cd.bg[0], bgColor2: /^#[0-9a-f]{6}$/i.test(cd.bg[1] || '') ? cd.bg[1] : cd.bg[0], bgStyle: BG_STYLES.some(b => b.v === cd.bgStyle) ? cd.bgStyle : 'aurora', textColor: /^#[0-9a-f]{6}$/i.test(cd.color || '') ? cd.color : '#ffffff' };
+  // 광고 표시(표시광고법·신문법): 영상 내내 왼쪽 위에 '광고' 배지
+  job.ad = raw.ad ? (typeof raw.ad === 'string' ? str(raw.ad, 12) : '광고') : '';
   job.noEmoji = raw.emoji === false;   // 실사·영화 느낌: 글자 화면에 자동 이모지를 넣지 않음
   // 로고(워터마크) · 끝 화면 그림(QR 등) · 자유 겹치기
   const lg = typeof raw.logo === 'string' ? { image: raw.logo } : (raw.logo && typeof raw.logo === 'object' ? raw.logo : null);
@@ -208,6 +210,7 @@ async function buildFromJob(job, getFile, onStatus) {
     if (m && m.type === 'image') { m.role = 'logo'; Object.assign(S, { logoId: m.id, logoPos: job.logo.pos, logoSize: job.logo.size }); }
     else warn.push(`로고 파일을 찾지 못함(${job.logo.image})`);
   }
+  if (job.ad && lay.length) { const T = lay[lay.length - 1].end; addOverlay({ type: 'text', text: job.ad, start: 0, end: T, w: 0.13, x: 0.1, y: 0.045, tpl: 'badge', color: '#1d1d1d', hl: '#F2C14E', font: "'Noto Sans KR'", anim: 'none' }); }
   for (const L of lay) if (L.clip._aiLabel) { addOverlay({ type: 'text', text: 'AI 제작', start: L.start, end: L.end, w: 0.1, x: 0.12, y: 0.965, tpl: 'basic', color: '#ffffff', anim: 'none' }); delete L.clip._aiLabel; }
   for (const L of lay) if (L.clip._jobSticker) { addOverlay({ type: 'sticker', text: L.clip._jobSticker, start: L.start + 0.15, end: L.end - 0.05, w: 0.18, x: 0.84, y: L.clip.kind === 'text' ? 0.2 : 0.42, anim: 'pop' }); delete L.clip._jobSticker; }
   if (job.endcard && lay.length) {

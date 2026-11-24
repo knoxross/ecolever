@@ -60,6 +60,7 @@ const trackLink = !baseLink || /[?&](utm_|src=)/.test(baseLink) ? baseLink
   : `${baseLink}${baseLink.includes('?') ? '&' : '?'}utm_source=instagram&utm_medium=social&utm_campaign=${mmdd}-${spec.brand}`;
 if (spec.upload) spec.upload.link = trackLink;
 const tags = (spec.upload && spec.upload.hashtags ? spec.upload.hashtags : brand.hashtags || []).map(t => '#' + String(t).replace(/^#/, ''));
+const adLine = spec.ad ? `[${typeof spec.ad === 'string' ? spec.ad : '광고'}] ` : '';
 const srcLine = spec.upload && spec.upload.source ? `출처: ${spec.upload.source}` : '';
 const lines = spec.scenes.map(s => (typeof s === 'string' ? s : s.text || '').replace(/\n/g, ' ')).filter(Boolean);
 const md = `# ${brand.name || spec.brand} 홍보물 — ${slug}
@@ -69,15 +70,15 @@ const md = `# ${brand.name || spec.brand} 홍보물 — ${slug}
 - 파일: ${res.map(x => `${x.file} (${x.width}×${x.height}, ${x.duration}초, ${(x.size_bytes / 1e6).toFixed(1)}MB, 검수 ${x.qa && x.qa.ok ? '통과' : '확인 필요'})`).join(' / ')}
 
 ## 유튜브 쇼츠
-제목: ${up.title || ''}
+제목: ${adLine}${up.title || ''}
 설명:
-${lines.join('\n')}
+${adLine}${lines.join('\n')}
 ${spec.outro || ''}${spec.outro_sub ? ' · ' + spec.outro_sub : ''}
 ${(spec.upload && spec.upload.link) || brand.site || ''}${srcLine ? '\n' + srcLine : ''}
 ${tags.slice(0, 5).join(' ')} #Shorts
 
 ## 인스타그램 릴스 · 피드
-${lines[0] || ''} 👇
+${adLine}${lines[0] || ''} 👇
 ${lines.slice(1).map(l => '✔ ' + l).join('\n')}
 
 ${spec.outro || ''}${spec.outro_sub ? '\n' + spec.outro_sub : ''}
@@ -86,7 +87,7 @@ ${spec.outro || ''}${spec.outro_sub ? '\n' + spec.outro_sub : ''}
 ${tags.join(' ')}
 
 ## 틱톡
-${lines[0] || ''} ${tags.slice(0, 4).join(' ')} #fyp
+${adLine}${lines[0] || ''} ${tags.slice(0, 4).join(' ')} #fyp
 
 ## 올리기 팁
 - 쇼츠·릴스·틱톡은 같은 날 오전 11~12시나 저녁 7~9시에 올리면 반응이 좋습니다.
