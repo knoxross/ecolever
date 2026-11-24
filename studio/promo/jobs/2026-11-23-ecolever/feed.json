@@ -142,9 +142,9 @@
     "color": "#EFE9DC"
   },
   "logo": {
-    "image": "../../assets/ecolever/logo.png",
+    "image": "../../assets/ecolever/symbol-ecolever-light.png",
     "pos": "tr",
-    "size": 0.1
+    "size": 0.09
   },
   "endcard": {
     "image": "../../assets/ecolever/qr-instagram.png",
@@ -172,6 +172,7 @@
     "link": "https://www.ecolever.co.kr/guide/community-grant-eco-bag.html",
     "source": "에코레버 구매 가이드(2026-11-22) · FITI 시험성적서"
   },
+  "footer": "(주)알앤케이그린월드",
   "platform": "reels",
   "export": {
     "quality": 1080,
