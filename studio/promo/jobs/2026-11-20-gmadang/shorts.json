@@ -20,7 +20,7 @@
       "hit": true
     },
     {
-      "text": "창간 회원 선착순 100명\n에코레버 에코백 1장 무료",
+      "text": "창간 회원 선착순 100명\n에코백 1장 무료",
       "sub": "배송비 무료 · 1인 1회 · 12월 31일까지",
       "image": "../../assets/gmadang/today-2026-11-20-me.png",
       "fit": "phone",
@@ -36,7 +36,7 @@
     },
     {
       "text": "바로 이 가방",
-      "sub": "ECOLEVER 에코백 · 40×37cm",
+      "sub": "창간 기념 증정 에코백 · 40×37cm",
       "image": "../../assets/ecolever/product-1color.jpg",
       "fit": "blur",
       "motion": "zoomIn",
@@ -130,15 +130,15 @@
       "지마당",
       "창간이벤트",
       "에코백증정",
-      "에코레버",
       "서울소식",
       "우리구소식",
       "동네신문",
       "무료회원"
     ],
     "link": "https://www.gmadang.com/",
-    "source": "지마당 창간 회원 이벤트(2026-11-17~12-31) · 지마당 AI 작성"
+    "source": "지마당 창간 이벤트(창간 회원 에코백 증정)"
   },
+  "footer": "발행 (주)알앤케이그린월드",
   "platform": "shorts",
   "export": {
     "quality": 1080,

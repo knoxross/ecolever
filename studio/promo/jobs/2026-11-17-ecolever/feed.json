@@ -120,9 +120,9 @@
     "color": "#EFE9DC"
   },
   "logo": {
-    "image": "../../assets/ecolever/logo.png",
+    "image": "../../assets/ecolever/symbol-ecolever-light.png",
     "pos": "tr",
-    "size": 0.1
+    "size": 0.09
   },
   "endcard": {
     "image": "../../assets/ecolever/qr-instagram.png",
@@ -150,6 +150,7 @@
     "link": "https://www.ecolever.co.kr/"
   },
   "emoji": false,
+  "footer": "(주)알앤케이그린월드",
   "platform": "reels",
   "export": {
     "quality": 1080,
