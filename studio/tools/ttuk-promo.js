@@ -19,14 +19,19 @@ if (!fs.existsSync(path.join(dir, 'spec.json'))) { console.error('사용법: nod
 const outDir = path.resolve(oi >= 0 ? args[oi + 1] : path.join(STUDIO, '..', 'deliver', 'promo', path.basename(dir)));
 fs.mkdirSync(outDir, { recursive: true });
 
-const spec = JSON.parse(fs.readFileSync(path.join(dir, 'spec.json'), 'utf8'));
+const spec0 = JSON.parse(fs.readFileSync(path.join(dir, 'spec.json'), 'utf8'));
+// 0) 브랜드 키트만 불러오고, 다른 브랜드 요소가 섞이면 만들기 전에 멈춤 (영상 하나 = 브랜드 하나)
+const { checkSpec } = require('./brand-kit.js');
+const chk = checkSpec(spec0);
+if (chk.errors.length) { console.error(`❌ 브랜드 섞임 검사 실패 — ${chk.kit ? chk.kit.name : spec0.brand}`); chk.errors.forEach(e => console.error('   - ' + e)); process.exit(3); }
+const spec = chk.fixed;
 const brands = JSON.parse(fs.readFileSync(path.join(STUDIO, 'promo', 'brands.json'), 'utf8'));
 const brand = brands[spec.brand] || {};
 const slug = path.basename(dir);
 
 // 1) 작업 파일 두 개 (세로 쇼츠 · 정사각 피드)
 const base = { ...spec };
-delete base.brand; delete base.topic; delete base.trend;
+delete base.brand; delete base.topic; delete base.trend; delete base.event;
 const shorts = { ...base, aspect: '9:16', platform: 'shorts', export: { quality: 1080, fps: 30, vq: 'high', maxSizeMB: 9.5, name: `${slug}-shorts` } };
 const feed = { ...base, aspect: '1:1', platform: 'reels', export: { quality: 1080, fps: 30, vq: 'high', maxSizeMB: 9.5, name: `${slug}-feed` } };
 fs.writeFileSync(path.join(dir, 'shorts.json'), JSON.stringify(shorts, null, 2));

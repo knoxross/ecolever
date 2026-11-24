@@ -105,9 +105,9 @@
   "outro": "견적은 ecolever.co.kr",
   "outro_sub": "02-6368-9989",
   "logo": {
-    "image": "../../assets/ecolever/logo.png",
+    "image": "../../assets/ecolever/symbol-ecolever-light.png",
     "pos": "tr",
-    "size": 0.12
+    "size": 0.09
   },
   "endcard": {
     "image": "../../assets/ecolever/qr-instagram.png",

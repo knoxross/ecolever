@@ -123,9 +123,9 @@
     "color": "#EFE9DC"
   },
   "logo": {
-    "image": "../../assets/ecolever/logo.png",
+    "image": "../../assets/ecolever/symbol-ecolever-light.png",
     "pos": "tr",
-    "size": 0.1
+    "size": 0.09
   },
   "endcard": {
     "image": "../../assets/ecolever/qr-instagram.png",

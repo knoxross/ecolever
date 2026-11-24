@@ -101,6 +101,8 @@ function normalizeJob(raw) {
   if (cd && Array.isArray(cd.bg) && /^#[0-9a-f]{6}$/i.test(cd.bg[0] || '')) job.card = { bgColor: cd.bg[0], bgColor2: /^#[0-9a-f]{6}$/i.test(cd.bg[1] || '') ? cd.bg[1] : cd.bg[0], bgStyle: BG_STYLES.some(b => b.v === cd.bgStyle) ? cd.bgStyle : 'aurora', textColor: /^#[0-9a-f]{6}$/i.test(cd.color || '') ? cd.color : '#ffffff' };
   // 광고 표시(표시광고법·신문법): 영상 내내 왼쪽 위에 '광고' 배지
   job.ad = raw.ad ? (typeof raw.ad === 'string' ? str(raw.ad, 12) : '광고') : '';
+  // 끝 화면 아래 작은 글씨 한 줄 (회사 표기: 다른 브랜드 로고 대신 글자로만)
+  job.footer = str(raw.footer, 60);
   job.noEmoji = raw.emoji === false;   // 실사·영화 느낌: 글자 화면에 자동 이모지를 넣지 않음
   // 로고(워터마크) · 끝 화면 그림(QR 등) · 자유 겹치기
   const lg = typeof raw.logo === 'string' ? { image: raw.logo } : (raw.logo && typeof raw.logo === 'object' ? raw.logo : null);
@@ -223,6 +225,7 @@ async function buildFromJob(job, getFile, onStatus) {
     }
     if (job.endcard.text) addOverlay({ type: 'text', text: job.endcard.text, start: last.start + 0.3, end: last.end, w: 0.22, x: 0.5, y: job.endcard.image ? 0.9 : 0.75, tpl: 'basic', color: '#ffffff', anim: 'fade' });
   }
+  if (job.footer && lay.length) { const last = lay[lay.length - 1]; addOverlay({ type: 'text', text: job.footer, start: last.start + 0.3, end: last.end, w: 0.075, x: 0.5, y: 0.975, tpl: 'basic', color: '#d8d8d8', font: "'Noto Sans KR'", anim: 'fade' }); }
   const total = totalDuration();
   for (const o of job.overlays) {
     const ov = { type: o.type, text: o.text, start: Math.min(o.start, Math.max(0, total - 0.3)), end: o.end > o.start ? Math.min(o.end, total) : Math.min(total, o.start + 3), x: o.x, y: o.y, w: o.w, tpl: o.tpl, color: o.color, anim: o.anim };
