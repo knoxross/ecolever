@@ -2,17 +2,60 @@
   "brand": "ecolever",
   "name": "ECOLEVER 에코레버",
   "status": "active",
-  "source_of_truth": ["대표님 PC C:\\Work\\ecolever\\shorts\\brand.json (기준, 이 세션에서는 아직 읽을 수 없음)", "knoxross/gmadang docs/brand-facts.md"],
+  "source_of_truth": [
+    "대표님 PC C:\\Work\\ecolever\\shorts\\brand.json (기준, 이 세션에서는 아직 읽을 수 없음)",
+    "knoxross/gmadang docs/brand-facts.md"
+  ],
   "logo": "assets/ecolever/symbol-ecolever-light.png",
-  "logoFiles": ["assets/ecolever/symbol-ecolever-light.png", "assets/ecolever/logo-ecolever-light.png", "assets/ecolever/ecolever-logo.svg", "assets/ecolever/ecolever-symbol.svg", "assets/ecolever/symbol-ecolever.png", "assets/ecolever/logo-ecolever.png"],
-  "colors": { "moss": "#3E5641", "mossDeep": "#2F4332", "paper": "#EFE9DC", "brass": "#A8823C", "ink": "#14110E" },
+  "logoFiles": [
+    "assets/ecolever/symbol-ecolever-light.png",
+    "assets/ecolever/logo-ecolever-light.png",
+    "assets/ecolever/ecolever-logo.svg",
+    "assets/ecolever/ecolever-symbol.svg",
+    "assets/ecolever/symbol-ecolever.png",
+    "assets/ecolever/logo-ecolever.png"
+  ],
+  "colors": {
+    "moss": "#3E5641",
+    "mossDeep": "#2F4332",
+    "paper": "#EFE9DC",
+    "brass": "#A8823C",
+    "ink": "#14110E"
+  },
   "font": "serif",
   "site": "ecolever.co.kr",
   "contact": "02-6368-9989",
-  "endcard": ["assets/ecolever/qr-instagram.png", "assets/ecolever/qr-youtube.png", "assets/ecolever/qr-tiktok.png", "assets/ecolever/logo-ecolever-light.png"],
-  "assetDirs": ["assets/ecolever/"],
-  "terms": ["에코레버", "ECOLEVER", "ecolever"],
-  "facts": ["50장부터 장당 1칼라 1,000원 · 2칼라 1,200원(부가세 별도)", "FITI 시험성적서 면 85.2% · 황마 10.9% · 레이온 3.9% (합성섬유 0%는 성적서 화면과 함께)", "40×37cm 약 70g", "견적서·세금계산서 발행 · 샘플 먼저", "1칼라 재고 600개(11/24 RNK 총괄 전달 — 영상에 수량을 쓸 때는 PC brand.json 확인 뒤)"],
-  "forbidden": ["잘 썩는", "땅에서 분해", "생분해", "식물성 섬유 100%", "무지", "100개부터", "1,000개부터", "흙으로 돌아가는"],
+  "endcard": [
+    "assets/ecolever/qr-instagram.png",
+    "assets/ecolever/qr-youtube.png",
+    "assets/ecolever/qr-tiktok.png",
+    "assets/ecolever/logo-ecolever-light.png"
+  ],
+  "assetDirs": [
+    "assets/ecolever/"
+  ],
+  "terms": [
+    "에코레버",
+    "ECOLEVER",
+    "ecolever"
+  ],
+  "facts": [
+    "50장부터 장당 1칼라 1,000원 · 2칼라 1,200원(부가세 별도)",
+    "FITI 시험성적서 면 85.2% · 황마 10.9% · 레이온 3.9% (합성섬유 0%는 성적서 화면과 함께)",
+    "40×37cm 약 70g",
+    "견적서·세금계산서 발행 · 샘플 먼저",
+    "1칼라 실물 재고 600개(대표님 11/24 확인)"
+  ],
+  "forbidden": [
+    "잘 썩는",
+    "땅에서 분해",
+    "생분해",
+    "식물성 섬유 100%",
+    "무지",
+    "100개부터",
+    "1,000개부터",
+    "흙으로 돌아가는",
+    "재고 1,000개"
+  ],
   "company_footer": "(주)알앤케이그린월드"
 }
