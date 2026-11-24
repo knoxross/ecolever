@@ -385,3 +385,28 @@ hr{border:0;border-top:1px solid var(--line);margin:14px 0;}
 .al-log .err { color: #ffb4a8; }
 pre.code { white-space: pre-wrap; word-break: break-all; background: rgba(0,0,0,.35); padding: 10px; border-radius: 8px; font-size: 11.5px; max-height: 260px; overflow: auto; }
 .warn { color: #ffd27a; }
+
+/* ---------- 3단계 빠른 만들기 · 간단히 보기 ---------- */
+.step.quick{gap:6px}
+.q-dots{display:inline-flex;gap:5px;margin-left:8px;vertical-align:middle}
+.q-dots span{width:9px;height:9px;border-radius:50%;background:var(--panel-3)}
+.q-dots span.on{background:var(--accent)}
+.q-drop{border:2px dashed var(--line);border-radius:12px;padding:16px;text-align:center}
+.q-drop.over{border-color:var(--accent);background:var(--panel-2)}
+.q-thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-top:10px;max-height:260px;overflow:auto}
+.q-thumb{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:#000}
+.q-thumb img,.q-thumb video{width:100%;height:100%;object-fit:cover}
+.q-thumb span{position:absolute;left:4px;top:4px;background:rgba(0,0,0,.6);color:#fff;font-size:12px;padding:1px 6px;border-radius:6px}
+.q-thumb button{position:absolute;right:4px;top:4px;border:0;background:rgba(0,0,0,.6);color:#fff;border-radius:6px;cursor:pointer}
+.q-tpls{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:10px}
+.q-tpl{display:flex;flex-direction:column;gap:3px;text-align:left;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--panel-2);color:var(--text);cursor:pointer}
+.q-tpl.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.q-tpl small{color:var(--muted)}
+.q-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px 12px}
+.q-grid label,.q-lines{display:flex;flex-direction:column;gap:4px;font-size:13px}
+.q-lines{margin-top:10px}
+.q-lines textarea{width:100%}
+.q-opts{display:flex;flex-direction:column;gap:6px;margin-top:10px;font-size:13px}
+body.simple .command,body.simple .timeline-wrap,body.simple #libraryPanel,body.simple #propsPanel,body.simple .step.auto{display:none}
+body.simple .layout{grid-template-columns:1fr;grid-template-rows:1fr;grid-template-areas:"stage"}
+#quickModal input:not([type=checkbox]):not([type=color]):not([type=file]),#quickModal select,#quickModal textarea{background:var(--panel-2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:7px 9px}

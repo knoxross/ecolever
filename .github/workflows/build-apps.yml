@@ -125,6 +125,18 @@ jobs:
         run: echo "v=$(node -p "require('./studio/package.json').version")" >> "$GITHUB_OUTPUT"
       - uses: actions/download-artifact@v4
         with: { path: out }
+      - name: 릴리스 노트 만들기 (studio/RELEASE_NOTES.md 의 바뀐 점 + 설치 안내)
+        run: |
+          {
+            echo "영상뚝딱 ${{ steps.ver.outputs.v }} 설치 파일"
+            echo "- 윈도우: YeongsangTtukttak-${{ steps.ver.outputs.v }}-win-x64.exe (처음 실행 시 \"추가 정보 → 실행\")"
+            echo "- 맥: …-mac-universal.dmg (처음 실행 시 앱을 우클릭 → 열기)"
+            echo "- 안드로이드: …-android.apk (\"출처를 알 수 없는 앱\" 허용 후 설치)"
+            echo
+            if [ -f studio/RELEASE_NOTES.md ]; then cat studio/RELEASE_NOTES.md; echo; fi
+            echo "© (주)알앤케이그린월드"
+          } > notes.md
+          cat notes.md
       - name: 파일 이름 정리
         run: |
           mkdir -p files
@@ -139,12 +151,7 @@ jobs:
           name: 영상뚝딱 ${{ steps.ver.outputs.v }} (빌드 ${{ github.run_number }})
           target_commitish: ${{ github.sha }}
           prerelease: ${{ !startsWith(github.ref, 'refs/tags/') }}
-          body: |
-            영상뚝딱 ${{ steps.ver.outputs.v }} 설치 파일
-            - 윈도우: YeongsangTtukttak-…-win-x64.exe (처음 실행 시 "추가 정보 → 실행")
-            - 맥: …-mac-universal.dmg (처음 실행 시 앱을 우클릭 → 열기)
-            - 안드로이드: …-android.apk ("출처를 알 수 없는 앱" 허용 후 설치)
-            © (주)알앤케이그린월드
+          body_path: notes.md
           files: files/*
       - name: 잠시 기다리기 (GitHub 일시 오류 대비)
         if: steps.rel1.outcome == 'failure'
@@ -157,10 +164,5 @@ jobs:
           name: 영상뚝딱 ${{ steps.ver.outputs.v }} (빌드 ${{ github.run_number }})
           target_commitish: ${{ github.sha }}
           prerelease: ${{ !startsWith(github.ref, 'refs/tags/') }}
-          body: |
-            영상뚝딱 ${{ steps.ver.outputs.v }} 설치 파일
-            - 윈도우: YeongsangTtukttak-…-win-x64.exe (처음 실행 시 "추가 정보 → 실행")
-            - 맥: …-mac-universal.dmg (처음 실행 시 앱을 우클릭 → 열기)
-            - 안드로이드: …-android.apk ("출처를 알 수 없는 앱" 허용 후 설치)
-            © (주)알앤케이그린월드
+          body_path: notes.md
           files: files/*

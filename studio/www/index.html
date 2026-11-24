@@ -26,6 +26,10 @@
 </header>
 
 <nav class="steps" id="steps">
+  <div class="step quick">
+    <button class="btn btn-sm btn-accent" id="quickBtn" title="사진 고르기 → 템플릿 → 미리보기, 3단계로 끝">⚡ 3단계로 만들기</button>
+    <button class="btn btn-sm" id="simpleToggle" title="타임라인·명령 칸을 접거나 펼치기">🔽 간단히 보기</button>
+  </div>
   <div class="step" data-step="1">
     <span class="num">1</span><span class="st-name">재료 넣기</span>
     <button class="btn btn-sm" id="importBtn" title="사진·영상·음악 가져오기 (Ctrl+I)">📁 사진·영상·음악</button>
@@ -156,6 +160,7 @@
       <canvas id="stage" width="1280" height="720"></canvas>
       <div class="stage-empty" id="stageEmpty">
         <h2>영상뚝딱 사용법</h2>
+        <p><button class="btn btn-accent" id="quickBtn2">⚡ 3단계로 바로 만들기</button></p>
         <ol>
           <li><b>1</b> 사진·동영상(+음악)을 넣어요</li>
           <li><b>2</b> 위 칸에 원하는 영상을 적어요</li>
@@ -301,6 +306,38 @@
 </main>
 
 <!-- 내보내기 설정 -->
+<div class="modal" id="quickModal" hidden>
+  <div class="modal-card wide">
+    <h3>⚡ 3단계로 만들기 <span class="q-dots"><span></span><span></span><span></span></span></h3>
+    <div class="q-step" data-q="1">
+      <p class="muted">1단계 · 사진·영상을 순서대로 골라 주세요 (최대 20개). 실제 사진·영상일수록 자연스러워요.</p>
+      <div class="q-drop" id="qDrop"><button class="btn" id="qPick" type="button">📁 사진·영상 고르기</button> <span class="muted small">또는 여기로 끌어다 놓기 · <span id="qCount">아직 없어요</span></span></div>
+      <input type="file" id="qFiles" multiple accept="image/*,video/*" hidden>
+      <div class="q-thumbs" id="qThumbs"></div>
+    </div>
+    <div class="q-step" data-q="2" hidden>
+      <p class="muted">2단계 · 템플릿을 고르고, 브랜드 하나만 적어 주세요. 영상 하나에는 브랜드 하나만 들어가요.</p>
+      <div class="q-tpls" id="qTpl"></div>
+      <div class="q-grid">
+        <label>화면 비율 <select id="qAspect"><option value="9:16">9:16 쇼츠·릴스·틱톡</option><option value="1:1">1:1 인스타 피드</option><option value="16:9">16:9 유튜브 가로</option></select></label>
+        <label>브랜드 이름 <input id="qBrand" placeholder="예) 에코레버"></label>
+        <label>사이트·연락처 <input id="qSite" placeholder="예) ecolever.co.kr · 02-000-0000"></label>
+        <label>브랜드 색 <input type="color" id="qColor" value="#2F4332"></label>
+        <label>로고(선택) <input type="file" id="qLogo" accept="image/*"> <small id="qLogoName" class="muted">없음</small></label>
+        <label>끝 화면 아래 한 줄(선택) <input id="qFooter" placeholder="예) (주)회사 이름"></label>
+      </div>
+      <label class="q-lines">장면별 자막 (한 줄 = 한 장면) <textarea id="qLines" rows="4"></textarea></label>
+      <div class="q-opts">
+        <label><input type="checkbox" id="qAutoSub"> 🎤 영상 속 말소리로 자막 자동</label>
+        <label><input type="checkbox" id="qVoice"> 🗣 자막을 자연스러운 AI 목소리로 읽기 (음악은 자동으로 작아져요)</label>
+        <span class="muted small" id="qKeyNote">말소리 자막·AI 목소리는 ⚙ AI 설정에 Google AI 키를 넣으면 켜져요.</span>
+      </div>
+    </div>
+    <p class="muted small">3단계 · 자막과 음악이 붙은 미리보기가 바로 재생돼요. 마음에 들면 ⬇ 동영상 저장, 고치려면 🛠 고급 편집 펼치기.</p>
+    <div class="modal-actions"><button class="btn" data-close>닫기</button><button class="btn" id="qBack" type="button">← 이전</button><button class="btn btn-accent" id="qNext" type="button">다음 →</button></div>
+  </div>
+</div>
+
 <div class="modal" id="exportModal" hidden>
   <div class="modal-card">
     <h2>⬇ 동영상 내보내기</h2>
@@ -645,5 +682,6 @@
 <script src="js/scheduler.js"></script>
 <script src="js/exporter.js"></script>
 <script src="js/ui.js"></script>
+<script src="js/quick.js"></script>
 </body>
 </html>
