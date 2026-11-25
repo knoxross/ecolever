@@ -1,0 +1,124 @@
+{
+  "brand": "gmadang",
+  "track": "2w02",
+  "topic": "서울백제어린이박물관 아기 매머드 '디마' 특별전 — 내년 3월 7일까지 무료",
+  "trend": "저장형 생활 정보 숏폼 · 실제 기사 화면 · 자막만으로 · 잔잔한 음악",
+  "source": "지마당 기사 https://www.gmadang.com/a/nq3yxc3.html (서울시 발표(내 손안에 서울))",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "4만 4,500년 전\n아기 매머드 '디마'",
+      "image": "../../../assets/gmadang/2w/nq3yxc3-0.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 2
+    },
+    {
+      "text": "서울백제어린이박물관 특별전",
+      "image": "../../../assets/gmadang/2w/nq3yxc3-1.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 1,
+      "sub": "11월 17일 ~ 2027년 3월 7일 · 관람료 무료"
+    },
+    {
+      "text": "매머드 뼈 연주하기 ·\n나만의 디마 엽서 꾸미기",
+      "image": "../../../assets/gmadang/2w/nq3yxc3-1.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "sub": "연계 체험"
+    },
+    {
+      "text": "화~금 오전 9시~오후 6시",
+      "image": "../../../assets/gmadang/2w/nq3yxc3-2.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "sub": "주말·공휴일 9시 30분~5시 30분 · 월요일 휴관"
+    },
+    {
+      "text": "상설전시는\n누리집에서 미리 예약",
+      "image": "../../../assets/gmadang/2w/nq3yxc3-3.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "sub": "겨울방학 아이와 가 볼 곳"
+    }
+  ],
+  "outro": "원문은 지마당에서",
+  "outro_sub": "gmadang.com",
+  "card": {
+    "bg": [
+      "#123A24",
+      "#123A24"
+    ],
+    "bgStyle": "solid",
+    "color": "#FFFFFF"
+  },
+  "logo": {
+    "image": "../../../assets/gmadang/icon-192.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/gmadang/og.png",
+    "size": 0.5
+  },
+  "music": {
+    "style": "acoustic",
+    "meter": "4/4",
+    "bpm": 96,
+    "seed": 2602
+  },
+  "upload": {
+    "title": "아기 매머드 '디마' 특별전, 내년 3월까지 무료 | 서울백제어린이박물관",
+    "hashtags": [
+      "어린이박물관",
+      "매머드",
+      "겨울방학",
+      "아이와갈만한곳",
+      "무료전시",
+      "지마당",
+      "서울소식"
+    ],
+    "link": "https://www.gmadang.com/a/nq3yxc3.html",
+    "source": "서울시 발표(내 손안에 서울) · 지마당 AI 작성"
+  }
+}

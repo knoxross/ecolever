@@ -68,7 +68,7 @@ for (const x of res) {
 // 4) 올릴 문구
 const up = res[0].upload || {};
 // 성과 측정 링크: 플랫폼마다 따로 (에코레버 utm_source, 지마당 ?src=video-MMDD-플랫폼, 20자 이하)
-const mmdd = (slug.match(/\d{4}-(\d{2})-(\d{2})/) || []).slice(1).join('');
+const mmdd = (slug.match(/\d{4}-(\d{2})-(\d{2})/) || []).slice(1).join('') || String(spec.track || slug).replace(/[^a-z0-9]/gi, '').slice(0, 6).toLowerCase();   // 날짜 없는 미리 만든 편은 track 값(예: 2w01)
 const baseLink = (spec.upload && spec.upload.link) || brand.site || '';
 const PL = { youtube: 'yt', instagram: 'ig', threads: 'th', naver: 'nb', tiktok: 'tt' };
 const linkFor = pf => {

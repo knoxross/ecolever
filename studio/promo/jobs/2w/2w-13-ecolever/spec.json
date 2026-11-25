@@ -1,0 +1,138 @@
+{
+  "brand": "ecolever",
+  "track": "2w13",
+  "topic": "로고 인쇄 없이 꾸미는 법 — 스티커·도장·손글씨(소량 행사용)",
+  "trend": "실물 클로즈업 무드형 숏폼 · 자막만으로 · 어쿠스틱",
+  "source": "brand-facts.md · 에코레버 구매 가이드 · brand-facts.md",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "로고 없는 에코백,\n이렇게 꾸며 보세요",
+      "image": "../../../assets/ecolever/product-2color.jpg",
+      "fit": "cover",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 1,
+      "focus": {
+        "s": 2.1,
+        "x": 0.2,
+        "y": 0.9
+      }
+    },
+    {
+      "text": "스티커 · 도장 · 손글씨",
+      "image": "../../../assets/ecolever/product-1color.jpg",
+      "fit": "cover",
+      "motion": "panRight",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "focus": {
+        "s": 2.3,
+        "x": 0.15,
+        "y": 0.95
+      },
+      "sub": "소량은 인쇄보다 비용·일정에 유리"
+    },
+    {
+      "text": "행사 이름·'○○ 지원' 표기도",
+      "image": "../../../assets/ecolever/guide-grant-top.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "sub": "에코레버 구매 가이드"
+    },
+    {
+      "text": "가방에 인쇄하려면\n10,000장부터",
+      "image": "../../../assets/ecolever/product-2color.jpg",
+      "fit": "cover",
+      "motion": "panLeft",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "focus": {
+        "s": 2.3,
+        "x": -0.3,
+        "y": -0.4
+      },
+      "sub": "에코레버 로고 인쇄 기준"
+    },
+    {
+      "text": "인쇄 없는 가방은 50장부터",
+      "image": "../../../assets/ecolever/product-1color.jpg",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "sub": "장당 1,000원 · 부가세 별도"
+    }
+  ],
+  "outro": "샘플 먼저\n받아 보세요",
+  "outro_sub": "ecolever.co.kr · 02-6368-9989",
+  "card": {
+    "bg": [
+      "#1F2A21",
+      "#1F2A21"
+    ],
+    "bgStyle": "solid",
+    "color": "#EFE9DC"
+  },
+  "logo": {
+    "image": "../../../assets/ecolever/symbol-ecolever-light.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/ecolever/qr-instagram.png",
+    "text": "QR · 인스타그램",
+    "size": 0.2
+  },
+  "music": {
+    "style": "lofi",
+    "meter": "4/4",
+    "bpm": 84,
+    "seed": 2713
+  },
+  "upload": {
+    "title": "로고 인쇄 없이 에코백 꾸미는 법 | 스티커·도장·손글씨",
+    "hashtags": [
+      "에코백꾸미기",
+      "에코백",
+      "행사굿즈",
+      "단체에코백",
+      "에코레버"
+    ],
+    "link": "https://www.ecolever.co.kr/",
+    "source": "에코레버 구매 가이드 · brand-facts.md · 음악: 영상뚝딱 자체 작곡"
+  }
+}
