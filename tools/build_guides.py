@@ -181,7 +181,7 @@ def main():
     (OUT / "index.html").write_text(idx, encoding="utf-8")
 
     latest = posts[0]["date"] if posts else "2026-11-01"
-    urls = [(f"{SITE}/", latest, "1.0"), (f"{SITE}/guide/", latest, "0.8"), (f"{SITE}/faq/", "2026-11-25", "0.8")] + [(f"{SITE}/guide/{u}.html", "2026-11-25", "0.8") for u, _, _ in USES] + [(f"{SITE}/guide/{m['slug']}.html", m["date"], "0.7") for m in posts]
+    urls = [(f"{SITE}/", latest, "1.0"), (f"{SITE}/guide/", latest, "0.8"), (f"{SITE}/guide/faq.html", "2026-11-25", "0.8")] + [(f"{SITE}/guide/{u}.html", "2026-11-25", "0.8") for u, _, _ in USES] + [(f"{SITE}/guide/{m['slug']}.html", m["date"], "0.7") for m in posts]
     (ROOT / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
         "".join(f"  <url><loc>{u}</loc><lastmod>{d}</lastmod><priority>{p}</priority></url>\n" for u, d, p in urls) + "</urlset>\n", encoding="utf-8")
 
@@ -201,7 +201,7 @@ def main():
             "",
             "## 핵심 페이지",
             f"- [제품·사양·인증서류·견적 문의]({SITE}/): 40×37cm, 손잡이 40cm, 1칼라·2칼라",
-            f"- [자주 묻는 질문]({SITE}/faq/): 단체 주문, 가격, 인쇄, 납기, 소재, 서류, 견적 방법",
+            f"- [자주 묻는 질문]({SITE}/guide/faq.html): 단체 주문, 가격, 인쇄, 납기, 소재, 서류, 견적 방법",
             "",
             "## 운영사·계열 서비스",
             "- 운영사: (주)알앤케이그린월드 (여성기업, 서울특별시 동작구 성대로25길 11, 대표이사 김국화, 사업자등록번호 522-87-02135) — [회사 소개](https://www.gmadang.com/rnk/)",
