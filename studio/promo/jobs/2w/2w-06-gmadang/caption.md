@@ -2,7 +2,7 @@
 
 - 주제: 성동구 12월부터 '이동식 반려동물 장례' — 구민 60% 할인, 75세 이상 홀몸 어르신 무료
 - 활용한 트렌드: 저장형 생활 정보 숏폼 · 실제 기사 화면 · 자막만으로 · 잔잔한 음악
-- 파일: 2w-06-gmadang-wide.mp4 (1920×1080, 19.15초, 17.1MB, 검수 통과)
+- 파일: 2w-06-gmadang-shorts.mp4 (1080×1920, 19.15초, 8.4MB, 검수 통과) / 2w-06-gmadang-feed.mp4 (1080×1350, 19.15초, 8.2MB, 검수 통과) / 2w-06-gmadang-wide.mp4 (1920×1080, 19.15초, 16.9MB, 검수 통과)
 - 규격표: studio/promo/platform-specs.md · 게시 전 RNK 총괄 승인
 
 ## 유튜브 쇼츠 — 2w-06-gmadang-shorts.mp4 (표지 cover-shorts.jpg)

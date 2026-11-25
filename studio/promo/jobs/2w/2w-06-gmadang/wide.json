@@ -17,6 +17,10 @@
       "duration": 3.2,
       "transition": "none",
       "energy": 1,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
       "sub": "성동구 이동식 반려동물 장례 · 12월부터"
     },
     {
@@ -32,6 +36,10 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 1,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
       "sub": "추모 예식 · 차량 안에서 화장 · 유골함 전달"
     },
     {
@@ -47,6 +55,10 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
       "sub": "취약계층 80% · 만 75세 이상 홀몸 어르신 무료"
     },
     {
@@ -62,6 +74,10 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
       "sub": "등록 안 했다면 미리 해 두세요"
     },
     {
@@ -76,7 +92,11 @@
       "textAnim": "fade",
       "duration": 3.2,
       "transition": "fade",
-      "energy": 2
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      }
     }
   ],
   "outro": "원문은 지마당에서",

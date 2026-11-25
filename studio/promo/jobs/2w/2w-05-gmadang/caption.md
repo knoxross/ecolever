@@ -2,7 +2,7 @@
 
 - 주제: 서울시 명소 13곳 '3D 디지털 배경' 무료 배포 — 웹툰·애니 상업용도 가능
 - 활용한 트렌드: 저장형 생활 정보 숏폼 · 실제 기사 화면 · 자막만으로 · 잔잔한 음악
-- 파일: 2w-05-gmadang-wide.mp4 (1920×1080, 16.85초, 17.1MB, 검수 통과)
+- 파일: 2w-05-gmadang-shorts.mp4 (1080×1920, 16.85초, 8.4MB, 검수 통과) / 2w-05-gmadang-feed.mp4 (1080×1350, 16.85초, 8.3MB, 검수 통과) / 2w-05-gmadang-wide.mp4 (1920×1080, 16.85초, 16.8MB, 검수 통과)
 - 규격표: studio/promo/platform-specs.md · 게시 전 RNK 총괄 승인
 
 ## 유튜브 쇼츠 — 2w-05-gmadang-shorts.mp4 (표지 cover-shorts.jpg)

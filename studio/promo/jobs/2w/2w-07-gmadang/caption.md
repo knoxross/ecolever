@@ -2,7 +2,7 @@
 
 - 주제: 서대문구 백련산 숲속치유센터 겨울 프로그램 11/29~12/27 — 회당 10명 이내
 - 활용한 트렌드: 저장형 생활 정보 숏폼 · 실제 기사 화면 · 자막만으로 · 잔잔한 음악
-- 파일: 2w-07-gmadang-wide.mp4 (1920×1080, 16.44초, 17.1MB, 검수 통과)
+- 파일: 2w-07-gmadang-shorts.mp4 (1080×1920, 16.44초, 8.3MB, 검수 통과) / 2w-07-gmadang-feed.mp4 (1080×1350, 16.44초, 8.3MB, 검수 통과) / 2w-07-gmadang-wide.mp4 (1920×1080, 16.44초, 16.4MB, 검수 통과)
 - 규격표: studio/promo/platform-specs.md · 게시 전 RNK 총괄 승인
 
 ## 유튜브 쇼츠 — 2w-07-gmadang-shorts.mp4 (표지 cover-shorts.jpg)
