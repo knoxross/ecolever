@@ -1,0 +1,146 @@
+{
+  "track": "2w14",
+  "source": "brand-facts.md · brand-facts.md",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "송년회 기념품,\n올해는 뭘로 하죠?",
+      "image": "../../../assets/ecolever/product-1color.jpg",
+      "fit": "cover",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 2,
+      "focus": {
+        "s": 2.3,
+        "x": 0.15,
+        "y": 0.95
+      }
+    },
+    {
+      "text": "받자마자 서랍행 말고",
+      "image": "../../../assets/ecolever/product-2color.jpg",
+      "fit": "cover",
+      "motion": "panLeft",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 1,
+      "focus": {
+        "s": 2.3,
+        "x": -0.3,
+        "y": -0.4
+      },
+      "sub": "다음에도 들고 다니는 가방"
+    },
+    {
+      "text": "40×37cm · 약 70g",
+      "image": "../../../assets/ecolever/product-1color.jpg",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "sub": "손잡이 40cm · 면·황마 혼방"
+    },
+    {
+      "text": "로고 인쇄 없이 50장부터",
+      "image": "../../../assets/ecolever/product-2color.jpg",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "sub": "1칼라 1,000원 · 2칼라 1,200원(부가세 별도)"
+    },
+    {
+      "text": "견적서 · 세금계산서 발행",
+      "image": "../../../assets/ecolever/product-1color.jpg",
+      "fit": "cover",
+      "motion": "panRight",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "focus": {
+        "s": 2.6,
+        "x": 0.55,
+        "y": 0.95
+      },
+      "sub": "샘플을 먼저 받아 보세요"
+    }
+  ],
+  "outro": "샘플 먼저\n받아 보세요",
+  "outro_sub": "ecolever.co.kr · 02-6368-9989",
+  "card": {
+    "bg": [
+      "#1F2A21",
+      "#1F2A21"
+    ],
+    "bgStyle": "solid",
+    "color": "#EFE9DC"
+  },
+  "logo": {
+    "image": "../../../assets/ecolever/symbol-ecolever-light.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/ecolever/qr-instagram.png",
+    "text": "QR · 인스타그램",
+    "size": 0.2
+  },
+  "music": {
+    "style": "acoustic",
+    "meter": "4/4",
+    "bpm": 96,
+    "seed": 2714
+  },
+  "upload": {
+    "title": "송년회·워크숍 기념품 | 다시 드는 에코백, 50장부터",
+    "hashtags": [
+      "송년회",
+      "워크숍",
+      "기념품",
+      "행사굿즈",
+      "단체에코백",
+      "에코레버"
+    ],
+    "link": "https://www.ecolever.co.kr/",
+    "source": "brand-facts.md · 음악: 영상뚝딱 자체 작곡"
+  },
+  "footer": "(주)알앤케이그린월드",
+  "aspect": "16:9",
+  "platform": "youtube",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 20,
+    "name": "2w-14-ecolever-wide"
+  }
+}

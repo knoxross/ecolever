@@ -1,0 +1,132 @@
+{
+  "track": "2w07",
+  "source": "지마당 기사 https://www.gmadang.com/a/nx14ow.html (서대문구 발표(구청 보도자료))",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "추운 날에도 숲에서\n쉬어 가세요",
+      "image": "../../../assets/gmadang/2w/nx14ow-0.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 1,
+      "sub": "서대문구 백련산 숲속치유센터"
+    },
+    {
+      "text": "12월 6일(일) 수능 마친\n학생·학부모 초대",
+      "image": "../../../assets/gmadang/2w/nx14ow-1.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "sub": "호흡명상 · 꽃차 · 꽃말 나누기"
+    },
+    {
+      "text": "12월 13일 임신부·예비 부모",
+      "image": "../../../assets/gmadang/2w/nx14ow-1.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "sub": "12월 20일 취업준비생·대학생"
+    },
+    {
+      "text": "12월 27일 일반 성인 '숲, 숨, 쉼'",
+      "image": "../../../assets/gmadang/2w/nx14ow-2.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "sub": "회당 10명 이내 소규모"
+    },
+    {
+      "text": "공공서비스예약에서\n'백련산 치유' 검색",
+      "image": "../../../assets/gmadang/2w/nx14ow-3.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "sub": "일찍 신청하세요"
+    }
+  ],
+  "outro": "원문은 지마당에서",
+  "outro_sub": "gmadang.com",
+  "card": {
+    "bg": [
+      "#123A24",
+      "#123A24"
+    ],
+    "bgStyle": "solid",
+    "color": "#FFFFFF"
+  },
+  "logo": {
+    "image": "../../../assets/gmadang/icon-192.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/gmadang/og.png",
+    "size": 0.5
+  },
+  "music": {
+    "style": "acoustic",
+    "meter": "4/4",
+    "bpm": 84,
+    "seed": 2607
+  },
+  "upload": {
+    "title": "백련산 숲속치유센터 겨울 프로그램 | 수험생·예비 부모·청년",
+    "hashtags": [
+      "숲치유",
+      "서대문구",
+      "수능끝",
+      "주말나들이",
+      "힐링",
+      "지마당",
+      "서울소식"
+    ],
+    "link": "https://www.gmadang.com/a/nx14ow.html",
+    "source": "서대문구 발표(구청 보도자료) · 지마당 AI 작성"
+  },
+  "footer": "발행 (주)알앤케이그린월드",
+  "aspect": "9:16",
+  "platform": "shorts",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 9.5,
+    "name": "2w-07-gmadang-shorts"
+  }
+}

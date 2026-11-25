@@ -41,7 +41,8 @@ const OUT = {
   square: { aspect: '1:1', platform: 'reels' },
   wide: { aspect: '16:9', platform: 'youtube' },
 };
-const outputs = (Array.isArray(spec.outputs) && spec.outputs.length ? spec.outputs : ['shorts', 'feed', 'wide']).filter(k => OUT[k]);
+const onlyI = args.indexOf('--only');   // 예: --only wide → 그 비율만 다시 만듦(문구에는 이미 있는 파일도 적음)
+const outputs = (onlyI >= 0 ? String(args[onlyI + 1] || '').split(',') : Array.isArray(spec.outputs) && spec.outputs.length ? spec.outputs : ['shorts', 'feed', 'wide']).filter(k => OUT[k]);
 const jobFiles = outputs.map(k => {
   const j = { ...base, ...OUT[k], export: { quality: 1080, fps: 30, vq: 'high', maxSizeMB: k === 'wide' ? 20 : 9.5, name: `${slug}-${k}` } };
   const f = path.join(dir, `${k}.json`); fs.writeFileSync(f, JSON.stringify(j, null, 2)); return f;
@@ -81,7 +82,7 @@ const adLine = spec.ad ? `[${typeof spec.ad === 'string' ? spec.ad : '광고'}] 
 const srcLine = spec.upload && spec.upload.source ? `출처: ${spec.upload.source}` : '';
 const lines = spec.scenes.map(s => (typeof s === 'string' ? s : s.text || '').replace(/\n/g, ' ')).filter(Boolean);
 const outro = `${(spec.outro || '').replace(/\n/g, ' ')}${spec.outro_sub ? ' · ' + spec.outro_sub : ''}`;
-const fileOf = k => (res.find(x => x.file.endsWith(`-${k}.mp4`)) || {}).file || '(없음)';
+const fileOf = k => (res.find(x => x.file.endsWith(`-${k}.mp4`)) || {}).file || (fs.existsSync(path.join(outDir, `${slug}-${k}.mp4`)) ? `${slug}-${k}.mp4` : '(없음)');
 const md = `# ${brand.name || spec.brand} 홍보물 — ${slug}
 
 - 주제: ${spec.topic || ''}

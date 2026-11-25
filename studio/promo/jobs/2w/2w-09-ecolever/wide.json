@@ -1,0 +1,145 @@
+{
+  "track": "2w09",
+  "source": "brand-facts.md · brand-facts.md",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "어떤 색이\n우리 행사에 맞을까요?",
+      "image": "../../../assets/ecolever/product-1color.jpg",
+      "fit": "cover",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 1,
+      "focus": {
+        "s": 2.3,
+        "x": 0.15,
+        "y": 0.95
+      }
+    },
+    {
+      "text": "1칼라 · 크림톤 단색",
+      "image": "../../../assets/ecolever/product-1color.jpg",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "sub": "실물 샘플을 먼저 받아 볼 수 있어요"
+    },
+    {
+      "text": "2칼라 · 그레이·크림 투톤",
+      "image": "../../../assets/ecolever/product-2color.jpg",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "sub": "주문하시면 생산"
+    },
+    {
+      "text": "둘 다 40×37cm · 약 70g",
+      "image": "../../../assets/ecolever/product-2color.jpg",
+      "fit": "cover",
+      "motion": "panLeft",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "focus": {
+        "s": 2.3,
+        "x": -0.3,
+        "y": -0.4
+      },
+      "sub": "손잡이 40cm"
+    },
+    {
+      "text": "장당 1,000원 · 1,200원",
+      "image": "../../../assets/ecolever/product-1color.jpg",
+      "fit": "cover",
+      "motion": "panRight",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "focus": {
+        "s": 2.6,
+        "x": 0.55,
+        "y": 0.95
+      },
+      "sub": "로고 인쇄 없이 50장부터 · 부가세 별도"
+    }
+  ],
+  "outro": "샘플 먼저\n받아 보세요",
+  "outro_sub": "ecolever.co.kr · 02-6368-9989",
+  "card": {
+    "bg": [
+      "#1F2A21",
+      "#1F2A21"
+    ],
+    "bgStyle": "solid",
+    "color": "#EFE9DC"
+  },
+  "logo": {
+    "image": "../../../assets/ecolever/symbol-ecolever-light.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/ecolever/qr-instagram.png",
+    "text": "QR · 인스타그램",
+    "size": 0.2
+  },
+  "music": {
+    "style": "calm",
+    "meter": "4/4",
+    "bpm": 80,
+    "seed": 2709
+  },
+  "upload": {
+    "title": "1칼라 vs 2칼라, 어떤 에코백이 맞을까요?",
+    "hashtags": [
+      "에코백",
+      "단체에코백",
+      "에코백추천",
+      "행사굿즈",
+      "에코레버"
+    ],
+    "link": "https://www.ecolever.co.kr/",
+    "source": "brand-facts.md · 음악: 영상뚝딱 자체 작곡"
+  },
+  "footer": "(주)알앤케이그린월드",
+  "aspect": "16:9",
+  "platform": "youtube",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 20,
+    "name": "2w-09-ecolever-wide"
+  }
+}

@@ -155,7 +155,7 @@ JOBS['2w-10-ecolever'] = eco(10, "성적서로 말하는 에코백 — FITI 면 
 
 JOBS['2w-11-ecolever'] = eco(11, "기관·단체 구매 담당자 체크 — 견적서·세금계산서·여성기업 확인서", [
     escene('product-1color.jpg', "구매 담당자라면\n서류부터 보시죠", focus=TOP1, e=1),
-    escene('doc-women-business.jpg', "여성기업 확인서 보유", "기관 구매 때 확인하세요", fit='blur', motion='zoomOut', e=2),
+    escene('doc-women-business-blur.jpg', "여성기업 확인서 보유", "기관 구매 때 확인하세요", fit='blur', motion='zoomOut', e=2),
     escene('product-2color.jpg', "견적서 · 세금계산서 발행", "통신판매업 신고 완료", focus=TEX2, motion='panLeft', e=2),
     escene('doc-fiti-test.jpg', "원단은 FITI 시험성적서로", "면 85.2% · 황마 10.9% · 레이온 3.9%", fit='blur', e=2),
     escene('product-1color.jpg', "로고 인쇄 없이 50장부터", "장당 1,000원 · 부가세 별도", focus=TOP1b, motion='panRight', e=3),

@@ -1,0 +1,130 @@
+{
+  "track": "2w06",
+  "source": "지마당 기사 https://www.gmadang.com/a/nn5uyfd.html (성동구 발표(시정일보 보도))",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "반려동물과의 마지막 인사,\n집 앞으로 찾아와요",
+      "image": "../../../assets/gmadang/2w/nn5uyfd-0.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 1,
+      "sub": "성동구 이동식 반려동물 장례 · 12월부터"
+    },
+    {
+      "text": "장례 차량이 원하는 곳으로",
+      "image": "../../../assets/gmadang/2w/nn5uyfd-1.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 1,
+      "sub": "추모 예식 · 차량 안에서 화장 · 유골함 전달"
+    },
+    {
+      "text": "성동구민 60% 할인",
+      "image": "../../../assets/gmadang/2w/nn5uyfd-1.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "sub": "취약계층 80% · 만 75세 이상 홀몸 어르신 무료"
+    },
+    {
+      "text": "동물등록을 마친\n반려가구가 대상",
+      "image": "../../../assets/gmadang/2w/nn5uyfd-2.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "sub": "등록 안 했다면 미리 해 두세요"
+    },
+    {
+      "text": "신청 방법은 12월\n성동구청 누리집에서",
+      "image": "../../../assets/gmadang/2w/nn5uyfd-3.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2
+    }
+  ],
+  "outro": "원문은 지마당에서",
+  "outro_sub": "gmadang.com",
+  "card": {
+    "bg": [
+      "#123A24",
+      "#123A24"
+    ],
+    "bgStyle": "solid",
+    "color": "#FFFFFF"
+  },
+  "logo": {
+    "image": "../../../assets/gmadang/icon-192.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/gmadang/og.png",
+    "size": 0.5
+  },
+  "music": {
+    "style": "calm",
+    "meter": "4/4",
+    "bpm": 72,
+    "seed": 2606
+  },
+  "upload": {
+    "title": "이동식 반려동물 장례, 구민 60% 할인 | 성동구 12월부터",
+    "hashtags": [
+      "반려동물",
+      "반려동물장례",
+      "성동구",
+      "펫로스",
+      "지마당",
+      "서울소식"
+    ],
+    "link": "https://www.gmadang.com/a/nn5uyfd.html",
+    "source": "성동구 발표(시정일보 보도) · 지마당 AI 작성"
+  },
+  "footer": "발행 (주)알앤케이그린월드",
+  "aspect": "16:9",
+  "platform": "youtube",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 20,
+    "name": "2w-06-gmadang-wide"
+  }
+}

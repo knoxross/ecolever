@@ -1,0 +1,132 @@
+{
+  "track": "2w04",
+  "source": "지마당 기사 https://www.gmadang.com/a/nq4783h.html (지마당 정리(동대문구·용산구·성동구·서초구·은평구·한국환경산업기술원 발표))",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "빈 페트병 1개에 10포인트",
+      "image": "../../../assets/gmadang/2w/nq4783h-0.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 2,
+      "sub": "동대문구 무인회수기 · 11월 24일 기준"
+    },
+    {
+      "text": "2,000포인트(200개)부터\n현금으로",
+      "image": "../../../assets/gmadang/2w/nq4783h-1.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 1,
+      "sub": "'수퍼빈' 앱 · 동대문구청 광장 등 4곳"
+    },
+    {
+      "text": "장바구니 쓰면 회당 50원",
+      "image": "../../../assets/gmadang/2w/nq4783h-1.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "sub": "탄소중립포인트 참여 매장 · 1인 연 최대 7만 원"
+    },
+    {
+      "text": "텀블러 할인 · 컵 회수기 ·\n자원순환 견학까지",
+      "image": "../../../assets/gmadang/2w/nq4783h-2.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "sub": "성동구 · 서초구 · 은평구"
+    },
+    {
+      "text": "라벨 떼고 모아 두세요",
+      "image": "../../../assets/gmadang/2w/nq4783h-3.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "sub": "탄소중립포인트 가입 cpoint.or.kr"
+    }
+  ],
+  "outro": "원문은 지마당에서",
+  "outro_sub": "gmadang.com",
+  "card": {
+    "bg": [
+      "#123A24",
+      "#123A24"
+    ],
+    "bgStyle": "solid",
+    "color": "#FFFFFF"
+  },
+  "logo": {
+    "image": "../../../assets/gmadang/icon-192.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/gmadang/og.png",
+    "size": 0.5
+  },
+  "music": {
+    "style": "acoustic",
+    "meter": "4/4",
+    "bpm": 92,
+    "seed": 2604
+  },
+  "upload": {
+    "title": "빈 페트병·장바구니·텀블러로 포인트 받는 곳 6가지",
+    "hashtags": [
+      "탄소중립포인트",
+      "페트병",
+      "텀블러",
+      "분리배출",
+      "생활꿀팁",
+      "지마당",
+      "서울소식"
+    ],
+    "link": "https://www.gmadang.com/a/nq4783h.html",
+    "source": "지마당 정리(동대문구·용산구·성동구·서초구·은평구·한국환경산업기술원 발표) · 지마당 AI 작성"
+  },
+  "footer": "발행 (주)알앤케이그린월드",
+  "aspect": "16:9",
+  "platform": "youtube",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 20,
+    "name": "2w-04-gmadang-wide"
+  }
+}

@@ -1,0 +1,145 @@
+{
+  "track": "2w10",
+  "source": "brand-facts.md · FITI 시험성적서",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "'친환경'이라는 말,\n근거가 있나요?",
+      "image": "../../../assets/ecolever/product-2color.jpg",
+      "fit": "cover",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 1,
+      "focus": {
+        "s": 2.3,
+        "x": -0.3,
+        "y": -0.4
+      }
+    },
+    {
+      "text": "FITI 시험성적서",
+      "image": "../../../assets/ecolever/doc-fiti-test.jpg",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "sub": "면 85.2% · 황마 10.9% · 레이온 3.9%"
+    },
+    {
+      "text": "합성섬유 0%",
+      "image": "../../../assets/ecolever/doc-fiti-test.jpg",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "sub": "성적서 혼용률 기준"
+    },
+    {
+      "text": "면 · 황마 혼방 원단",
+      "image": "../../../assets/ecolever/product-1color.jpg",
+      "fit": "cover",
+      "motion": "panRight",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "focus": {
+        "s": 2.3,
+        "x": 0.15,
+        "y": 0.95
+      },
+      "sub": "손에 닿는 결"
+    },
+    {
+      "text": "성적서 사본을 함께 드려요",
+      "image": "../../../assets/ecolever/product-2color.jpg",
+      "fit": "cover",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "focus": {
+        "s": 2.1,
+        "x": 0.2,
+        "y": 0.9
+      },
+      "sub": "결과 보고서·납품 서류에"
+    }
+  ],
+  "outro": "샘플 먼저\n받아 보세요",
+  "outro_sub": "ecolever.co.kr · 02-6368-9989",
+  "card": {
+    "bg": [
+      "#1F2A21",
+      "#1F2A21"
+    ],
+    "bgStyle": "solid",
+    "color": "#EFE9DC"
+  },
+  "logo": {
+    "image": "../../../assets/ecolever/symbol-ecolever-light.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/ecolever/qr-instagram.png",
+    "text": "QR · 인스타그램",
+    "size": 0.2
+  },
+  "music": {
+    "style": "luxury",
+    "meter": "4/4",
+    "bpm": 76,
+    "seed": 2710
+  },
+  "upload": {
+    "title": "근거는 성적서에 | 면·황마 혼방 에코백, 합성섬유 0%",
+    "hashtags": [
+      "에코백",
+      "시험성적서",
+      "면황마",
+      "친환경굿즈",
+      "에코레버"
+    ],
+    "link": "https://www.ecolever.co.kr/",
+    "source": "FITI 시험성적서 · 음악: 영상뚝딱 자체 작곡"
+  },
+  "footer": "(주)알앤케이그린월드",
+  "aspect": "9:16",
+  "platform": "shorts",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 9.5,
+    "name": "2w-10-ecolever-shorts"
+  }
+}

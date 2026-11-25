@@ -557,7 +557,14 @@ function drawClipBase(clip, local) {
           drawFit(src, sw, sh, 'cover', 1.12, 0, 0);
           ctx.restore();
           ctx.filter = fcss;
-          drawFit(src, sw, sh, 'contain', mv.z, mv.x, mv.y, enh);
+          if (W > H * 1.2 && sh > sw * 1.3) {
+            // 가로 화면 + 세로로 긴 캡처(기사·누리집): 가운데 좁은 띠로 작게 보이지 않게,
+            // 폭을 화면의 56%로 키우고 위→아래로 천천히 내려 읽는 느낌으로 보여 줌
+            const dw = W * 0.56, dh = dw * sh / sw, over = Math.max(0, dh - H);
+            const y = -over * (0.1 + 0.45 * p), x = (W - dw) / 2;
+            ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.45)'; ctx.shadowBlur = Math.min(W, H) * 0.03;
+            ctx.drawImage(src, x, y, dw, dh); ctx.restore();
+          } else drawFit(src, sw, sh, 'contain', mv.z, mv.x, mv.y, enh);
         } else {
           ctx.filter = fcss;
           drawFit(src, sw, sh, clip.fit, mv.z, mv.x, mv.y, enh);

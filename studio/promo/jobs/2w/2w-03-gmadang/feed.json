@@ -1,0 +1,131 @@
+{
+  "track": "2w03",
+  "source": "지마당 기사 https://www.gmadang.com/a/nzag38v.html (서울시 발표(이투데이 보도))",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "추운 날 들어갈 곳,\n서울에 1,461곳",
+      "image": "../../../assets/gmadang/2w/nzag38v-0.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 2,
+      "sub": "서울시 한파쉼터"
+    },
+    {
+      "text": "기후동행쉼터 409곳도",
+      "image": "../../../assets/gmadang/2w/nzag38v-1.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 1,
+      "sub": "민관이 함께 운영 · 내년 3월 15일까지"
+    },
+    {
+      "text": "12~2월 이동식 쉼터 '온기소'",
+      "image": "../../../assets/gmadang/2w/nzag38v-1.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "sub": "광화문광장 등 사람이 많은 곳"
+    },
+    {
+      "text": "12~3월 평일 오전 6시~오후 9시",
+      "image": "../../../assets/gmadang/2w/nzag38v-2.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "sub": "배출가스 5등급 차량 운행 제한"
+    },
+    {
+      "text": "에너지바우처는\n12월 31일까지 신청",
+      "image": "../../../assets/gmadang/2w/nzag38v-2.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "sub": "동주민센터"
+    }
+  ],
+  "outro": "원문은 지마당에서",
+  "outro_sub": "gmadang.com",
+  "card": {
+    "bg": [
+      "#123A24",
+      "#123A24"
+    ],
+    "bgStyle": "solid",
+    "color": "#FFFFFF"
+  },
+  "logo": {
+    "image": "../../../assets/gmadang/icon-192.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/gmadang/og.png",
+    "size": 0.5
+  },
+  "music": {
+    "style": "calm",
+    "meter": "4/4",
+    "bpm": 78,
+    "seed": 2603
+  },
+  "upload": {
+    "title": "한파쉼터 1,461곳·이동식 쉼터 '온기소' | 서울시 겨울철 종합대책",
+    "hashtags": [
+      "한파쉼터",
+      "겨울철대책",
+      "에너지바우처",
+      "서울시",
+      "지마당",
+      "서울소식"
+    ],
+    "link": "https://www.gmadang.com/a/nzag38v.html",
+    "source": "서울시 발표(이투데이 보도) · 지마당 AI 작성"
+  },
+  "footer": "발행 (주)알앤케이그린월드",
+  "aspect": "4:5",
+  "platform": "reels",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 9.5,
+    "name": "2w-03-gmadang-feed"
+  }
+}
