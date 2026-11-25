@@ -1,0 +1,68 @@
+# 영상뚝딱 자동 업데이트 폴더(/app/ttukttak/) 한 번 정리 — 대표님 승인(11/25, 총괄 경유)
+# 수동 실행만 됩니다: Actions → "영상뚝딱 설치 파일 정리(한 번)" → Run workflow → 확인 칸에 DELETE-14 입력
+# 지우는 파일은 아래 14개로 고정합니다(와일드카드 없음). 2.3.0 설치 파일·blockmap·latest.yml 은 지우지 않습니다.
+# 14개 모두 GitHub 릴리스에 같은 버전 설치 파일이 남아 있습니다(ttuk-v2.2.1-build26 ~ ttuk-v2.2.7-build41).
+name: 영상뚝딱 설치 파일 정리(한 번)
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: '지우려면 DELETE-14 를 입력하세요 (그 밖의 값이면 목록만 출력)'
+        required: true
+        default: 'LIST-ONLY'
+
+permissions:
+  contents: read
+
+concurrency: deploy
+
+jobs:
+  cleanup:
+    name: 오래된 설치 파일 14개 지우기
+    runs-on: ubuntu-latest
+    steps:
+      - name: 목록 출력 → 14개 삭제 → 목록 출력
+        env:
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          CONFIRM: ${{ github.event.inputs.confirm }}
+        run: |
+          set -u
+          if [ -z "$FTP_USER" ] || [ -z "$FTP_PASSWORD" ]; then echo "::error::FTP 비밀이 없습니다"; exit 1; fi
+          umask 077
+          printf 'machine 211.47.74.75\nlogin %s\npassword %s\n' "$FTP_USER" "$FTP_PASSWORD" > "$RUNNER_TEMP/netrc"
+          trap 'rm -f "$RUNNER_TEMP/netrc"' EXIT
+          FTP() { curl -sS --disable-epsv --netrc-file "$RUNNER_TEMP/netrc" -m 60 "$@"; }
+          ROOT=$(FTP --list-only "ftp://211.47.74.75/" || true)
+          WEB=""; for c in www public_html html htdocs; do if printf '%s\n' "$ROOT" | sed 's#.*/##' | grep -qx "$c"; then WEB="$c/"; break; fi; done
+          DIR="${WEB}app/ttukttak/"
+          echo "폴더: /$DIR"
+          echo "===== 지우기 전 목록 (권한·크기·날짜·이름) ====="
+          FTP "ftp://211.47.74.75/$DIR" || { echo "::error::폴더 목록을 읽지 못했습니다"; exit 1; }
+          FILES="
+          YeongsangTtukttak-2.2.1-win-x64.exe
+          YeongsangTtukttak-2.2.1-win-x64.exe.blockmap
+          YeongsangTtukttak-2.2.2-win-x64.exe
+          YeongsangTtukttak-2.2.2-win-x64.exe.blockmap
+          YeongsangTtukttak-2.2.3-win-x64.exe
+          YeongsangTtukttak-2.2.3-win-x64.exe.blockmap
+          YeongsangTtukttak-2.2.4-win-x64.exe
+          YeongsangTtukttak-2.2.4-win-x64.exe.blockmap
+          YeongsangTtukttak-2.2.5-win-x64.exe
+          YeongsangTtukttak-2.2.5-win-x64.exe.blockmap
+          YeongsangTtukttak-2.2.6-win-x64.exe
+          YeongsangTtukttak-2.2.6-win-x64.exe.blockmap
+          YeongsangTtukttak-2.2.7-win-x64.exe
+          YeongsangTtukttak-2.2.7-win-x64.exe.blockmap
+          "
+          N=$(echo $FILES | wc -w); [ "$N" = 14 ] || { echo "::error::대상이 14개가 아닙니다($N)"; exit 1; }
+          if [ "$CONFIRM" != "DELETE-14" ]; then echo "확인 값이 DELETE-14 가 아니어서 목록만 출력하고 끝냅니다."; exit 0; fi
+          OK=0; FAIL=0
+          for f in $FILES; do
+            if FTP -Q "DELE ${DIR}${f}" "ftp://211.47.74.75/" -o /dev/null; then echo "지움: $f"; OK=$((OK+1)); else echo "::warning::못 지움(없거나 거부): $f"; FAIL=$((FAIL+1)); fi
+          done
+          echo "결과: 지움 $OK / 실패 $FAIL"
+          echo "===== 지운 뒤 목록 ====="
+          FTP "ftp://211.47.74.75/$DIR" || true
+          echo "latest.yml: $(curl -s -m 20 https://www.ecolever.co.kr/app/ttukttak/latest.yml | grep -m1 '^version:')"
