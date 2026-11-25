@@ -93,6 +93,7 @@ jobs:
         env:
           FTP_USER: ${{ secrets.FTP_USER }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -e
           if [ -z "$FTP_USER" ] || [ -z "$FTP_PASSWORD" ]; then echo "::warning::FTP 비밀이 없어 건너뜁니다"; exit 0; fi
@@ -110,8 +111,25 @@ jobs:
             curl -sS --disable-epsv --retry 3 --retry-delay 5 --netrc-file "$RUNNER_TEMP/netrc" --ftp-create-dirs -m 900 -T "$f" "ftp://211.47.74.75/${WEB}app/ttukttak/$(basename "$f")"
             echo "올림: $(basename "$f")"
           done
+          sleep 5; NOW=$(curl -s -m 20 https://www.ecolever.co.kr/app/ttukttak/latest.yml | grep -m1 '^version:' | awk '{print $2}' || true)
+          echo "확인: 서버 latest.yml = ${NOW:-읽지 못함}"
+          # 정리(총괄·대표님 승인 11/25): 새 버전이 확인된 뒤에만, 새 버전과 바로 이전 버전($CUR)을 빼고
+          # $CUR 보다 오래되었고 GitHub 릴리스에 같은 설치 파일이 있는 것만 지움. 실패해도 업로드 결과는 그대로.
+          if [ "$NOW" = "$NEW" ] && [ -n "$CUR" ]; then
+            REL=$(curl -s -m 30 -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases?per_page=100" | grep -o '"name": *"YeongsangTtukttak-[0-9.]*-win-x64\.exe"' | grep -o 'YeongsangTtukttak-[0-9.]*-win-x64\.exe' | sort -u || true)
+            NAMES=$(curl -sS --disable-epsv --netrc-file "$RUNNER_TEMP/netrc" --list-only -m 30 "ftp://211.47.74.75/${WEB}app/ttukttak/" | sed 's#.*/##' | tr -d '\r' || true)
+            for n in $NAMES; do
+              v=$(printf '%s' "$n" | sed -nE 's/^YeongsangTtukttak-([0-9]+\.[0-9]+\.[0-9]+)-win-x64\.exe(\.blockmap)?$/\1/p')
+              [ -n "$v" ] || continue
+              [ "$v" = "$NEW" ] || [ "$v" = "$CUR" ] && continue
+              [ "$(printf '%s\n%s\n' "$v" "$CUR" | sort -V | head -1)" = "$v" ] || continue   # $CUR 보다 오래된 것만
+              printf '%s\n' "$REL" | grep -qx "YeongsangTtukttak-$v-win-x64.exe" || { echo "남김(릴리스에 없음): $n"; continue; }
+              if curl -sS --disable-epsv --netrc-file "$RUNNER_TEMP/netrc" -m 60 -Q "DELE ${WEB}app/ttukttak/$n" "ftp://211.47.74.75/" -o /dev/null; then echo "정리: $n"; else echo "::warning::정리 실패: $n"; fi
+            done
+          else
+            echo "정리 건너뜀(새 버전 확인 안 됨 또는 이전 버전 없음)"
+          fi
           rm -f "$RUNNER_TEMP/netrc"
-          sleep 5; echo "확인: $(curl -s -m 20 https://www.ecolever.co.kr/app/ttukttak/latest.yml | grep -m1 '^version:')"
 
   release:
     name: 릴리스에 올리기
