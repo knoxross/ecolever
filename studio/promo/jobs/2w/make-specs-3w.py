@@ -194,6 +194,16 @@ JOBS['2w-28-ecolever'] = eco(28, "샘플 신청 — 대량 주문 전에 1칼라
     escene('product-1color.jpg', "전화 02-6368-9989", "누리집 문의서 · 메일 모두 가능", focus=TOP1b, motion='panRight', e=3),
 ], ('acoustic', 86), "대량 주문 전에 샘플 먼저 | 에코레버 1칼라 실물 확인", ["에코백샘플", "단체에코백", "행사굿즈", "에코백"], "에코레버 자주 묻는 질문")
 
+# ------------------------------------------------------------------ 29편: 비공개 처리된 쇼츠(YueKL4Xb6NE) 대체판 — 대표님 결정 11/25, 사실표 범위만
+JOBS['2w-29-ecolever'] = eco(29, "속이 살짝 비치는 에코백 — 성글게 짠 면·황마 혼방 원단(FITI 면 85.2%·황마 10.9%·레이온 3.9%, 합성섬유 0%)", [
+    escene('product-2color.jpg', "이게 가방이냐고요?\n속이 살짝 비치는데?", focus=TEX2, e=2),
+    escene('product-1color.jpg', "성글게 짠 원단이라\n결이 그대로 보여요", "면·황마 혼방", focus=TOP1, motion='panRight', e=1),
+    escene('doc-fiti-test.jpg', "면 85.2% · 황마 10.9% · 레이온 3.9%", "FITI 시험성적서 기준", fit='blur', motion='zoomOut', e=2),
+    escene('doc-fiti-test.jpg', "합성섬유 0%", "성적서 혼용률 기준", fit='blur', e=3),
+    escene('product-1color.jpg', "장당 약 70g · 40×37cm", "가볍게 들고 다니는 가방", fit='blur', motion='zoomOut', e=2),
+    escene('product-2color.jpg', "로고 인쇄 없이 50장부터", "장당 1칼라 1,000원 · 2칼라 1,200원(부가세 별도)", focus=TOP2, e=3),
+], ('acoustic', 90), "속이 살짝 비치는 에코백? 성글게 짠 면·황마 혼방이라서", ["에코백", "면황마", "시험성적서", "에코백추천"], "FITI 시험성적서 · 비공개 처리된 쇼츠(YueKL4Xb6NE) 대체판")
+
 for name, spec in JOBS.items():
     d = os.path.join(HERE, name)
     os.makedirs(d, exist_ok=True)

@@ -1,0 +1,151 @@
+{
+  "track": "2w18",
+  "source": "지마당 기사 https://www.gmadang.com/a/nn5vkib.html (서대문구 발표(시정일보 보도))",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "신촌역 걸어서 8분,\n야경 보이는 '바람산'",
+      "image": "../../../assets/gmadang/3w/nn5vkib-0.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 1,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "창천근린공원"
+    },
+    {
+      "text": "서울별빛명소 선정",
+      "image": "../../../assets/gmadang/3w/nn5vkib-1.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "2026 서울별빛명소 조성사업"
+    },
+    {
+      "text": "지금도 전망 덱에서\n신촌 야경을 볼 수 있어요",
+      "image": "../../../assets/gmadang/3w/nn5vkib-1.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "풍차 조형물 · 엘리베이터"
+    },
+    {
+      "text": "2027년부터 '노을 전망라운지'로",
+      "image": "../../../assets/gmadang/3w/nn5vkib-2.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "연세로와 이어지는 야간 산책길"
+    },
+    {
+      "text": "연말 저녁 산책,\n바람산 어때요?",
+      "image": "../../../assets/gmadang/3w/nn5vkib-3.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      }
+    }
+  ],
+  "outro": "원문은 지마당에서",
+  "outro_sub": "gmadang.com",
+  "card": {
+    "bg": [
+      "#123A24",
+      "#123A24"
+    ],
+    "bgStyle": "solid",
+    "color": "#FFFFFF"
+  },
+  "logo": {
+    "image": "../../../assets/gmadang/icon-192.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/gmadang/og.png",
+    "size": 0.5
+  },
+  "music": {
+    "style": "acoustic",
+    "meter": "4/4",
+    "bpm": 84,
+    "seed": 3618
+  },
+  "upload": {
+    "title": "신촌역 8분, 야경 보이는 바람산 | 서울별빛명소 선정",
+    "hashtags": [
+      "신촌",
+      "야경명소",
+      "서울별빛명소",
+      "연말데이트",
+      "서대문구",
+      "지마당",
+      "서울소식"
+    ],
+    "link": "https://www.gmadang.com/a/nn5vkib.html",
+    "source": "서대문구 발표(시정일보 보도) · 지마당 AI 작성"
+  },
+  "footer": "발행 (주)알앤케이그린월드",
+  "aspect": "16:9",
+  "platform": "youtube",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 20,
+    "name": "2w-18-gmadang-wide"
+  }
+}

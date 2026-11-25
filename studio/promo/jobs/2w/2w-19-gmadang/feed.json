@@ -1,0 +1,150 @@
+{
+  "track": "2w19",
+  "source": "지마당 기사 https://www.gmadang.com/a/nn5vl5y.html (광진구 발표(시정일보 보도))",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "건대 양꼬치거리에서도\n온누리상품권?",
+      "image": "../../../assets/gmadang/3w/nn5vl5y-0.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      }
+    },
+    {
+      "text": "골목형상점가 3곳 새로 지정",
+      "image": "../../../assets/gmadang/3w/nn5vl5y-1.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 1,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "광진구 · 11월 19일"
+    },
+    {
+      "text": "강변SK뷰 · 건대건국문길 ·\n건대양꼬치거리",
+      "image": "../../../assets/gmadang/3w/nn5vl5y-1.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "모두 389개 점포"
+    },
+    {
+      "text": "온누리상품권 가맹 등록 가능",
+      "image": "../../../assets/gmadang/3w/nn5vl5y-2.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "가게 입구 가맹점 표시를 확인하세요"
+    },
+    {
+      "text": "광진구 골목형상점가 20곳",
+      "image": "../../../assets/gmadang/3w/nn5vl5y-3.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "전통시장까지 27개 상권"
+    }
+  ],
+  "outro": "원문은 지마당에서",
+  "outro_sub": "gmadang.com",
+  "card": {
+    "bg": [
+      "#123A24",
+      "#123A24"
+    ],
+    "bgStyle": "solid",
+    "color": "#FFFFFF"
+  },
+  "logo": {
+    "image": "../../../assets/gmadang/icon-192.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/gmadang/og.png",
+    "size": 0.5
+  },
+  "music": {
+    "style": "acoustic",
+    "meter": "4/4",
+    "bpm": 92,
+    "seed": 3619
+  },
+  "upload": {
+    "title": "건대 양꼬치거리도 온누리상품권 | 골목형상점가 3곳 지정",
+    "hashtags": [
+      "온누리상품권",
+      "건대맛집",
+      "골목형상점가",
+      "광진구",
+      "지마당",
+      "서울소식"
+    ],
+    "link": "https://www.gmadang.com/a/nn5vl5y.html",
+    "source": "광진구 발표(시정일보 보도) · 지마당 AI 작성"
+  },
+  "footer": "발행 (주)알앤케이그린월드",
+  "aspect": "4:5",
+  "platform": "reels",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 9.5,
+    "name": "2w-19-gmadang-feed"
+  }
+}
