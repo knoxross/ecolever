@@ -1,0 +1,193 @@
+{
+  "brand": "ecolever",
+  "topic": "연말 행사 굿즈 담당자 POV — 받자마자 서랍행 판촉물 말고, 성적서로 고르는 에코백 (영화 톤 재제작 11/24)",
+  "trend": "POV 훅 + 실물 클로즈업 인서트 + 근거 서류 화면 + 공개 직전 정적",
+  "source": "brand-facts.md · FITI 시험성적서 · 에코레버 사이트",
+  "aspect": "9:16",
+  "mood": "calm",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "POV: 연말 행사 굿즈\n담당자가 됐다",
+      "image": "../../assets/ecolever/product-1color.jpg",
+      "fit": "cover",
+      "focus": {
+        "s": 2.3,
+        "x": 0.1,
+        "y": 0.95
+      },
+      "motion": "zoomIn",
+      "filter": "cine",
+      "fx": "grain",
+      "fxAmt": 0.25,
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 88,
+      "textPos": "center",
+      "textAnim": "fade",
+      "duration": 2.8,
+      "transition": "none",
+      "energy": 2,
+      "hit": true
+    },
+    {
+      "text": "받자마자 서랍행\n판촉물 말고",
+      "sub": "다음에도 들고 다니는 가방",
+      "bg": [
+        "#14110E",
+        "#14110E"
+      ],
+      "bgStyle": "solid",
+      "font": "serif",
+      "color": "#EFE9DC",
+      "fx": "grain",
+      "fxAmt": 0.3,
+      "textAnim": "fade",
+      "duration": 2.6,
+      "transition": "fade",
+      "energy": 1
+    },
+    {
+      "text": "손에 닿는 결부터\n다릅니다",
+      "sub": "면 · 황마 혼방 원단",
+      "image": "../../assets/ecolever/product-2color.jpg",
+      "fit": "cover",
+      "focus": {
+        "s": 2.2,
+        "x": -0.35,
+        "y": -0.3
+      },
+      "motion": "zoomOut",
+      "filter": "cine",
+      "fx": "grain",
+      "fxAmt": 0.25,
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 84,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 2.8,
+      "transition": "fade",
+      "energy": 1
+    },
+    {
+      "text": "근거는 성적서에",
+      "sub": "면 85.2% · 황마 10.9% · 레이온 3.9%",
+      "image": "../../assets/ecolever/doc-fiti-test.jpg",
+      "fit": "card",
+      "bg": [
+        "#2F4332",
+        "#1F2A21"
+      ],
+      "bgStyle": "gradient",
+      "font": "serif",
+      "color": "#FFFFFF",
+      "textPos": "top",
+      "textAnim": "up",
+      "duration": 3.0,
+      "transition": "fade",
+      "energy": 2
+    },
+    {
+      "text": "합성섬유 0%",
+      "sub": "FITI 시험성적서 혼용률 기준",
+      "bg": [
+        "#14110E",
+        "#14110E"
+      ],
+      "bgStyle": "solid",
+      "font": "serif",
+      "color": "#EFE9DC",
+      "fx": "grain",
+      "fxAmt": 0.3,
+      "fontSize": 120,
+      "textAnim": "up",
+      "duration": 2.6,
+      "transition": "fade",
+      "energy": 3,
+      "hit": true,
+      "musicStop": true
+    },
+    {
+      "text": "50장부터, 장당 1,000원",
+      "sub": "인쇄 없이 · 1칼라 · 부가세 별도",
+      "image": "../../assets/ecolever/product-1color.jpg",
+      "fit": "card",
+      "bg": [
+        "#2F4332",
+        "#1F2A21"
+      ],
+      "bgStyle": "gradient",
+      "font": "serif",
+      "color": "#FFFFFF",
+      "textPos": "top",
+      "textAnim": "up",
+      "duration": 3.0,
+      "transition": "fade",
+      "energy": 3
+    },
+    {
+      "text": "1칼라는 실물 재고,\n샘플 먼저",
+      "sub": "받아 보고 정하세요",
+      "image": "../../assets/ecolever/product-1color.jpg",
+      "fit": "cover",
+      "focus": {
+        "s": 2.0,
+        "x": -0.45,
+        "y": 0.9
+      },
+      "motion": "zoomOut",
+      "filter": "cine",
+      "fx": "grain",
+      "fxAmt": 0.25,
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 84,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 2.8,
+      "transition": "fade",
+      "energy": 3
+    }
+  ],
+  "outro": "견적은\necolever.co.kr",
+  "outro_sub": "02-6368-9989",
+  "card": {
+    "bg": [
+      "#1F2A21",
+      "#2F4332"
+    ],
+    "bgStyle": "gradient",
+    "color": "#EFE9DC"
+  },
+  "logo": {
+    "image": "../../assets/ecolever/symbol-ecolever-light.png",
+    "pos": "tr",
+    "size": 0.09
+  },
+  "endcard": {
+    "image": "../../assets/ecolever/qr-instagram.png",
+    "text": "QR · 인스타그램",
+    "size": 0.2
+  },
+  "music": {
+    "style": "corp",
+    "meter": "4/4",
+    "bpm": 96,
+    "seed": 2116
+  },
+  "upload": {
+    "title": "연말 행사 굿즈, 성적서로 고르는 에코백 | 50장부터",
+    "hashtags": [
+      "에코백",
+      "에코백제작",
+      "행사굿즈",
+      "기업굿즈",
+      "연말행사",
+      "단체에코백",
+      "에코레버"
+    ],
+    "link": "https://www.ecolever.co.kr/",
+    "source": "FITI 시험성적서 · 에코레버"
+  }
+}

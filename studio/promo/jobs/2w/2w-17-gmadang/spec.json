@@ -1,0 +1,142 @@
+{
+  "brand": "gmadang",
+  "track": "2w17",
+  "topic": "서대문구 올겨울 차도·보도 제설 분리 — 보도 제설 14개 노선 22.4km",
+  "trend": "저장형 생활 정보 숏폼 · 실제 기사 화면 · 자막만으로 · 잔잔한 음악",
+  "source": "지마당 기사 https://www.gmadang.com/a/nn5vl45.html (서대문구 발표(시정일보 보도))",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "눈 오는 날 보도,\n올겨울엔 따로 치워요",
+      "image": "../../../assets/gmadang/3w/nn5vl45-0.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "서대문구 겨울철 제설대책"
+    },
+    {
+      "text": "보도 제설 14개 노선 · 22.4km",
+      "image": "../../../assets/gmadang/3w/nn5vl45-1.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 1,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "통학로 · 버스정류장 · 지하철역 주변"
+    },
+    {
+      "text": "골목엔 소형 장비와\n주민제설반",
+      "image": "../../../assets/gmadang/3w/nn5vl45-1.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      }
+    },
+    {
+      "text": "내 집·가게 앞 눈은\n먼저 치워 주세요",
+      "image": "../../../assets/gmadang/3w/nn5vl45-2.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      }
+    },
+    {
+      "text": "얼어붙은 비탈길 신고는\n다산콜센터 120",
+      "image": "../../../assets/gmadang/3w/nn5vl45-3.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "제설대책은 2027년 3월 15일까지"
+    }
+  ],
+  "outro": "원문은 지마당에서",
+  "outro_sub": "gmadang.com",
+  "card": {
+    "bg": [
+      "#123A24",
+      "#123A24"
+    ],
+    "bgStyle": "solid",
+    "color": "#FFFFFF"
+  },
+  "logo": {
+    "image": "../../../assets/gmadang/icon-192.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/gmadang/og.png",
+    "size": 0.5
+  },
+  "music": {
+    "style": "calm",
+    "meter": "4/4",
+    "bpm": 76,
+    "seed": 3617
+  },
+  "upload": {
+    "title": "올겨울 보도 제설 따로 한다 | 서대문구 14개 노선 22.4km",
+    "hashtags": [
+      "제설",
+      "서대문구",
+      "겨울철대책",
+      "눈오는날",
+      "지마당",
+      "서울소식"
+    ],
+    "link": "https://www.gmadang.com/a/nn5vl45.html",
+    "source": "서대문구 발표(시정일보 보도) · 지마당 AI 작성"
+  }
+}

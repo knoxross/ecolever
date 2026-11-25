@@ -1,0 +1,151 @@
+{
+  "track": "2w01",
+  "source": "지마당 기사 https://www.gmadang.com/a/nq3yxer.html (서울시 발표(내 손안에 서울))",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "국보 『삼국사기』 전권을\n무료로 볼 수 있어요",
+      "image": "../../../assets/gmadang/2w/nq3yxer-0.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      }
+    },
+    {
+      "text": "한성백제박물관 특별전",
+      "image": "../../../assets/gmadang/2w/nq3yxer-1.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 1,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "2026년 11월 27일 ~ 2027년 2월 21일"
+    },
+    {
+      "text": "기획전시실 1·2 · 관람료 무료",
+      "image": "../../../assets/gmadang/2w/nq3yxer-1.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "매주 월요일과 1월 1일은 휴관"
+    },
+    {
+      "text": "옥산서원 소장 1573년 무렵 인쇄본",
+      "image": "../../../assets/gmadang/2w/nq3yxer-2.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "『삼국사기』 9책 50권 전권"
+    },
+    {
+      "text": "겨울방학, 아이와\n역사 나들이 어때요?",
+      "image": "../../../assets/gmadang/2w/nq3yxer-3.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "관람 시간·교통편은 박물관 누리집에서"
+    }
+  ],
+  "outro": "원문은 지마당에서",
+  "outro_sub": "gmadang.com",
+  "card": {
+    "bg": [
+      "#123A24",
+      "#123A24"
+    ],
+    "bgStyle": "solid",
+    "color": "#FFFFFF"
+  },
+  "logo": {
+    "image": "../../../assets/gmadang/icon-192.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/gmadang/og.png",
+    "size": 0.5
+  },
+  "music": {
+    "style": "calm",
+    "meter": "4/4",
+    "bpm": 80,
+    "seed": 2601
+  },
+  "upload": {
+    "title": "국보 삼국사기 전권 무료 공개 | 한성백제박물관 특별전",
+    "hashtags": [
+      "한성백제박물관",
+      "삼국사기",
+      "겨울방학",
+      "무료전시",
+      "송파구",
+      "지마당",
+      "서울소식"
+    ],
+    "link": "https://www.gmadang.com/a/nq3yxer.html",
+    "source": "서울시 발표(내 손안에 서울) · 지마당 AI 작성"
+  },
+  "footer": "발행 (주)알앤케이그린월드",
+  "aspect": "4:5",
+  "platform": "reels",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 9.5,
+    "name": "2w-01-gmadang-feed"
+  }
+}

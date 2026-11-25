@@ -1,0 +1,144 @@
+{
+  "brand": "gmadang",
+  "track": "2w16",
+  "topic": "종로구 한파쉼터 47곳·스마트쉼터 2곳 — 한파특보 땐 구청사 24시간",
+  "trend": "저장형 생활 정보 숏폼 · 실제 기사 화면 · 자막만으로 · 잔잔한 음악",
+  "source": "지마당 기사 https://www.gmadang.com/a/nn5vkfe.html (종로구 발표(시정일보 보도))",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "추운 날 몸 녹일 곳,\n종로에 47곳",
+      "image": "../../../assets/gmadang/3w/nn5vkfe-0.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "구청사·동주민센터·도서관·경로당"
+    },
+    {
+      "text": "한파특보 땐 구청사 24시간",
+      "image": "../../../assets/gmadang/3w/nn5vkfe-1.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 1,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "동주민센터는 평일 밤 9시까지"
+    },
+    {
+      "text": "정류소 61곳 온열의자",
+      "image": "../../../assets/gmadang/3w/nn5vkfe-1.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "온기텐트 13곳"
+    },
+    {
+      "text": "스마트쉼터 2곳은 늘 열려요",
+      "image": "../../../assets/gmadang/3w/nn5vkfe-2.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "냉난방기 · 충전기 · 공공와이파이"
+    },
+    {
+      "text": "혼자 사는 이웃 어르신이\n걱정되면 동주민센터로",
+      "image": "../../../assets/gmadang/3w/nn5vkfe-3.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "한파쉼터는 내년 3월 15일까지"
+    }
+  ],
+  "outro": "원문은 지마당에서",
+  "outro_sub": "gmadang.com",
+  "card": {
+    "bg": [
+      "#123A24",
+      "#123A24"
+    ],
+    "bgStyle": "solid",
+    "color": "#FFFFFF"
+  },
+  "logo": {
+    "image": "../../../assets/gmadang/icon-192.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/gmadang/og.png",
+    "size": 0.5
+  },
+  "music": {
+    "style": "calm",
+    "meter": "4/4",
+    "bpm": 74,
+    "seed": 3616
+  },
+  "upload": {
+    "title": "종로구 한파쉼터 47곳 · 한파특보 땐 구청사 24시간",
+    "hashtags": [
+      "한파쉼터",
+      "종로구",
+      "겨울나기",
+      "한파",
+      "지마당",
+      "서울소식"
+    ],
+    "link": "https://www.gmadang.com/a/nn5vkfe.html",
+    "source": "종로구 발표(시정일보 보도) · 지마당 AI 작성"
+  }
+}

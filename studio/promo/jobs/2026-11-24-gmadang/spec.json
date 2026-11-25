@@ -1,0 +1,29 @@
+{
+  "brand": "gmadang",
+  "topic": "12/13(일) 에코백 꾸미기 원데이 클래스 모집 — 창간 기념 1회차·무료·선착순 12명 (더블유, 광고)",
+  "trend": "연말 주말 가족·아이 체험 + 저장형 체크리스트 + 실제 신청 화면 + 공개 직전 정적",
+  "source": "지마당 더블유 페이지 https://www.gmadang.com/w/#class (광고 · 계열 공간, 2026-11-24 확인)",
+  "aspect": "9:16",
+  "mood": "bright",
+  "emoji": false,
+  "ad": true,
+  "scenes": [
+    { "text": "장바구니,\n내 손으로 그려 볼래요?", "image": "../../assets/ecolever/product-1color.jpg", "fit": "cover", "focus": { "s": 2.3, "x": 0.1, "y": 0.95 }, "motion": "zoomIn", "filter": "cine", "fx": "grain", "fxAmt": 0.2, "font": "serif", "textBg": true, "fontSize": 86, "textPos": "center", "textAnim": "fade", "duration": 2.8, "transition": "none", "energy": 2, "hit": true },
+    { "text": "로고 없는 에코백에\n그림과 글씨를", "sub": "에코백 40×37cm · 만든 가방은 가져가요", "image": "../../assets/gmadang/w-class-info.png", "fit": "phone", "bg": ["#1E5A37", "#123A24"], "bgStyle": "gradient", "textPos": "top", "duration": 3.2, "transition": "fade", "energy": 1 },
+    { "text": "에코백 꾸미기 원데이 클래스", "list": ["12월 13일(일) 오후 2시~3시 30분", "더블유 세미나실 · 상도동 루나포레", "회차당 선착순 12명 · 3명까지 신청", "준비물 없음 · 가방과 재료 드려요"], "sub": "초등학생 이상 누구나 · 초등학생은 보호자와 함께", "bg": ["#123A24", "#0E2C1B"], "bgStyle": "gradient", "color": "#FFFFFF", "listColor": "#F2C14E", "fontSize": 70, "textPos": "top", "textAnim": "fade", "duration": 4.8, "transition": "fade", "energy": 2 },
+    { "text": "창간 기념 1회차,\n무료예요", "sub": "선착순 12명", "image": "../../assets/ecolever/product-2color.jpg", "fit": "cover", "focus": { "s": 2.0, "x": -0.2, "y": 0.9 }, "motion": "zoomOut", "filter": "cine", "fx": "grain", "fxAmt": 0.2, "font": "serif", "textBg": true, "fontSize": 92, "textPos": "center", "textAnim": "up", "duration": 2.8, "transition": "fade", "energy": 3, "hit": true, "musicStop": true },
+    { "text": "이름 · 휴대폰만 쓰면\n신청 끝", "sub": "지마당 → 더블유 → 클래스", "image": "../../assets/gmadang/w-class-apply.png", "fit": "phone", "bg": ["#1E5A37", "#123A24"], "bgStyle": "gradient", "textPos": "top", "duration": 3.2, "transition": "fade", "energy": 3 }
+  ],
+  "outro": "가족과 함께\n만들어 보세요",
+  "outro_sub": "gmadang.com/w · 02-6368-9989",
+  "card": { "bg": ["#123A24", "#1E5A37"], "bgStyle": "gradient", "color": "#FFFFFF" },
+  "logo": { "image": "../../assets/gmadang/icon-192.png", "pos": "tr", "size": 0.09 },
+  "endcard": { "image": "../../assets/gmadang/og.png", "size": 0.56 },
+  "music": { "style": "bright", "meter": "4/4", "bpm": 104, "seed": 1124 },
+  "upload": {
+    "title": "12/13(일) 에코백 꾸미기 원데이 클래스 | 무료 · 선착순 12명",
+    "hashtags": ["원데이클래스", "에코백꾸미기", "주말체험", "아이와함께", "상도동", "동작구", "지마당", "더블유"],
+    "link": "https://www.gmadang.com/w/",
+    "source": "지마당 더블유 페이지(광고 · (주)알앤케이그린월드 계열 공간, 에코백은 계열사 에코레버 제품)"
+  }
+}

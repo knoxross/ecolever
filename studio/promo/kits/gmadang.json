@@ -1,0 +1,21 @@
+{
+  "brand": "gmadang",
+  "name": "지마당",
+  "status": "active",
+  "kind": "서울 지역 신문(매체) 브랜드",
+  "source_of_truth": ["knoxross/gmadang docs/brand-facts.md", "gmadang.com 기사 원문·출처"],
+  "logo": "assets/gmadang/icon-192.png",
+  "logoFiles": ["assets/gmadang/icon-192.png", "assets/gmadang/icon-512.png"],
+  "colors": { "green": "#1E5A37", "greenDeep": "#123A24", "accent": "#E8A33D", "white": "#FFFFFF" },
+  "font": "Noto Sans KR",
+  "site": "gmadang.com",
+  "contact": "",
+  "endcard": ["assets/gmadang/og.png"],
+  "assetDirs": ["assets/gmadang/"],
+  "terms": ["지마당", "gmadang"],
+  "exceptions": {
+    "giveaway": { "about": "창간 기념 에코백 증정 영상에서만 에코백 사진 사용 가능. 출처는 '지마당 창간 이벤트'로 표시(다른 브랜드 로고·사이트·연락처는 넣지 않음).", "allowAssets": ["assets/ecolever/product-1color.jpg", "assets/ecolever/product-2color.jpg"], "allowTerms": [], "sourceLabel": "지마당 창간 이벤트" }
+  },
+  "forbidden": ["김국화 출연", "AI 작성 숨기기"],
+  "company_footer": "발행 (주)알앤케이그린월드"
+}

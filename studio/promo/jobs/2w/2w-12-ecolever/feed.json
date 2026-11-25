@@ -1,0 +1,144 @@
+{
+  "track": "2w12",
+  "source": "brand-facts.md · 한국환경산업기술원 탄소중립포인트(cpoint.or.kr) · brand-facts.md",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "장바구니만 써도\n포인트가 쌓여요",
+      "image": "../../../assets/ecolever/product-1color.jpg",
+      "fit": "cover",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 2,
+      "focus": {
+        "s": 2.3,
+        "x": 0.15,
+        "y": 0.95
+      }
+    },
+    {
+      "text": "탄소중립포인트 '장바구니 이용'",
+      "image": "../../../assets/ecolever/product-2color.jpg",
+      "fit": "cover",
+      "motion": "panLeft",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 1,
+      "focus": {
+        "s": 2.3,
+        "x": -0.3,
+        "y": -0.4
+      },
+      "sub": "참여 매장에서 회당 50원 · cpoint.or.kr"
+    },
+    {
+      "text": "1인 연 최대 7만 원",
+      "image": "../../../assets/ecolever/product-1color.jpg",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "sub": "참여 매장인지 누리집에서 확인"
+    },
+    {
+      "text": "행사 기념품을\n다시 드는 장바구니로",
+      "image": "../../../assets/ecolever/product-2color.jpg",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3
+    },
+    {
+      "text": "로고 인쇄 없이 50장부터",
+      "image": "../../../assets/ecolever/product-1color.jpg",
+      "fit": "cover",
+      "motion": "panRight",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "focus": {
+        "s": 2.6,
+        "x": 0.55,
+        "y": 0.95
+      },
+      "sub": "장당 1,000원 · 부가세 별도"
+    }
+  ],
+  "outro": "샘플 먼저\n받아 보세요",
+  "outro_sub": "ecolever.co.kr · 02-6368-9989",
+  "card": {
+    "bg": [
+      "#1F2A21",
+      "#1F2A21"
+    ],
+    "bgStyle": "solid",
+    "color": "#EFE9DC"
+  },
+  "logo": {
+    "image": "../../../assets/ecolever/symbol-ecolever-light.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/ecolever/qr-instagram.png",
+    "text": "QR · 인스타그램",
+    "size": 0.2
+  },
+  "music": {
+    "style": "acoustic",
+    "meter": "4/4",
+    "bpm": 90,
+    "seed": 2712
+  },
+  "upload": {
+    "title": "장바구니 쓰면 탄소중립포인트 | 기념품은 다시 드는 가방으로",
+    "hashtags": [
+      "탄소중립포인트",
+      "장바구니",
+      "에코백",
+      "행사굿즈",
+      "에코레버"
+    ],
+    "link": "https://www.ecolever.co.kr/",
+    "source": "한국환경산업기술원 탄소중립포인트(cpoint.or.kr) · brand-facts.md · 음악: 영상뚝딱 자체 작곡"
+  },
+  "footer": "(주)알앤케이그린월드",
+  "aspect": "4:5",
+  "platform": "reels",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 9.5,
+    "name": "2w-12-ecolever-feed"
+  }
+}

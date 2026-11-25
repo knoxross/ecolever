@@ -1,0 +1,152 @@
+{
+  "track": "2w15",
+  "source": "지마당 기사 https://www.gmadang.com/a/nn5vk9v.html (송파구 발표(시정일보 보도))",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "이중섭·천경자 등\n거장 32명 작품 44점",
+      "image": "../../../assets/gmadang/3w/nn5vk9v-0.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "석촌호수 '더 갤러리 호수'"
+    },
+    {
+      "text": "한국근현대미술거장 특별기획전",
+      "image": "../../../assets/gmadang/3w/nn5vk9v-1.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 1,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "11월 24일 ~ 2027년 1월 31일"
+    },
+    {
+      "text": "고희동 · 이중섭 · 천경자 · 방혜자",
+      "image": "../../../assets/gmadang/3w/nn5vk9v-1.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "송파구 · 고려대학교박물관 공동 기획"
+    },
+    {
+      "text": "제1전시장 '거장들을 한자리에'",
+      "image": "../../../assets/gmadang/3w/nn5vk9v-2.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "제2전시장 '한국 근현대미술 100년의 흐름'"
+    },
+    {
+      "text": "연말, 교과서 속 그림을\n직접 보러 가요",
+      "image": "../../../assets/gmadang/3w/nn5vk9v-3.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "관람 시간은 송파구청에 확인"
+    }
+  ],
+  "outro": "원문은 지마당에서",
+  "outro_sub": "gmadang.com",
+  "card": {
+    "bg": [
+      "#123A24",
+      "#123A24"
+    ],
+    "bgStyle": "solid",
+    "color": "#FFFFFF"
+  },
+  "logo": {
+    "image": "../../../assets/gmadang/icon-192.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/gmadang/og.png",
+    "size": 0.5
+  },
+  "music": {
+    "style": "calm",
+    "meter": "4/4",
+    "bpm": 78,
+    "seed": 3615
+  },
+  "upload": {
+    "title": "이중섭·천경자 거장 32명 작품 44점 | 석촌호수 더 갤러리 호수",
+    "hashtags": [
+      "석촌호수",
+      "미술전시",
+      "연말나들이",
+      "이중섭",
+      "송파구",
+      "지마당",
+      "서울소식"
+    ],
+    "link": "https://www.gmadang.com/a/nn5vk9v.html",
+    "source": "송파구 발표(시정일보 보도) · 지마당 AI 작성"
+  },
+  "footer": "발행 (주)알앤케이그린월드",
+  "aspect": "16:9",
+  "platform": "youtube",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 20,
+    "name": "2w-15-gmadang-wide"
+  }
+}

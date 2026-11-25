@@ -1,0 +1,178 @@
+{
+  "brand": "ecolever",
+  "topic": "마을 공모사업·주민자치회 활동 재료로 에코백 살 때 — 정산 서류 체크리스트",
+  "trend": "연말 공모사업 정산 시즌 + 저장형 체크리스트 숏폼(한 줄씩 체크) + 실물 클로즈업 + 공개 직전 정적",
+  "source": "에코레버 구매 가이드 '마을 공모사업·주민자치회 활동 재료로 에코백 살 때 확인할 것'(2026-11-22) · brand-facts.md",
+  "aspect": "9:16",
+  "mood": "calm",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "공모사업 재료비,\n정산 걱정되시죠?",
+      "image": "../../assets/ecolever/product-1color.jpg",
+      "fit": "cover",
+      "focus": {
+        "s": 2.3,
+        "x": 0.1,
+        "y": 0.95
+      },
+      "motion": "zoomIn",
+      "filter": "cine",
+      "fx": "grain",
+      "fxAmt": 0.25,
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 88,
+      "textPos": "center",
+      "textAnim": "fade",
+      "duration": 2.8,
+      "transition": "none",
+      "energy": 2,
+      "hit": true
+    },
+    {
+      "text": "주민자치회 · 마을공동체 · 동아리",
+      "sub": "장바구니 캠페인 · 꾸미기 체험 · 행사 기념품",
+      "bg": [
+        "#14110E",
+        "#14110E"
+      ],
+      "bgStyle": "solid",
+      "font": "serif",
+      "color": "#EFE9DC",
+      "fx": "grain",
+      "fxAmt": 0.3,
+      "textAnim": "fade",
+      "duration": 2.6,
+      "transition": "fade",
+      "energy": 1
+    },
+    {
+      "text": "정산 서류, 미리 챙기세요",
+      "list": [
+        "견적서 (규격 · 수량 · 단가)",
+        "세금계산서 또는 카드 영수증",
+        "거래명세서 · 납품 사진",
+        "판매처 사업자등록증 사본"
+      ],
+      "sub": "사업마다 지침이 다르니 담당 부서에 먼저 확인",
+      "bg": [
+        "#1F2A21",
+        "#14110E"
+      ],
+      "bgStyle": "gradient",
+      "font": "serif",
+      "color": "#EFE9DC",
+      "fontSize": 76,
+      "textPos": "top",
+      "textAnim": "fade",
+      "fx": "grain",
+      "fxAmt": 0.25,
+      "duration": 4.4,
+      "transition": "fade",
+      "energy": 2
+    },
+    {
+      "text": "50장부터, 장당 1,000원",
+      "sub": "1칼라 · 부가세 별도 · 견적서 · 세금계산서 발행",
+      "image": "../../assets/ecolever/product-1color.jpg",
+      "fit": "card",
+      "filter": "cine",
+      "fx": "grain",
+      "fxAmt": 0.25,
+      "font": "serif",
+      "textBg": false,
+      "fontSize": 84,
+      "textPos": "top",
+      "textAnim": "up",
+      "duration": 3.0,
+      "transition": "fade",
+      "energy": 2,
+      "bg": [
+        "#2F4332",
+        "#1F2A21"
+      ],
+      "bgStyle": "gradient",
+      "color": "#FFFFFF"
+    },
+    {
+      "text": "결과 보고서엔\n시험성적서 사본도",
+      "sub": "면 85.2% · 황마 10.9% · 레이온 3.9%",
+      "image": "../../assets/ecolever/doc-fiti-test.jpg",
+      "fit": "card",
+      "bg": [
+        "#2F4332",
+        "#1F2A21"
+      ],
+      "bgStyle": "gradient",
+      "font": "serif",
+      "color": "#FFFFFF",
+      "textPos": "top",
+      "textAnim": "up",
+      "duration": 3.0,
+      "transition": "fade",
+      "energy": 3,
+      "hit": true,
+      "musicStop": true
+    },
+    {
+      "text": "연말 정산이면\n12월 초 납품으로",
+      "sub": "샘플은 그 전에 받아 보세요 · 1칼라 실물 재고",
+      "image": "../../assets/ecolever/product-2color.jpg",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "filter": "cine",
+      "fx": "grain",
+      "fxAmt": 0.25,
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 84,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.0,
+      "transition": "fade",
+      "energy": 3
+    }
+  ],
+  "outro": "샘플 먼저\n받아 보세요",
+  "outro_sub": "ecolever.co.kr · 02-6368-9989",
+  "card": {
+    "bg": [
+      "#1F2A21",
+      "#2F4332"
+    ],
+    "bgStyle": "gradient",
+    "color": "#EFE9DC"
+  },
+  "logo": {
+    "image": "../../assets/ecolever/symbol-ecolever-light.png",
+    "pos": "tr",
+    "size": 0.09
+  },
+  "endcard": {
+    "image": "../../assets/ecolever/qr-instagram.png",
+    "text": "QR · 인스타그램",
+    "size": 0.2
+  },
+  "music": {
+    "style": "luxury",
+    "meter": "4/4",
+    "bpm": 90,
+    "seed": 1123
+  },
+  "upload": {
+    "title": "공모사업 재료비로 에코백 살 때, 정산 서류 체크리스트 | 50장부터",
+    "hashtags": [
+      "공모사업",
+      "주민자치회",
+      "마을공동체",
+      "정산",
+      "에코백",
+      "장바구니캠페인",
+      "단체에코백",
+      "에코레버"
+    ],
+    "link": "https://www.ecolever.co.kr/guide/community-grant-eco-bag.html",
+    "source": "에코레버 구매 가이드(2026-11-22) · FITI 시험성적서"
+  }
+}

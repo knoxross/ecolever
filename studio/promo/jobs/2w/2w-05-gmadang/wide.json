@@ -1,0 +1,152 @@
+{
+  "track": "2w05",
+  "source": "지마당 기사 https://www.gmadang.com/a/nq3yxc6.html (서울시 발표(내 손안에 서울))",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "웹툰 배경, 서울 명소를\n무료로 쓰세요",
+      "image": "../../../assets/gmadang/2w/nq3yxc6-0.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "서울 명소 3D 디지털 애셋 13종"
+    },
+    {
+      "text": "DDP · 청계천 · 여의도 한강공원 ·\n반포대교와 세빛섬",
+      "image": "../../../assets/gmadang/2w/nq3yxc6-1.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 1,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "외부 5곳 · 실내 8곳"
+    },
+    {
+      "text": "창작 플랫폼 '에이콘(ACON)'",
+      "image": "../../../assets/gmadang/2w/nq3yxc6-1.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "회원 가입 후 무료 · 스케치업 형식"
+    },
+    {
+      "text": "상업용 웹툰·영상도 가능",
+      "image": "../../../assets/gmadang/2w/nq3yxc6-2.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "작품에 서울시·서울경제진흥원 애셋 활용 표기"
+    },
+    {
+      "text": "되팔기·유료 재배포는 안 돼요",
+      "image": "../../../assets/gmadang/2w/nq3yxc6-3.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "문의 다산콜센터 02-120"
+    }
+  ],
+  "outro": "원문은 지마당에서",
+  "outro_sub": "gmadang.com",
+  "card": {
+    "bg": [
+      "#123A24",
+      "#123A24"
+    ],
+    "bgStyle": "solid",
+    "color": "#FFFFFF"
+  },
+  "logo": {
+    "image": "../../../assets/gmadang/icon-192.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/gmadang/og.png",
+    "size": 0.5
+  },
+  "music": {
+    "style": "lofi",
+    "meter": "4/4",
+    "bpm": 82,
+    "seed": 2605
+  },
+  "upload": {
+    "title": "서울 명소 3D 배경 무료 — 웹툰·애니 상업용도 가능",
+    "hashtags": [
+      "웹툰",
+      "애니메이션",
+      "무료소스",
+      "3D배경",
+      "서울시",
+      "지마당",
+      "서울소식"
+    ],
+    "link": "https://www.gmadang.com/a/nq3yxc6.html",
+    "source": "서울시 발표(내 손안에 서울) · 지마당 AI 작성"
+  },
+  "footer": "발행 (주)알앤케이그린월드",
+  "aspect": "16:9",
+  "platform": "youtube",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 20,
+    "name": "2w-05-gmadang-wide"
+  }
+}

@@ -1,0 +1,149 @@
+{
+  "brand": "ecolever",
+  "track": "2w24",
+  "topic": "기업 판촉·사내 행사용 에코백 — 사내 행사 50개부터, 로고 인쇄 10,000개부터, ESG 근거",
+  "trend": "실물 클로즈업 무드형 숏폼 · 자막만으로 · 어쿠스틱",
+  "source": "brand-facts.md · 에코레버 안내 '기업 판촉·사내 행사용'",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "판촉물,\n서랍 말고 가방으로",
+      "image": "../../../assets/ecolever/product-2color.jpg",
+      "fit": "cover",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 1,
+      "focus": {
+        "s": 2.3,
+        "x": -0.3,
+        "y": -0.4
+      },
+      "textBox": {
+        "opacity": 0.92
+      }
+    },
+    {
+      "text": "사내 행사·워크숍은\n인쇄 없이 50개부터",
+      "image": "../../../assets/ecolever/guide3/for-company-promo-0.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "장당 1칼라 1,000원 · 2칼라 1,200원(부가세 별도)"
+    },
+    {
+      "text": "회사 로고 인쇄는\n10,000개부터",
+      "image": "../../../assets/ecolever/product-1color.jpg",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92
+      },
+      "sub": "시안 확인 뒤 견적서"
+    },
+    {
+      "text": "ESG 보고에 붙일 근거",
+      "image": "../../../assets/ecolever/doc-fiti-test.jpg",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92
+      },
+      "sub": "FITI 혼용률 · 합성섬유 혼용 없음"
+    },
+    {
+      "text": "처음엔 소량으로 반응 보고,\n다음 행사에서 로고 인쇄로",
+      "image": "../../../assets/ecolever/product-1color.jpg",
+      "fit": "cover",
+      "motion": "panRight",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "focus": {
+        "s": 2.6,
+        "x": 0.55,
+        "y": 0.95
+      },
+      "textBox": {
+        "opacity": 0.92
+      }
+    }
+  ],
+  "outro": "샘플 먼저\n받아 보세요",
+  "outro_sub": "ecolever.co.kr · 02-6368-9989",
+  "card": {
+    "bg": [
+      "#1F2A21",
+      "#1F2A21"
+    ],
+    "bgStyle": "solid",
+    "color": "#EFE9DC"
+  },
+  "logo": {
+    "image": "../../../assets/ecolever/symbol-ecolever-light.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/ecolever/qr-instagram.png",
+    "text": "QR · 인스타그램",
+    "size": 0.2
+  },
+  "music": {
+    "style": "corp",
+    "meter": "4/4",
+    "bpm": 94,
+    "seed": 3724
+  },
+  "upload": {
+    "title": "기업 판촉·사내 행사 에코백 | 50개부터, 로고 인쇄 10,000개부터",
+    "hashtags": [
+      "기업판촉물",
+      "사내행사",
+      "ESG",
+      "에코백",
+      "판촉물",
+      "에코레버"
+    ],
+    "link": "https://www.ecolever.co.kr/",
+    "source": "에코레버 안내 '기업 판촉·사내 행사용' · 음악: 영상뚝딱 자체 작곡"
+  }
+}

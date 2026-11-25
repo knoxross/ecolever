@@ -1,0 +1,175 @@
+{
+  "source": "에코레버 구매 가이드 '가게 포장용 에코백 50장'(2026-11-21) · brand-facts.md",
+  "aspect": "9:16",
+  "mood": "calm",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "봉투 대신\n이거 드려 보세요",
+      "image": "../../assets/ecolever/product-1color.jpg",
+      "fit": "cover",
+      "focus": {
+        "s": 1.7,
+        "x": 0,
+        "y": 0.85
+      },
+      "motion": "zoomIn",
+      "filter": "cine",
+      "fx": "grain",
+      "fxAmt": 0.25,
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 92,
+      "textPos": "center",
+      "textAnim": "fade",
+      "duration": 2.8,
+      "transition": "none",
+      "energy": 2,
+      "hit": true
+    },
+    {
+      "text": "빵집 · 꽃집 · 반찬가게 · 동네 서점",
+      "sub": "단골손님 포장 · 선물 포장",
+      "bg": [
+        "#14110E",
+        "#14110E"
+      ],
+      "bgStyle": "solid",
+      "font": "serif",
+      "color": "#EFE9DC",
+      "fx": "grain",
+      "fxAmt": 0.3,
+      "textAnim": "fade",
+      "duration": 2.6,
+      "transition": "fade",
+      "energy": 1
+    },
+    {
+      "text": "50장부터",
+      "sub": "로고 인쇄 없이 · 장당 1,000원(부가세 별도)",
+      "image": "../../assets/ecolever/product-1color.jpg",
+      "fit": "cover",
+      "focus": {
+        "s": 1.8,
+        "x": 0.5,
+        "y": -0.75
+      },
+      "motion": "zoomOut",
+      "filter": "cine",
+      "fx": "grain",
+      "fxAmt": 0.25,
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 96,
+      "textPos": "bottom",
+      "textAnim": "up",
+      "duration": 3,
+      "transition": "fade",
+      "energy": 2
+    },
+    {
+      "text": "50장이면 55,000원",
+      "sub": "1칼라 · 부가세 포함 · 배송비 별도 안내",
+      "image": "../../assets/ecolever/guide-shop50-price.png",
+      "fit": "phone",
+      "motion": "scrollDown",
+      "bg": [
+        "#2F4332",
+        "#14110E"
+      ],
+      "bgStyle": "gradient",
+      "filter": "cine",
+      "font": "serif",
+      "textPos": "top",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 1
+    },
+    {
+      "text": "가게 이름은\n스티커 · 도장으로",
+      "sub": "로고 인쇄는 1만 장부터라, 소량은 이렇게",
+      "bg": [
+        "#2F4332",
+        "#14110E"
+      ],
+      "bgStyle": "gradient",
+      "font": "serif",
+      "color": "#FFFFFF",
+      "fx": "grain",
+      "fxAmt": 0.3,
+      "textAnim": "up",
+      "duration": 3,
+      "transition": "fade",
+      "energy": 3,
+      "hit": true,
+      "musicStop": true
+    },
+    {
+      "text": "다음에도\n들고 오는 가방",
+      "sub": "40×37cm · 약 70g",
+      "image": "../../assets/ecolever/product-2color.jpg",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "filter": "cine",
+      "fx": "grain",
+      "fxAmt": 0.25,
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 84,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3,
+      "transition": "fade",
+      "energy": 3
+    }
+  ],
+  "outro": "샘플 먼저\n받아 보세요",
+  "outro_sub": "ecolever.co.kr · 02-6368-9989",
+  "card": {
+    "bg": [
+      "#14110E",
+      "#2F4332"
+    ],
+    "bgStyle": "gradient",
+    "color": "#EFE9DC"
+  },
+  "logo": {
+    "image": "../../assets/ecolever/symbol-ecolever-light.png",
+    "pos": "tr",
+    "size": 0.09
+  },
+  "endcard": {
+    "image": "../../assets/ecolever/qr-instagram.png",
+    "text": "QR · 인스타그램",
+    "size": 0.2
+  },
+  "music": {
+    "style": "lofi",
+    "meter": "4/4",
+    "bpm": 84,
+    "seed": 1121
+  },
+  "upload": {
+    "title": "봉투 대신 이거 드려 보세요 | 동네 가게 에코백 50장부터",
+    "hashtags": [
+      "에코백",
+      "가게포장",
+      "장바구니",
+      "빵집",
+      "꽃집",
+      "소상공인",
+      "단체에코백",
+      "에코레버"
+    ],
+    "link": "https://www.ecolever.co.kr/guide/shop-packaging-eco-bag-50.html?utm_source=instagram&utm_medium=social&utm_campaign=1121-shop50"
+  },
+  "footer": "(주)알앤케이그린월드",
+  "platform": "shorts",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 9.5,
+    "name": "2026-11-21-ecolever-shorts"
+  }
+}

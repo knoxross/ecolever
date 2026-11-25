@@ -1,0 +1,145 @@
+{
+  "track": "2w08",
+  "source": "brand-facts.md · brand-facts.md 가격(대표님 11/17)",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "에코백 50장,\n얼마일까요?",
+      "image": "../../../assets/ecolever/product-1color.jpg",
+      "fit": "cover",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 2,
+      "focus": {
+        "s": 2.3,
+        "x": 0.15,
+        "y": 0.95
+      }
+    },
+    {
+      "text": "1칼라 장당 1,000원",
+      "image": "../../../assets/ecolever/product-1color.jpg",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 1,
+      "sub": "로고 인쇄 없음 · 부가세 별도"
+    },
+    {
+      "text": "2칼라 장당 1,200원",
+      "image": "../../../assets/ecolever/product-2color.jpg",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "sub": "그레이·크림 투톤 · 부가세 별도"
+    },
+    {
+      "text": "1칼라 50장이면\n부가세 포함 55,000원",
+      "image": "../../../assets/ecolever/product-1color.jpg",
+      "fit": "cover",
+      "motion": "panRight",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "focus": {
+        "s": 2.6,
+        "x": 0.55,
+        "y": 0.95
+      },
+      "sub": "수량과 관계없이 같은 장당 가격"
+    },
+    {
+      "text": "견적서 · 세금계산서 발행",
+      "image": "../../../assets/ecolever/product-2color.jpg",
+      "fit": "cover",
+      "motion": "panLeft",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "focus": {
+        "s": 2.3,
+        "x": -0.3,
+        "y": -0.4
+      },
+      "sub": "40×37cm · 약 70g"
+    }
+  ],
+  "outro": "샘플 먼저\n받아 보세요",
+  "outro_sub": "ecolever.co.kr · 02-6368-9989",
+  "card": {
+    "bg": [
+      "#1F2A21",
+      "#1F2A21"
+    ],
+    "bgStyle": "solid",
+    "color": "#EFE9DC"
+  },
+  "logo": {
+    "image": "../../../assets/ecolever/symbol-ecolever-light.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/ecolever/qr-instagram.png",
+    "text": "QR · 인스타그램",
+    "size": 0.2
+  },
+  "music": {
+    "style": "acoustic",
+    "meter": "4/4",
+    "bpm": 88,
+    "seed": 2708
+  },
+  "upload": {
+    "title": "에코백 50장, 얼마예요? | 장당 1,000원부터(부가세 별도)",
+    "hashtags": [
+      "에코백",
+      "단체에코백",
+      "에코백가격",
+      "행사굿즈",
+      "에코레버"
+    ],
+    "link": "https://www.ecolever.co.kr/",
+    "source": "brand-facts.md 가격(대표님 11/17) · 음악: 영상뚝딱 자체 작곡"
+  },
+  "footer": "(주)알앤케이그린월드",
+  "aspect": "16:9",
+  "platform": "youtube",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 20,
+    "name": "2w-08-ecolever-wide"
+  }
+}

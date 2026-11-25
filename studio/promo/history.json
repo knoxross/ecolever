@@ -1,0 +1,371 @@
+[
+  {
+    "date": "2026-11-16",
+    "brand": "ecolever",
+    "topic": "연말 행사 굿즈 담당자 POV — 성적서로 증명하는 에코백 (11/20 사실표 기준 수정판)",
+    "trend": "POV 훅 + 체크리스트형 빠른 컷",
+    "files": [
+      "2026-11-16-ecolever-shorts.mp4",
+      "2026-11-16-ecolever-feed.mp4"
+    ],
+    "remade": "2026-11-24 대표님 \"만들어봐\" — 영화 톤으로 새로 만듦(그래픽 배경·이모지 제거, 실물 클로즈업·명조 자막·필름 색감, 에코레버 CI 로고, '공공기관 구매도 OK' 삭제(조달 미등록)). 이전판 spec.v1-graphic.json"
+  },
+  {
+    "date": "2026-11-16",
+    "brand": "gmadang",
+    "topic": "창간 소개 — 서울 사는데 우리 구 소식 어디서 봐요?",
+    "trend": "질문형 훅 + 실제 앱 화면 스크롤",
+    "files": [
+      "2026-11-16-gmadang-shorts.mp4",
+      "2026-11-16-gmadang-feed.mp4"
+    ]
+  },
+  {
+    "date": "2026-11-17",
+    "brand": "ecolever",
+    "topic": "'친환경'이라는데 근거 있나요? — 성적서로 확인, 합성섬유 0%, 50장부터 (11/20 대체판, 옛 주제 '잘 썩는 가방' 폐기)",
+    "trend": "질문형 훅 + 폰 퍼스트 시네마틱(필름 톤·그레인·느린 이동) + 공개 직전 정적",
+    "music": "기업홍보(어쿠스틱 기타·피아노·현악) 96BPM 영상 맞춤: 1→2→1→1→3(정적 후 강조)→2→3→3",
+    "files": [
+      "2026-11-17-ecolever-shorts.mp4",
+      "2026-11-17-ecolever-feed.mp4"
+    ],
+    "remade": "2026-11-24 로고를 회사 Rk 마크 → 에코레버 CI 심벌로 바꿔 다시 만듦"
+  },
+  {
+    "date": "2026-11-18",
+    "brand": "gmadang",
+    "topic": "오늘 아침 우리 구 소식 30초 브리핑 — 동작구 동행일자리 233명(월평균 약 145만 원)·겨울 대책(난방비 10만 원)·서울시 숏폼 공모(총상금 1천만 원)",
+    "trend": "숫자 훅 + 실제 오늘 화면 + 정보형 브리핑 + 공개 직전 정적",
+    "music": "경쾌한 팝(기타 스트럼·피아노·철금) 112BPM 영상 맞춤: 2→1→2→2→3(정적 후 강조)→3→3",
+    "source": "지마당 11/18 1면(동작구 발표·시정일보 보도)",
+    "files": [
+      "2026-11-18-gmadang-shorts.mp4",
+      "2026-11-18-gmadang-feed.mp4"
+    ]
+  },
+  {
+    "date": "2026-11-19",
+    "brand": "ecolever",
+    "topic": "수능 끝난 고3 졸업 선물 — 학교 단체 주문 (11/20 안전판: 50개·장당 1,000원)",
+    "trend": "수능일(11/19) 시즌 이슈 + 공감형 질문 훅 + '많이보다 의미 있게' + 시네마틱 필름 톤 + 공개 직전 정적",
+    "music": "잔잔한 감성(피아노 아르페지오·현악) 84BPM 영상 맞춤: 1→2→2→2→3(정적 후 강조)→3→3",
+    "files": [
+      "2026-11-19-ecolever-shorts.mp4",
+      "2026-11-19-ecolever-feed.mp4"
+    ],
+    "remade": "2026-11-24 로고를 회사 Rk 마크 → 에코레버 CI 심벌로 바꿔 다시 만듦"
+  },
+  {
+    "date": "2026-11-20",
+    "brand": "gmadang",
+    "topic": "창간 회원 이벤트 — 지마당 무료 가입하면 선착순 100명 에코레버 에코백 1장 증정 (두 브랜드 함께)",
+    "trend": "혜택형 훅 + 실제 앱 화면 + 실제 제품 사진 + 신청 경로 따라 하기 + 공개 직전 정적",
+    "music": "귀여운 동요 결(우쿨렐레·철금·박수) 116BPM 영상 맞춤: 2→1→2→2→3(정적 후 강조)→3→3",
+    "link": "https://www.gmadang.com/?src=video-1120",
+    "files": [
+      "2026-11-20-gmadang-shorts.mp4",
+      "2026-11-20-gmadang-feed.mp4"
+    ],
+    "remade": "2026-11-24 증정 영상 예외(event giveaway): 에코레버 이름 빼고 출처 지마당 창간 이벤트로 다시 만듦"
+  },
+  {
+    "date": "2026-11-21",
+    "brand": "ecolever",
+    "topic": "동네 가게 포장용 에코백 50장 — 봉투 대신 이거 드려 보세요",
+    "trend": "소상공인 실용 팁 + 클로즈업 인서트 컷(손잡이·원단 질감) + 가격을 숫자로 바로 + 공개 직전 정적",
+    "music": "로파이(일렉피아노·콘트라베이스) 84BPM 영상 맞춤: 2→1→2→1→3(정적 후 강조)→3→3",
+    "people": "없음 — 구글 AI 키 미등록(API key not valid), 촬영 소재 없음",
+    "source": "에코레버 구매 가이드 '가게 포장용 에코백 50장'(main, 11/21) · brand-facts.md",
+    "link": "utm_campaign=1121-shop50",
+    "files": [
+      "2026-11-21-ecolever-shorts.mp4",
+      "2026-11-21-ecolever-feed.mp4"
+    ],
+    "remade": "2026-11-24 로고를 회사 Rk 마크 → 에코레버 CI 심벌로 바꿔 다시 만듦"
+  },
+  {
+    "date": "2026-11-22",
+    "brand": "gmadang",
+    "topic": "아파서 일 못 한 날 생활비 하루 9만 6,960원 — 서울형 입원 생활비(프리랜서·1인 사장님)",
+    "trend": "저장·공유형 정보 숏폼 + 숫자 카운트업 훅 + 실제 기사 화면 + 공개 직전 정적",
+    "music": "잔잔 88BPM 영상 맞춤: 2→2→1→1→3(정적 후 강조)→3→2",
+    "people": "없음 — 구글 AI 키 미등록(API key not valid)",
+    "source": "지마당 기사 https://www.gmadang.com/a/nq3yxb5.html (출처: 서울시 발표(내 손안에 서울), AI 작성) · 끝에 ESG 면 gmadang.com/esg",
+    "link": "?src=video-1122",
+    "files": [
+      "2026-11-22-gmadang-shorts.mp4",
+      "2026-11-22-gmadang-feed.mp4"
+    ]
+  },
+  {
+    "date": "2026-11-23",
+    "brand": "ecolever",
+    "topic": "마을 공모사업·주민자치회 활동 재료로 에코백 살 때 — 정산 서류 체크리스트",
+    "trend": "연말 공모사업 정산 시즌 + 저장형 체크리스트(한 줄씩 체크) + 실물 클로즈업 + 공개 직전 정적",
+    "music": "고급 피아노(피아노 아르페지오·현악·콘트라베이스) 90BPM 영상 맞춤: 2→1→2→2→3(정적 후 강조)→3",
+    "people": "없음 — 구글 AI 키 미등록(400), 촬영 소재 없음",
+    "source": "에코레버 구매 가이드 '마을 공모사업·주민자치회 활동 재료로 에코백 살 때 확인할 것'(2026-11-22) · brand-facts.md · FITI 시험성적서",
+    "link": "utm_campaign=1123-ecolever",
+    "files": [
+      "2026-11-23-ecolever-shorts.mp4",
+      "2026-11-23-ecolever-feed.mp4"
+    ],
+    "remade": "2026-11-24 로고를 회사 Rk 마크 → 에코레버 CI 심벌로 바꿔 다시 만듦"
+  },
+  {
+    "date": "2026-11-24",
+    "brand": "gmadang",
+    "topic": "12/13(일) 에코백 꾸미기 원데이 클래스 모집 — 창간 기념 1회차·무료·선착순 12명 (더블유, 광고)",
+    "trend": "연말 주말 가족·아이 체험 + 저장형 체크리스트 + 실제 신청 화면 + 공개 직전 정적",
+    "music": "경쾌한 팝(기타·피아노·철금) 104BPM 영상 맞춤: 2→1→2→3(정적 후 강조)→3",
+    "people": "없음 — 구글 AI 키 미등록(400)",
+    "source": "지마당 더블유 페이지 https://www.gmadang.com/w/#class (광고·계열 공간, 11/24 확인)",
+    "ad": true,
+    "link": "?src=video-1124 (/w/)",
+    "files": [
+      "2026-11-24-gmadang-shorts.mp4",
+      "2026-11-24-gmadang-feed.mp4"
+    ],
+    "status": "보류 — 브랜드 섞임(더블유·에코레버). 게시 금지, 더블유 브랜드 결정 뒤 단독 영상으로 다시 만듦 (11/24 RNK 총괄 지시)"
+  },
+  {
+    "date": "2026-11-24",
+    "brand": "ecolever",
+    "topic": "[견본] 자연스러움 기준 — 다시 들고 다니는 가방",
+    "trend": "실사 클로즈업 위주 무드형 · 자막만 · 어쿠스틱",
+    "music": "어쿠스틱 핑거피킹 84BPM(영상뚝딱 자체 작곡, 저작권 없음) · 끝 페이드아웃",
+    "people": "없음 — 구글 키·촬영본 없음",
+    "source": "FITI 시험성적서 · 에코레버 제품 사진",
+    "sample": true,
+    "note": "RNK 총괄 11/24 요청 견본. 비교 영상 비교-기존vs새기준.mp4",
+    "files": [
+      "2026-11-24-ecolever-natural-shorts.mp4",
+      "2026-11-24-ecolever-natural-feed.mp4"
+    ]
+  },
+  {
+    "date": "2026-11-25",
+    "brand": "gmadang",
+    "premade": true,
+    "track": "2w01",
+    "topic": "[2주 미리 만듦] 한성백제박물관 특별전 '삼국사기·삼국유사, 백제를 기록하다' — 국보 삼국사기 전권, 무료",
+    "source": "지마당 기사 https://www.gmadang.com/a/nq3yxer.html (서울시 발표(내 손안에 서울))",
+    "files": [
+      "2w-01-gmadang-shorts.mp4",
+      "2w-01-gmadang-feed.mp4",
+      "2w-01-gmadang-wide.mp4"
+    ],
+    "music": "영상뚝딱 자체 작곡(저작권 없음) · 끝 페이드아웃",
+    "people": "없음 — 구글 키·촬영본 없음",
+    "note": "12월 SNS 계정 개설 전 게시 안 함. RNK 총괄 승인 대기"
+  },
+  {
+    "date": "2026-11-25",
+    "brand": "gmadang",
+    "premade": true,
+    "track": "2w02",
+    "topic": "[2주 미리 만듦] 서울백제어린이박물관 아기 매머드 '디마' 특별전 — 내년 3월 7일까지 무료",
+    "source": "지마당 기사 https://www.gmadang.com/a/nq3yxc3.html (서울시 발표(내 손안에 서울))",
+    "files": [
+      "2w-02-gmadang-shorts.mp4",
+      "2w-02-gmadang-feed.mp4",
+      "2w-02-gmadang-wide.mp4"
+    ],
+    "music": "영상뚝딱 자체 작곡(저작권 없음) · 끝 페이드아웃",
+    "people": "없음 — 구글 키·촬영본 없음",
+    "note": "12월 SNS 계정 개설 전 게시 안 함. RNK 총괄 승인 대기"
+  },
+  {
+    "date": "2026-11-25",
+    "brand": "gmadang",
+    "premade": true,
+    "track": "2w03",
+    "topic": "[2주 미리 만듦] 서울시 겨울철 종합대책 — 한파쉼터 1,461곳·이동식 쉼터 '온기소'·에너지바우처",
+    "source": "지마당 기사 https://www.gmadang.com/a/nzag38v.html (서울시 발표(이투데이 보도))",
+    "files": [
+      "2w-03-gmadang-shorts.mp4",
+      "2w-03-gmadang-feed.mp4",
+      "2w-03-gmadang-wide.mp4"
+    ],
+    "music": "영상뚝딱 자체 작곡(저작권 없음) · 끝 페이드아웃",
+    "people": "없음 — 구글 키·촬영본 없음",
+    "note": "12월 SNS 계정 개설 전 게시 안 함. RNK 총괄 승인 대기"
+  },
+  {
+    "date": "2026-11-25",
+    "brand": "gmadang",
+    "premade": true,
+    "track": "2w04",
+    "topic": "[2주 미리 만듦] [모아 보기] 빈 페트병·장바구니·텀블러로 포인트·현금 받는 곳 6가지(11월 24일 기준)",
+    "source": "지마당 기사 https://www.gmadang.com/a/nq4783h.html (지마당 정리(동대문구·용산구·성동구·서초구·은평구·한국환경산업기술원 발표))",
+    "files": [
+      "2w-04-gmadang-shorts.mp4",
+      "2w-04-gmadang-feed.mp4",
+      "2w-04-gmadang-wide.mp4"
+    ],
+    "music": "영상뚝딱 자체 작곡(저작권 없음) · 끝 페이드아웃",
+    "people": "없음 — 구글 키·촬영본 없음",
+    "note": "12월 SNS 계정 개설 전 게시 안 함. RNK 총괄 승인 대기"
+  },
+  {
+    "date": "2026-11-25",
+    "brand": "gmadang",
+    "premade": true,
+    "track": "2w05",
+    "topic": "[2주 미리 만듦] 서울시 명소 13곳 '3D 디지털 배경' 무료 배포 — 웹툰·애니 상업용도 가능",
+    "source": "지마당 기사 https://www.gmadang.com/a/nq3yxc6.html (서울시 발표(내 손안에 서울))",
+    "files": [
+      "2w-05-gmadang-shorts.mp4",
+      "2w-05-gmadang-feed.mp4",
+      "2w-05-gmadang-wide.mp4"
+    ],
+    "music": "영상뚝딱 자체 작곡(저작권 없음) · 끝 페이드아웃",
+    "people": "없음 — 구글 키·촬영본 없음",
+    "note": "12월 SNS 계정 개설 전 게시 안 함. RNK 총괄 승인 대기"
+  },
+  {
+    "date": "2026-11-25",
+    "brand": "gmadang",
+    "premade": true,
+    "track": "2w06",
+    "topic": "[2주 미리 만듦] 성동구 12월부터 '이동식 반려동물 장례' — 구민 60% 할인, 75세 이상 홀몸 어르신 무료",
+    "source": "지마당 기사 https://www.gmadang.com/a/nn5uyfd.html (성동구 발표(시정일보 보도))",
+    "files": [
+      "2w-06-gmadang-shorts.mp4",
+      "2w-06-gmadang-feed.mp4",
+      "2w-06-gmadang-wide.mp4"
+    ],
+    "music": "영상뚝딱 자체 작곡(저작권 없음) · 끝 페이드아웃",
+    "people": "없음 — 구글 키·촬영본 없음",
+    "note": "12월 SNS 계정 개설 전 게시 안 함. RNK 총괄 승인 대기"
+  },
+  {
+    "date": "2026-11-25",
+    "brand": "gmadang",
+    "premade": true,
+    "track": "2w07",
+    "topic": "[2주 미리 만듦] 서대문구 백련산 숲속치유센터 겨울 프로그램 11/29~12/27 — 회당 10명 이내",
+    "source": "지마당 기사 https://www.gmadang.com/a/nx14ow.html (서대문구 발표(구청 보도자료))",
+    "files": [
+      "2w-07-gmadang-shorts.mp4",
+      "2w-07-gmadang-feed.mp4",
+      "2w-07-gmadang-wide.mp4"
+    ],
+    "music": "영상뚝딱 자체 작곡(저작권 없음) · 끝 페이드아웃",
+    "people": "없음 — 구글 키·촬영본 없음",
+    "note": "12월 SNS 계정 개설 전 게시 안 함. RNK 총괄 승인 대기"
+  },
+  {
+    "date": "2026-11-25",
+    "brand": "ecolever",
+    "premade": true,
+    "track": "2w08",
+    "topic": "[2주 미리 만듦] 에코백 50장, 얼마예요? — 장당 1칼라 1,000원·2칼라 1,200원(부가세 별도)",
+    "source": "brand-facts.md · brand-facts.md 가격(대표님 11/17)",
+    "files": [
+      "2w-08-ecolever-shorts.mp4",
+      "2w-08-ecolever-feed.mp4",
+      "2w-08-ecolever-wide.mp4"
+    ],
+    "music": "영상뚝딱 자체 작곡(저작권 없음) · 끝 페이드아웃",
+    "people": "없음 — 구글 키·촬영본 없음",
+    "note": "12월 SNS 계정 개설 전 게시 안 함. RNK 총괄 승인 대기"
+  },
+  {
+    "date": "2026-11-25",
+    "brand": "ecolever",
+    "premade": true,
+    "track": "2w09",
+    "topic": "[2주 미리 만듦] 1칼라 vs 2칼라 — 크림톤 단색과 그레이·크림 투톤",
+    "source": "brand-facts.md · brand-facts.md",
+    "files": [
+      "2w-09-ecolever-shorts.mp4",
+      "2w-09-ecolever-feed.mp4",
+      "2w-09-ecolever-wide.mp4"
+    ],
+    "music": "영상뚝딱 자체 작곡(저작권 없음) · 끝 페이드아웃",
+    "people": "없음 — 구글 키·촬영본 없음",
+    "note": "12월 SNS 계정 개설 전 게시 안 함. RNK 총괄 승인 대기"
+  },
+  {
+    "date": "2026-11-25",
+    "brand": "ecolever",
+    "premade": true,
+    "track": "2w10",
+    "topic": "[2주 미리 만듦] 성적서로 말하는 에코백 — FITI 면 85.2%·황마 10.9%·레이온 3.9%, 합성섬유 0%",
+    "source": "brand-facts.md · FITI 시험성적서",
+    "files": [
+      "2w-10-ecolever-shorts.mp4",
+      "2w-10-ecolever-feed.mp4",
+      "2w-10-ecolever-wide.mp4"
+    ],
+    "music": "영상뚝딱 자체 작곡(저작권 없음) · 끝 페이드아웃",
+    "people": "없음 — 구글 키·촬영본 없음",
+    "note": "12월 SNS 계정 개설 전 게시 안 함. RNK 총괄 승인 대기"
+  },
+  {
+    "date": "2026-11-25",
+    "brand": "ecolever",
+    "premade": true,
+    "track": "2w11",
+    "topic": "[2주 미리 만듦] 기관·단체 구매 담당자 체크 — 견적서·세금계산서·여성기업 확인서",
+    "source": "brand-facts.md · brand-facts.md · 여성기업 확인서",
+    "files": [
+      "2w-11-ecolever-shorts.mp4",
+      "2w-11-ecolever-feed.mp4",
+      "2w-11-ecolever-wide.mp4"
+    ],
+    "music": "영상뚝딱 자체 작곡(저작권 없음) · 끝 페이드아웃",
+    "people": "없음 — 구글 키·촬영본 없음",
+    "note": "12월 SNS 계정 개설 전 게시 안 함. RNK 총괄 승인 대기"
+  },
+  {
+    "date": "2026-11-25",
+    "brand": "ecolever",
+    "premade": true,
+    "track": "2w12",
+    "topic": "[2주 미리 만듦] 장바구니 쓰면 탄소중립포인트 — 참여 매장 회당 50원(cpoint.or.kr), 기념품은 다시 드는 가방",
+    "source": "brand-facts.md · 한국환경산업기술원 탄소중립포인트(cpoint.or.kr) · brand-facts.md",
+    "files": [
+      "2w-12-ecolever-shorts.mp4",
+      "2w-12-ecolever-feed.mp4",
+      "2w-12-ecolever-wide.mp4"
+    ],
+    "music": "영상뚝딱 자체 작곡(저작권 없음) · 끝 페이드아웃",
+    "people": "없음 — 구글 키·촬영본 없음",
+    "note": "12월 SNS 계정 개설 전 게시 안 함. RNK 총괄 승인 대기"
+  },
+  {
+    "date": "2026-11-25",
+    "brand": "ecolever",
+    "premade": true,
+    "track": "2w13",
+    "topic": "[2주 미리 만듦] 로고 인쇄 없이 꾸미는 법 — 스티커·도장·손글씨(소량 행사용)",
+    "source": "brand-facts.md · 에코레버 구매 가이드 · brand-facts.md",
+    "files": [
+      "2w-13-ecolever-shorts.mp4",
+      "2w-13-ecolever-feed.mp4",
+      "2w-13-ecolever-wide.mp4"
+    ],
+    "music": "영상뚝딱 자체 작곡(저작권 없음) · 끝 페이드아웃",
+    "people": "없음 — 구글 키·촬영본 없음",
+    "note": "12월 SNS 계정 개설 전 게시 안 함. RNK 총괄 승인 대기"
+  },
+  {
+    "date": "2026-11-25",
+    "brand": "ecolever",
+    "premade": true,
+    "track": "2w14",
+    "topic": "[2주 미리 만듦] 송년회·워크숍 기념품 — 받자마자 서랍행 말고 다시 드는 가방",
+    "source": "brand-facts.md · brand-facts.md",
+    "files": [
+      "2w-14-ecolever-shorts.mp4",
+      "2w-14-ecolever-feed.mp4",
+      "2w-14-ecolever-wide.mp4"
+    ],
+    "music": "영상뚝딱 자체 작곡(저작권 없음) · 끝 페이드아웃",
+    "people": "없음 — 구글 키·촬영본 없음",
+    "note": "12월 SNS 계정 개설 전 게시 안 함. RNK 총괄 승인 대기"
+  }
+]

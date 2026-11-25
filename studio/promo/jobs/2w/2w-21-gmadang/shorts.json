@@ -1,0 +1,151 @@
+{
+  "track": "2w21",
+  "source": "지마당 기사 https://www.gmadang.com/a/nq3yxeq.html (서울시 발표(내 손안에 서울))",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "관광지에서 화장실 급할 때,\nQR을 찍으세요",
+      "image": "../../../assets/gmadang/3w/nq3yxeq-0.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "서울시 관광특구 화장실 개선"
+    },
+    {
+      "text": "명동·남대문 노점에\n'화장실 안내 QR'",
+      "image": "../../../assets/gmadang/3w/nq3yxeq-1.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 1,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "찍으면 주변 개방화장실이 지도에"
+    },
+    {
+      "text": "관광특구 8곳으로 넓혀요",
+      "image": "../../../assets/gmadang/3w/nq3yxeq-1.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "이태원 · 명동 · 종로 · 잠실 · 홍대 등"
+    },
+    {
+      "text": "개방화장실 148곳 → 200곳",
+      "image": "../../../assets/gmadang/3w/nq3yxeq-2.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "2027년까지 · 전통시장 10곳도"
+    },
+    {
+      "text": "서울시 '공중화장실 지도'도\n함께 쓰세요",
+      "image": "../../../assets/gmadang/3w/nq3yxeq-3.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "연말 나들이 전에 저장"
+    }
+  ],
+  "outro": "원문은 지마당에서",
+  "outro_sub": "gmadang.com",
+  "card": {
+    "bg": [
+      "#123A24",
+      "#123A24"
+    ],
+    "bgStyle": "solid",
+    "color": "#FFFFFF"
+  },
+  "logo": {
+    "image": "../../../assets/gmadang/icon-192.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/gmadang/og.png",
+    "size": 0.5
+  },
+  "music": {
+    "style": "acoustic",
+    "meter": "4/4",
+    "bpm": 88,
+    "seed": 3621
+  },
+  "upload": {
+    "title": "관광지 화장실, QR 찍으면 지도에 | 서울시 개방화장실 200곳으로",
+    "hashtags": [
+      "서울나들이",
+      "화장실",
+      "생활꿀팁",
+      "서울시",
+      "지마당",
+      "서울소식"
+    ],
+    "link": "https://www.gmadang.com/a/nq3yxeq.html",
+    "source": "서울시 발표(내 손안에 서울) · 지마당 AI 작성"
+  },
+  "footer": "발행 (주)알앤케이그린월드",
+  "aspect": "9:16",
+  "platform": "shorts",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 9.5,
+    "name": "2w-21-gmadang-shorts"
+  }
+}
