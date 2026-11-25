@@ -31,15 +31,19 @@ jobs:
           WEB=""
           for c in www public_html html htdocs; do if printf '%s\n' "$LIST" | sed 's#.*/##' | grep -qx "$c"; then WEB="$c/"; break; fi; done
           echo "web folder: /$WEB"
-          shopt -s nullglob
+          shopt -s nullglob; FAILED=""
           for f in index.html .htaccess robots.txt sitemap.xml llms.txt abf0e43b3caf459fadaf9491a62b47d9.txt css/* js/* imgs/* guide/*; do
             [ -f "$f" ] || continue
-            curl -sS --disable-epsv --retry 2 --retry-delay 3 --netrc-file "$RUNNER_TEMP/netrc" --ftp-create-dirs -m 60 -T "$f" "ftp://211.47.74.75/$WEB$f"
-            echo "uploaded $f"
+            if curl -sS --disable-epsv --retry 2 --retry-delay 3 --netrc-file "$RUNNER_TEMP/netrc" --ftp-create-dirs -m 60 -T "$f" "ftp://211.47.74.75/$WEB$f"; then
+              echo "uploaded $f"
+            else
+              echo "::warning::upload failed: $f"; FAILED="$FAILED $f"
+            fi
           done
           printf "actions %s %s\n" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$GITHUB_SHA" > "$RUNNER_TEMP/deploy-stamp.txt"
           curl -sS --disable-epsv --retry 2 --retry-delay 3 --netrc-file "$RUNNER_TEMP/netrc" -m 30 -T "$RUNNER_TEMP/deploy-stamp.txt" "ftp://211.47.74.75/${WEB}deploy-stamp.txt" || true
           rm -f "$RUNNER_TEMP/netrc"
+          if [ -n "$FAILED" ]; then echo "$FAILED" > "$RUNNER_TEMP/upload-failed.txt"; echo "::error::FTP에 못 올린 파일:$FAILED"; fi
       - name: IndexNow — 이번 배포에서 바뀐 페이지만 빙·네이버 등에 알림(실패해도 배포는 계속)
         continue-on-error: true
         timeout-minutes: 3
@@ -48,3 +52,6 @@ jobs:
           BEFORE: ${{ github.event.before }}
           AFTER: ${{ github.sha }}
         run: python3 tools/indexnow.py www.ecolever.co.kr abf0e43b3caf459fadaf9491a62b47d9 || true
+      - name: 업로드 실패가 있었으면 마지막에 실패로 표시(나머지 파일·IndexNow는 이미 끝남)
+        run: |
+          if [ -s "$RUNNER_TEMP/upload-failed.txt" ]; then echo "못 올린 파일 — $(cat "$RUNNER_TEMP/upload-failed.txt")"; exit 1; fi
