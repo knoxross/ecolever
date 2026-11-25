@@ -1,0 +1,166 @@
+{
+  "source": "지마당 2026-11-20 기사 https://www.gmadang.com/a/nq3yxb5.html (AI 작성, 출처: 서울시 발표(내 손안에 서울))",
+  "aspect": "16:9",
+  "mood": "calm",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "아파서 일 못 한 날,\n생활비 받는 거\n아세요?",
+      "bg": [
+        "#123A24",
+        "#123A24"
+      ],
+      "bgStyle": "solid",
+      "color": "#FFFFFF",
+      "fontSize": 110,
+      "textAnim": "fade",
+      "duration": 2.8,
+      "transition": "none",
+      "energy": 2,
+      "hit": true
+    },
+    {
+      "text": "하루 96,960원",
+      "sub": "서울형 입원 생활비 · 2026년 서울시 생활임금 기준",
+      "bg": [
+        "#E8A33D",
+        "#B9741E"
+      ],
+      "bgStyle": "solid",
+      "color": "#FFFFFF",
+      "fontSize": 132,
+      "countUp": true,
+      "textAnim": "none",
+      "duration": 2.8,
+      "transition": "fade",
+      "energy": 2
+    },
+    {
+      "text": "입원 13일 + 검진 1일\n최대 135만 7,440원",
+      "sub": "출처 서울시 발표(내 손안에 서울) · 지마당 AI 작성",
+      "image": "../../assets/gmadang/today-2026-11-22-art0.png",
+      "fit": "phone",
+      "bg": [
+        "#1E5A37",
+        "#123A24"
+      ],
+      "bgStyle": "gradient",
+      "textPos": "top",
+      "duration": 3.4,
+      "transition": "fade",
+      "energy": 1
+    },
+    {
+      "text": "프리랜서 · 1인 사장님\n이런 분이면 확인",
+      "sub": "서울 주민등록 · 건보 지역가입자 · 중위소득 100% 이하",
+      "bg": [
+        "#123A24",
+        "#123A24"
+      ],
+      "bgStyle": "solid",
+      "color": "#FFFFFF",
+      "fontSize": 100,
+      "textAnim": "up",
+      "duration": 3,
+      "transition": "fade",
+      "energy": 1
+    },
+    {
+      "text": "재산 기준\n4억 원으로 완화",
+      "sub": "올해 3억 5,000만 원에서 · 금융재산·자동차 제외",
+      "bg": [
+        "#1E5A37",
+        "#123A24"
+      ],
+      "bgStyle": "solid",
+      "color": "#FFFFFF",
+      "fontSize": 116,
+      "textAnim": "up",
+      "duration": 2.8,
+      "transition": "fade",
+      "energy": 3,
+      "hit": true,
+      "musicStop": true
+    },
+    {
+      "text": "퇴원·검진일부터\n180일 안에 신청",
+      "sub": "누리집 · 동주민센터 · 보건소 · 문의 02-120",
+      "image": "../../assets/gmadang/today-2026-11-22-art2.png",
+      "fit": "phone",
+      "motion": "scrollDown",
+      "bg": [
+        "#1E5A37",
+        "#123A24"
+      ],
+      "bgStyle": "gradient",
+      "textPos": "top",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3
+    },
+    {
+      "text": "지마당 ESG 면\n새로 열렸어요",
+      "sub": "gmadang.com/esg",
+      "image": "../../assets/gmadang/today-2026-11-22-esg.png",
+      "fit": "phone",
+      "bg": [
+        "#1E5A37",
+        "#123A24"
+      ],
+      "bgStyle": "gradient",
+      "textPos": "top",
+      "duration": 2.8,
+      "transition": "fade",
+      "energy": 2
+    }
+  ],
+  "outro": "저장해 두고\n필요할 때 꺼내 보세요",
+  "outro_sub": "gmadang.com",
+  "card": {
+    "bg": [
+      "#123A24",
+      "#1E5A37"
+    ],
+    "bgStyle": "gradient",
+    "color": "#FFFFFF"
+  },
+  "logo": {
+    "image": "../../assets/gmadang/icon-192.png",
+    "pos": "tr",
+    "size": 0.09
+  },
+  "endcard": {
+    "image": "../../assets/gmadang/og.png",
+    "size": 0.56
+  },
+  "music": {
+    "style": "calm",
+    "meter": "4/4",
+    "bpm": 88,
+    "seed": 1122
+  },
+  "upload": {
+    "title": "아파서 일 못 한 날 생활비 하루 9만 6,960원 | 서울형 입원 생활비",
+    "hashtags": [
+      "서울형입원생활비",
+      "프리랜서",
+      "1인사장",
+      "서울시지원금",
+      "지원금",
+      "지마당",
+      "서울소식",
+      "저장필수"
+    ],
+    "link": "https://www.gmadang.com/a/nq3yxb5.html",
+    "source": "서울시 발표(내 손안에 서울) · 지마당 AI 작성"
+  },
+  "footer": "발행 (주)알앤케이그린월드",
+  "platform": "youtube",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 20,
+    "name": "2026-11-22-gmadang-wide"
+  }
+}

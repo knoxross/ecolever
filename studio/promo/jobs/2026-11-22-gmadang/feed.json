@@ -1,6 +1,6 @@
 {
   "source": "지마당 2026-11-20 기사 https://www.gmadang.com/a/nq3yxb5.html (AI 작성, 출처: 서울시 발표(내 손안에 서울))",
-  "aspect": "1:1",
+  "aspect": "4:5",
   "mood": "calm",
   "emoji": false,
   "scenes": [
@@ -154,6 +154,7 @@
     "link": "https://www.gmadang.com/a/nq3yxb5.html",
     "source": "서울시 발표(내 손안에 서울) · 지마당 AI 작성"
   },
+  "footer": "발행 (주)알앤케이그린월드",
   "platform": "reels",
   "export": {
     "quality": 1080,
