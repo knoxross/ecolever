@@ -5,9 +5,8 @@ RewriteCond %{HTTPS} off [OR]
 RewriteCond %{HTTP_HOST} !^www\. [NC]
 RewriteRule ^ https://www.ecolever.co.kr%{REQUEST_URI} [L,R=301]
 
-# 임시(2026-11-25): 가비아가 새 파일 생성을 막아 guide/faq.html이 아직 없음 → 홈 FAQ로. 풀리면 /guide/faq.html 301로 되돌림
-RewriteRule ^faq/?$ https://www.ecolever.co.kr/#faq [L,R=302,NE]
-RewriteRule ^guide/faq\.html$ https://www.ecolever.co.kr/#faq [L,R=302,NE]
+# 예전 FAQ 주소(/faq/) → guide/faq.html (가비아 FTP가 새 폴더를 못 만들어 guide/ 안으로 옮김, 2026-11-25)
+RewriteRule ^faq/?$ https://www.ecolever.co.kr/guide/faq.html [L,R=301]
 
 # 압축 · 캐시 (페이지 속도 = 검색 순위·전환율)
 <IfModule mod_deflate.c>
