@@ -79,6 +79,10 @@ function normalizeJob(raw) {
     if (FONTS.some(f => f.v === s.font)) look.font = s.font;
     else if (s.font === 'serif') look.font = "'Gowun Batang'";
     if (typeof s.textBg === 'boolean') look.textBg = s.textBg;
+    // 자막 가독성: 상자 불투명도(0.3~1, 기본 0.55) · 자막이 나오는 동안 뒤 화면 어둡게(0~0.7)
+    const tb = Object.assign({}, raw.textBox || {}, s.textBox || {});
+    if (+tb.opacity > 0) look.textBgAlpha = clamp(+tb.opacity, 0.3, 1);
+    if (+tb.dim > 0) look.textDim = clamp(+tb.dim, 0, 0.7);
     sc.look = look;
     if (sc.text || sc.image) job.scenes.push(sc);
   }

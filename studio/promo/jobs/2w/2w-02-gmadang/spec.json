@@ -19,7 +19,11 @@
       "textAnim": "fade",
       "duration": 3.2,
       "transition": "none",
-      "energy": 2
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      }
     },
     {
       "text": "서울백제어린이박물관 특별전",
@@ -34,6 +38,10 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 1,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
       "sub": "11월 17일 ~ 2027년 3월 7일 · 관람료 무료"
     },
     {
@@ -49,6 +57,10 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
       "sub": "연계 체험"
     },
     {
@@ -64,6 +76,10 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
       "sub": "주말·공휴일 9시 30분~5시 30분 · 월요일 휴관"
     },
     {
@@ -79,6 +95,10 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 3,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
       "sub": "겨울방학 아이와 가 볼 곳"
     }
   ],

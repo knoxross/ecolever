@@ -17,6 +17,10 @@
       "duration": 3.2,
       "transition": "none",
       "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
       "sub": "동대문구 무인회수기 · 11월 24일 기준"
     },
     {
@@ -32,6 +36,10 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 1,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
       "sub": "'수퍼빈' 앱 · 동대문구청 광장 등 4곳"
     },
     {
@@ -47,6 +55,10 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
       "sub": "탄소중립포인트 참여 매장 · 1인 연 최대 7만 원"
     },
     {
@@ -62,6 +74,10 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
       "sub": "성동구 · 서초구 · 은평구"
     },
     {
@@ -77,6 +93,10 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 3,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
       "sub": "탄소중립포인트 가입 cpoint.or.kr"
     }
   ],

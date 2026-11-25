@@ -16,7 +16,11 @@
       "textAnim": "fade",
       "duration": 3.2,
       "transition": "none",
-      "energy": 2
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      }
     },
     {
       "text": "한성백제박물관 특별전",
@@ -31,6 +35,10 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 1,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
       "sub": "2026년 11월 27일 ~ 2027년 2월 21일"
     },
     {
@@ -46,6 +54,10 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
       "sub": "매주 월요일과 1월 1일은 휴관"
     },
     {
@@ -61,6 +73,10 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
       "sub": "『삼국사기』 9책 50권 전권"
     },
     {
@@ -76,6 +92,10 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 3,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
       "sub": "관람 시간·교통편은 박물관 누리집에서"
     }
   ],

@@ -832,13 +832,16 @@ function drawText(clip, local) {
     ctx.translate(TX, cy); ctx.scale(s, s); ctx.translate(-TX, -cy);
   }
 
+  if (clip.textDim > 0 && blockH > 0) {   // 글자 많은 캡처 위 자막: 자막이 보이는 동안 뒤 화면을 함께 어둡게
+    ctx.fillStyle = `rgba(0,0,0,${clip.textDim})`; ctx.fillRect(-W, -H, W * 3, H * 3);
+  }
   if (clip.textBg && blockH > 0) {
     ctx.font = textFont(clip, fs);
     let mw = Math.max(0, ...fullLines.map(l => ctx.measureText(l).width));
     ctx.font = textFont(clip, subFs);
     mw = Math.max(mw, ...subLines.map(l => ctx.measureText(l).width));
     const pad = fs * 0.35;
-    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillStyle = `rgba(0,0,0,${clip.textBgAlpha || 0.55})`;
     roundRect(TX - mw / 2 - pad * 1.4, y0 - pad, mw + pad * 2.8, blockH + pad * 2, fs * 0.25);
     ctx.fill();
   }

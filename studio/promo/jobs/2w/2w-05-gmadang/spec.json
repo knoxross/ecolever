@@ -20,6 +20,10 @@
       "duration": 3.2,
       "transition": "none",
       "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
       "sub": "서울 명소 3D 디지털 애셋 13종"
     },
     {
@@ -35,6 +39,10 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 1,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
       "sub": "외부 5곳 · 실내 8곳"
     },
     {
@@ -50,6 +58,10 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
       "sub": "회원 가입 후 무료 · 스케치업 형식"
     },
     {
@@ -65,6 +77,10 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
       "sub": "작품에 서울시·서울경제진흥원 애셋 활용 표기"
     },
     {
@@ -80,6 +96,10 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 3,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
       "sub": "문의 다산콜센터 02-120"
     }
   ],

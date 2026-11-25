@@ -15,6 +15,8 @@ GA = '../../../assets/gmadang/'
 def gscene(img, text, sub='', d=3.2, motion='zoomIn', e=1, **kw):
     s = {"text": text, "image": G + img, "fit": "blur", "motion": motion, "font": "serif", "textBg": True,
          "fontSize": 64, "textPos": "bottom", "textAnim": "fade", "duration": d, "transition": "fade", "energy": e}
+    # 총괄 11/25: 기사 글자 위 자막이 잘 안 읽힘 → 상자 92% 불투명 + 자막 동안 화면 40% 어둡게
+    s["textBox"] = {"opacity": 0.92, "dim": 0.4}
     if sub: s["sub"] = sub
     s.update(kw)
     return s

@@ -2,7 +2,7 @@
 
 - 주제: 서울시 겨울철 종합대책 — 한파쉼터 1,461곳·이동식 쉼터 '온기소'·에너지바우처
 - 활용한 트렌드: 저장형 생활 정보 숏폼 · 실제 기사 화면 · 자막만으로 · 잔잔한 음악
-- 파일: 2w-03-gmadang-wide.mp4 (1920×1080, 17.71초, 17.2MB, 검수 통과)
+- 파일: 2w-03-gmadang-shorts.mp4 (1080×1920, 17.71초, 8.3MB, 검수 통과) / 2w-03-gmadang-feed.mp4 (1080×1350, 17.71초, 8.2MB, 검수 통과) / 2w-03-gmadang-wide.mp4 (1920×1080, 17.71초, 16.8MB, 검수 통과)
 - 규격표: studio/promo/platform-specs.md · 게시 전 RNK 총괄 승인
 
 ## 유튜브 쇼츠 — 2w-03-gmadang-shorts.mp4 (표지 cover-shorts.jpg)

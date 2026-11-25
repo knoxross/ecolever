@@ -2,7 +2,7 @@
 
 - 주제: 한성백제박물관 특별전 '삼국사기·삼국유사, 백제를 기록하다' — 국보 삼국사기 전권, 무료
 - 활용한 트렌드: 저장형 생활 정보 숏폼 · 실제 기사 화면 · 자막만으로 · 잔잔한 음악
-- 파일: 2w-01-gmadang-wide.mp4 (1920×1080, 17.25초, 16.9MB, 검수 통과)
+- 파일: 2w-01-gmadang-shorts.mp4 (1080×1920, 17.25초, 8.3MB, 검수 통과) / 2w-01-gmadang-feed.mp4 (1080×1350, 17.25초, 8.2MB, 검수 통과) / 2w-01-gmadang-wide.mp4 (1920×1080, 17.25초, 16.7MB, 검수 통과)
 - 규격표: studio/promo/platform-specs.md · 게시 전 RNK 총괄 승인
 
 ## 유튜브 쇼츠 — 2w-01-gmadang-shorts.mp4 (표지 cover-shorts.jpg)
