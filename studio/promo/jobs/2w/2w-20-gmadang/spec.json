@@ -1,0 +1,143 @@
+{
+  "brand": "gmadang",
+  "track": "2w20",
+  "topic": "중구 12월부터 '피클볼 원패스' 시범 — 체육관 3곳 한 번 등록으로",
+  "trend": "저장형 생활 정보 숏폼 · 실제 기사 화면 · 자막만으로 · 잔잔한 음악",
+  "source": "지마당 기사 https://www.gmadang.com/a/nn5vkej.html (중구시설관리공단 발표(시정일보 보도))",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "요즘 뜨는 운동, 피클볼",
+      "image": "../../../assets/gmadang/3w/nn5vkej-0.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "테니스·배드민턴·탁구의 장점을 합친 운동"
+    },
+    {
+      "text": "12월부터 '원패스' 시범",
+      "image": "../../../assets/gmadang/3w/nn5vkej-1.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 1,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "중구시설관리공단"
+    },
+    {
+      "text": "충무스포츠센터 · 훈련원공원 ·\n무학봉체육관",
+      "image": "../../../assets/gmadang/3w/nn5vkej-1.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "한 번 등록으로 세 곳 이용"
+    },
+    {
+      "text": "코트가 작고 공이 가벼워\n배우기 쉬워요",
+      "image": "../../../assets/gmadang/3w/nn5vkej-2.png",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      }
+    },
+    {
+      "text": "이용 방법·시간표는\n중구시설관리공단에",
+      "image": "../../../assets/gmadang/3w/nn5vkej-3.png",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "겨울방학 운동으로"
+    }
+  ],
+  "outro": "원문은 지마당에서",
+  "outro_sub": "gmadang.com",
+  "card": {
+    "bg": [
+      "#123A24",
+      "#123A24"
+    ],
+    "bgStyle": "solid",
+    "color": "#FFFFFF"
+  },
+  "logo": {
+    "image": "../../../assets/gmadang/icon-192.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/gmadang/og.png",
+    "size": 0.5
+  },
+  "music": {
+    "style": "lofi",
+    "meter": "4/4",
+    "bpm": 90,
+    "seed": 3620
+  },
+  "upload": {
+    "title": "피클볼 원패스, 체육관 3곳 한 번 등록으로 | 중구 12월부터",
+    "hashtags": [
+      "피클볼",
+      "생활체육",
+      "겨울방학",
+      "중구",
+      "지마당",
+      "서울소식"
+    ],
+    "link": "https://www.gmadang.com/a/nn5vkej.html",
+    "source": "중구시설관리공단 발표(시정일보 보도) · 지마당 AI 작성"
+  }
+}
