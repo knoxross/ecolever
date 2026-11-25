@@ -14,6 +14,7 @@
 .g-art p{margin-bottom:14px;}
 .g-art ul{margin:0 0 16px 20px;}
 .g-art a{color:var(--moss);font-weight:600;}
+.g-art a.btn-moss{color:#fff;}.g-art a.btn-outline{color:var(--ink);}
 .g-box{margin-top:40px;padding:22px;border-radius:12px;background:var(--moss-soft);border:1px solid var(--line);}
 .g-box p{font-size:14.5px;color:var(--body);margin:6px 0 14px;}
 .g-list{list-style:none;display:grid;gap:12px;}
