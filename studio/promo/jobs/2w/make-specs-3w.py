@@ -139,7 +139,7 @@ JOBS['2w-21-gmadang'] = gm(21, 'nq3yxeq', "서울시 관광특구·전통시장 
 # ------------------------------------------------------------------ 에코레버 7편 (안내 페이지 주제, 사실표 범위 · 증명서 보유·날짜 없음)
 JOBS['2w-22-ecolever'] = eco(22, "공공기관·지자체 행사용 에코백 — 수량·서류·인쇄 안내", [
     escene('product-1color.jpg', "공공기관 행사 에코백,\n어디서부터 볼까요?", focus=TOP1, e=1),
-    gshot('for-public-agency-0b.png', "소규모 행사는\n로고 인쇄 없이 50개부터", "기관 로고 인쇄는 10,000개부터", motion='zoomOut', e=2),
+    gshot('for-public-agency-0.png', "소규모 행사는\n로고 인쇄 없이 50개부터", "기관 로고 인쇄는 10,000개부터", motion='zoomOut', e=2),
     escene('doc-fiti-test.jpg', "원단 근거는 FITI 시험성적서", "면 85.2% · 황마 10.9% · 레이온 3.9%", fit='blur', e=2),
     escene('product-2color.jpg', "여성기업 제품 구매 목표\n물품·용역 5% 이상", "여성기업지원법 · 적용 기준은 기관 계약 부서에 확인", focus=TEX2, motion='panLeft', e=2),
     escene('product-1color.jpg', "견적서 · 세금계산서 발행", "장당 1칼라 1,000원 · 부가세 별도", focus=TOP1b, motion='panRight', e=3),
