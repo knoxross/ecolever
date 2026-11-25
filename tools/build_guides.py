@@ -153,6 +153,13 @@ FOOT = """
 def ldjson(o):
     return '<script type="application/ld+json">' + json.dumps(o, ensure_ascii=False) + "</script>"
 
+# 용도별 안내(정적 페이지 guide/<slug>.html, 이 스크립트가 만들지 않음): 사이트맵·llms.txt·가이드 목록에만 넣습니다
+USES = [
+    ("for-public-agency", "공공기관·지자체 행사용 에코백 — 수량·서류·인쇄 안내", "공공기관·지자체 행사와 환경 캠페인에 쓸 에코백을 준비하는 담당자용 안내. 로고 인쇄 없이 50개부터, 기관 로고 인쇄는 10,000개부터, 여성기업 확인서·견적서·세금계산서·시험성적서를 드립니다."),
+    ("for-school-academy", "학교·학원 행사용 에코백 — 수량·납기·인쇄 안내", "학교 행사·환경교육·체험학습, 학원 행사와 원생 선물용 에코백을 준비하는 교사·행정실·원장님용 안내. 로고 인쇄 없이 50개부터 장당 1칼라 1,000원(부가세 별도), 견적서·세금계산서를 드립니다."),
+    ("for-company-promo", "기업 판촉·사내 행사용 에코백 — 수량·납기·인쇄 안내", "기업 판촉물, 전시회 기념품, 사내 행사·워크숍, ESG 캠페인용 에코백을 준비하는 담당자용 안내. 로고 인쇄는 10,000개부터, 인쇄 없는 가방은 50개부터, 시험성적서로 친환경 근거를 확인할 수 있습니다."),
+]
+
 def main():
     OUT.mkdir(exist_ok=True)
     posts = sorted((parse(p) for p in SRC.glob("*.md")), key=lambda m: m.get("date", ""), reverse=True)
@@ -167,14 +174,14 @@ def main():
                            ogtype="article", site=SITE, ld=ld)
         page += f'<p class="g-crumb"><a href="/guide/">구매 가이드</a> · {m["date"]}</p>\n<article class="g-art">\n<h1>{html.escape(m["title"])}</h1>\n<p class="g-lead">{html.escape(m["description"])}</p>\n{md(m["body"])}\n</article>' + FOOT
         (OUT / f"{m['slug']}.html").write_text(page, encoding="utf-8")
-    items = "\n".join(f'<li><a href="/guide/{m["slug"]}.html"><b>{html.escape(m["title"])}</b><span>{html.escape(m["description"])}</span></a></li>' for m in posts)
+    items = "\n".join(f'<li><a href="/guide/{u}.html"><b>{html.escape(t)}</b><span>{html.escape(d)}</span></a></li>' for u, t, d in USES) + "\n" + "\n".join(f'<li><a href="/guide/{m["slug"]}.html"><b>{html.escape(m["title"])}</b><span>{html.escape(m["description"])}</span></a></li>' for m in posts)
     idx = HEAD.format(title="에코백 대량 구매 가이드", desc="행사·판촉용 친환경 에코백을 대량 구매할 때 알아야 할 서류, 납기, 사양, 공공구매 정보를 정리했습니다.",
                       url=f"{SITE}/guide/", ogtype="website", site=SITE, ld="")
     idx += f'<h1>에코백 대량 구매 가이드</h1>\n<p class="g-lead">발주 담당자가 실제로 묻는 질문에 답합니다.</p>\n<ul class="g-list">\n{items}\n</ul>' + FOOT
     (OUT / "index.html").write_text(idx, encoding="utf-8")
 
     latest = posts[0]["date"] if posts else "2026-11-01"
-    urls = [(f"{SITE}/", latest, "1.0"), (f"{SITE}/guide/", latest, "0.8"), (f"{SITE}/guide/faq.html", "2026-11-25", "0.8")] + [(f"{SITE}/guide/{m['slug']}.html", m["date"], "0.7") for m in posts]
+    urls = [(f"{SITE}/", latest, "1.0"), (f"{SITE}/guide/", latest, "0.8"), (f"{SITE}/guide/faq.html", "2026-11-25", "0.8")] + [(f"{SITE}/guide/{u}.html", "2026-11-25", "0.8") for u, _, _ in USES] + [(f"{SITE}/guide/{m['slug']}.html", m["date"], "0.7") for m in posts]
     (ROOT / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
         "".join(f"  <url><loc>{u}</loc><lastmod>{d}</lastmod><priority>{p}</priority></url>\n" for u, d, p in urls) + "</urlset>\n", encoding="utf-8")
 
@@ -201,7 +208,7 @@ def main():
             "- [지마당](https://www.gmadang.com/): 서울 25개 구 구정소식 동네 신문 (같은 운영사)",
             "- [더블유 STUDY & SEMINAR SPACE](https://www.gmadang.com/w/): 서울 동작구 상도동 공간대여 (같은 운영사)",
             "",
-            "## 구매 가이드"] + [f"- [{m['title']}]({SITE}/guide/{m['slug']}.html): {m['description']}" for m in posts]
+            "## 용도별 안내"] + [f"- [{t}]({SITE}/guide/{u}.html): {d}" for u, t, d in USES] + ["", "## 구매 가이드"] + [f"- [{m['title']}]({SITE}/guide/{m['slug']}.html): {m['description']}" for m in posts]
     (ROOT / "llms.txt").write_text("\n".join(llms) + "\n", encoding="utf-8")
     print(f"built {len(posts)} guides")
 
