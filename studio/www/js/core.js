@@ -705,9 +705,10 @@ function drawShowcase(clip, local, src, sw, sh, p, fcss) {
   if (clip.fit === 'phone') {
     const capTop = clip.textPos === 'top' && (clip.text || '').trim();
     const lines = capTop ? (clip.text || '').split('\n').length + ((clip.sub || '').trim() ? 1 : 0) : 0;
-    const phH = lines >= 3 ? 0.68 : lines === 2 ? 0.72 : capTop ? 0.76 : 0.8;
-    const ph = Math.min(H * (H > W ? phH : (capTop ? 0.74 : 0.88)), W * 0.9 / 0.49), pw = ph * 0.49, r = pw * 0.13, bez = pw * 0.035;
-    const cx = W / 2, cy = H * (H > W ? (capTop ? 0.97 - phH / 2 - 0.03 : 0.47) : (capTop ? 0.56 : 0.5)) + float + (1 - ease) * H * 0.08;
+    const phH = (lines >= 3 ? 0.68 : lines === 2 ? 0.72 : capTop ? 0.76 : 0.8) - (H > W && H < W * 1.4 && capTop ? 0.1 : 0);   // 4:5 는 세로가 짧아 휴대폰을 조금 줄임
+    const ph = Math.min(H * (H > W ? phH : (W > H * 1.2 && (clip.text || '').trim() ? 0.9 : capTop ? 0.74 : 0.88)), W * 0.9 / 0.49), pw = ph * 0.49, r = pw * 0.13, bez = pw * 0.035;
+    const sideL = W > H * 1.2 && (clip.text || '').trim();
+    const cx = sideL ? W * 0.72 : W / 2, cy = (sideL ? H * 0.5 : H * (H > W ? (capTop ? 0.97 - phH / 2 - 0.03 : 0.47) : (capTop ? 0.56 : 0.5))) + float + (1 - ease) * H * 0.08;
     ctx.translate(cx, cy); ctx.scale(0.9 + 0.1 * ease, 0.9 + 0.1 * ease); ctx.globalAlpha = ease;
     ctx.shadowColor = 'rgba(0,0,0,0.45)'; ctx.shadowBlur = M * 0.06; ctx.shadowOffsetY = M * 0.02;
     ctx.fillStyle = '#111317'; ctx.beginPath(); ctx.roundRect(-pw / 2, -ph / 2, pw, ph, r); ctx.fill();
@@ -731,7 +732,8 @@ function drawShowcase(clip, local, src, sw, sh, p, fcss) {
     if (ar > 1.6) { bw = W * 0.84; bh = bw / ar; if (bh < H * 0.22) { bh = Math.min(H * 0.3, bh * 1.6); bw = bh * ar; if (bw > W * 0.92) { bw = W * 0.92; bh = bw / ar; } } }
     const pad = M * 0.035;
     const z = 0.94 + 0.06 * ease + 0.03 * easeInOut(p);
-    const cx = W / 2, cy = H * (H > W ? 0.44 : 0.47) + float + (1 - ease) * H * 0.05;
+    const sideC = W > H * 1.2 && (clip.text || '').trim();
+    const cx = sideC ? W * 0.7 : W / 2, cy = (sideC ? H * 0.5 : H * (H > W ? 0.44 : 0.47)) + float + (1 - ease) * H * 0.05;
     ctx.translate(cx, cy); ctx.scale(z, z); ctx.rotate((1 - ease) * -0.05); ctx.globalAlpha = ease;
     ctx.shadowColor = 'rgba(0,0,0,0.35)'; ctx.shadowBlur = M * 0.05; ctx.shadowOffsetY = M * 0.018;
     ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.roundRect(-bw / 2 - pad, -bh / 2 - pad, bw + pad * 2, bh + pad * 2, M * 0.035); ctx.fill();
@@ -773,6 +775,9 @@ function textFont(clip, size) {
 }
 function drawText(clip, local) {
   const W = canvas.width, H = canvas.height;
+  // 가로 화면(16:9)에서 휴대폰·카드 그림이 있으면: 그림은 오른쪽, 글자는 왼쪽 (겹치지 않게)
+  const side = clip.kind !== 'text' && ['phone', 'card'].includes(clip.fit) && W > H * 1.2;
+  const TX = side ? W * 0.31 : W / 2, TW = side ? W * 0.52 : W;
   const scale = Math.min(W, H) / 1080;
   const anim = clip.textAnim;
   // 글자가 화면 밖으로 넘치거나 너무 많은 줄이 되지 않게 크기 자동 맞춤 (잘림 방지)
@@ -781,9 +786,9 @@ function drawText(clip, local) {
   const maxLines = isCard ? 4 : 3, maxH = H * (isCard ? 0.72 : 0.36);
   for (let k = 0; k < 10; k++) {
     ctx.font = textFont(clip, fs);
-    const n = (clip.text || '').trim() ? wrapText(clip.text, W * 0.86).length : 0;
+    const n = (clip.text || '').trim() ? wrapText(clip.text, TW * 0.86).length : 0;
     ctx.font = textFont(clip, fs * 0.48);
-    const ns = (clip.sub || '').trim() ? wrapText(clip.sub, W * 0.8).length : 0;
+    const ns = (clip.sub || '').trim() ? wrapText(clip.sub, TW * 0.8).length : 0;
     const h = n * fs * 1.3 + ns * fs * 0.48 * 1.45 + (clip.emoji ? fs * 1.3 : 0);
     if ((n <= maxLines && h <= maxH) || fs < 14 * scale) break;
     fs *= 0.88;
@@ -799,16 +804,16 @@ function drawText(clip, local) {
     text = chars.slice(0, n).join('');
   }
   ctx.font = textFont(clip, fs);
-  const lines = text ? wrapText(text, W * 0.86) : [];
-  const fullLines = anim === 'type' ? wrapText(clip.text || '', W * 0.86) : lines;
+  const lines = text ? wrapText(text, TW * 0.86) : [];
+  const fullLines = anim === 'type' ? wrapText(clip.text || '', TW * 0.86) : lines;
   ctx.font = textFont(Object.assign({}, clip, { font: clip.kind === 'text' ? "'Noto Sans KR'" : clip.font }), subFs);
-  const subLines = (clip.sub || '').trim() ? wrapText(clip.sub, W * 0.8) : [];
+  const subLines = (clip.sub || '').trim() ? wrapText(clip.sub, TW * 0.8) : [];
   const lh = fs * 1.3, slh = subFs * 1.45, gap = subLines.length && fullLines.length ? fs * 0.35 : 0;
   const emH = clip.emoji ? fs * 1.3 : 0;
   const blockH = emH + fullLines.length * lh + gap + subLines.length * slh;
   // 세로 영상은 아래쪽이 앱 버튼·설명에 가려지므로 자막을 조금 올림 (안전 영역)
   const margin = clip.textPos === 'bottom' && H > W * 1.4 ? H * 0.2 : H * 0.08;
-  let y0 = clip.textPos === 'top' ? margin : clip.textPos === 'center' ? (H - blockH) / 2 : H - margin - blockH;
+  let y0 = side ? (H - blockH) / 2 : clip.textPos === 'top' ? margin : clip.textPos === 'center' ? (H - blockH) / 2 : H - margin - blockH;
   if (clip.kind === 'media' && clip.textPos === 'bottom' && blockH > 0) captionTop = captionTop == null ? y0 : Math.min(captionTop, y0);
 
   if (anim === 'fade') ctx.globalAlpha *= easeOut(a);
@@ -817,7 +822,7 @@ function drawText(clip, local) {
     const s = a >= 1 ? 1 : Math.max(0.01, easeOutBack(a));
     ctx.globalAlpha *= clamp(a * 3, 0, 1);
     const cy = y0 + blockH / 2;
-    ctx.translate(W / 2, cy); ctx.scale(s, s); ctx.translate(-W / 2, -cy);
+    ctx.translate(TX, cy); ctx.scale(s, s); ctx.translate(-TX, -cy);
   }
 
   if (clip.textBg && blockH > 0) {
@@ -827,7 +832,7 @@ function drawText(clip, local) {
     mw = Math.max(mw, ...subLines.map(l => ctx.measureText(l).width));
     const pad = fs * 0.35;
     ctx.fillStyle = 'rgba(0,0,0,0.55)';
-    roundRect((W - mw) / 2 - pad * 1.4, y0 - pad, mw + pad * 2.8, blockH + pad * 2, fs * 0.25);
+    roundRect(TX - mw / 2 - pad * 1.4, y0 - pad, mw + pad * 2.8, blockH + pad * 2, fs * 0.25);
     ctx.fill();
   }
   const drawLines = (ls, size, lineH, startY, color, f) => {
@@ -838,18 +843,18 @@ function drawText(clip, local) {
         ctx.save();
         ctx.lineJoin = 'round'; ctx.lineWidth = size * 0.14; ctx.strokeStyle = 'rgba(0,0,0,0.7)';
         ctx.shadowColor = 'rgba(0,0,0,0.45)'; ctx.shadowBlur = size * 0.25;
-        if (clip.kind !== 'text') ctx.strokeText(l, W / 2, y);
+        if (clip.kind !== 'text') ctx.strokeText(l, TX, y);
         ctx.restore();
       }
       ctx.fillStyle = color;
-      ctx.fillText(l, W / 2, y);
+      ctx.fillText(l, TX, y);
     });
   };
   if (clip.emoji) {
     ctx.save();
     const b = anim === 'none' ? 0 : Math.sin(clamp(local / 0.6, 0, 1) * Math.PI) * fs * 0.15 + Math.sin(local * 2.4) * fs * 0.04;
     ctx.font = `${Math.round(fs * 1.05)}px 'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif`;
-    ctx.fillText(clip.emoji, W / 2, y0 + emH / 2 - b);
+    ctx.fillText(clip.emoji, TX, y0 + emH / 2 - b);
     ctx.restore();
   }
   drawLines(lines, fs, lh, y0 + emH, clip.textColor);

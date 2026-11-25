@@ -248,10 +248,14 @@ async function buildFromJob(job, getFile, onStatus) {
   for (const L of lay) if (L.clip._jobSticker) { addOverlay({ type: 'sticker', text: L.clip._jobSticker, start: L.start + 0.15, end: L.end - 0.05, w: 0.18, x: 0.84, y: L.clip.kind === 'text' ? 0.2 : 0.42, anim: 'pop' }); delete L.clip._jobSticker; }
   if (job.endcard && lay.length) {
     const last = lay[lay.length - 1];
+    // 정사각·4:5·가로 화면은 세로 공간이 좁음 → 끝 문구를 위로, 끝 화면 그림을 아래로 (겹치지 않게)
+    const [aw, ah] = String(S.aspect || '9:16').split(':').map(Number), tallish = ah / aw > 1.4;
+    if (!tallish && last.clip.kind === 'text' && job.endcard.image) last.clip.textPos = 'top';
+    const ecY = tallish ? 0.72 : 0.7, ecSize = tallish ? job.endcard.size : Math.min(job.endcard.size, aw > ah ? 0.32 : 0.46);
     if (job.endcard.image) {
       const f = await getFile(job.endcard.image).catch(() => null);
       const m = f ? (await loadFiles([f])).added[0] : null;
-      if (m && m.type === 'image') addOverlay({ type: 'image', mediaId: m.id, start: last.start + 0.2, end: last.end, w: job.endcard.size, x: 0.5, y: 0.72, anim: 'pop' });
+      if (m && m.type === 'image') addOverlay({ type: 'image', mediaId: m.id, start: last.start + 0.2, end: last.end, w: ecSize, x: 0.5, y: ecY, anim: 'pop' });
       else warn.push(`끝 화면 그림을 찾지 못함(${job.endcard.image})`);
     }
     if (job.endcard.text) addOverlay({ type: 'text', text: job.endcard.text, start: last.start + 0.3, end: last.end, w: 0.22, x: 0.5, y: job.endcard.image ? 0.9 : 0.75, tpl: 'basic', color: '#ffffff', anim: 'fade' });
