@@ -142,8 +142,9 @@ JOBS['2w-22-ecolever'] = eco(22, "공공기관·지자체 행사용 에코백 �
     gshot('for-public-agency-0.png', "소규모 행사는\n로고 인쇄 없이 50개부터", "기관 로고 인쇄는 10,000개부터", motion='zoomOut', e=2),
     escene('doc-fiti-test.jpg', "원단 근거는 FITI 시험성적서", "면 85.2% · 황마 10.9% · 레이온 3.9%", fit='blur', e=2),
     escene('product-2color.jpg', "여성기업 제품 구매 목표\n물품·용역 5% 이상", "여성기업지원법 · 적용 기준은 기관 계약 부서에 확인", focus=TEX2, motion='panLeft', e=2),
-    escene('product-1color.jpg', "견적서 · 세금계산서 발행", "장당 1칼라 1,000원 · 부가세 별도", focus=TOP1b, motion='panRight', e=3),
-], ('corp', 90), "공공기관 행사 에코백 | 50개부터, 견적서·세금계산서", ["공공기관", "지자체행사", "에코백", "단체에코백", "여성기업"], "에코레버 안내 '공공기관·지자체 행사용' · 여성기업 제품 구매 안내")
+    escene('doc-women-business-blur.jpg', "여성기업과는 1억 원 이하\n수의계약 가능", "국가계약법 시행령 제26조 · 물품 계약", fit='blur', motion='zoomOut', e=3),
+    escene('product-1color.jpg', "견적서 · 세금계산서 발행", "장당 1칼라 1,000원 · 부가세 별도", focus=TOP1b, motion='panRight', e=2),
+], ('corp', 90), "공공기관 행사 에코백 | 50개부터, 견적서·세금계산서", ["공공기관", "지자체행사", "에코백", "단체에코백", "여성기업"], "에코레버 안내 '공공기관·지자체 행사용' · 여성기업 제품 구매 안내 · 국가계약법 시행령 제26조(사실표 11/25)")
 
 JOBS['2w-23-ecolever'] = eco(23, "학교·학원 행사용 에코백 — 학급 단위 50개부터, 꾸미기 수업, 행정실 서류", [
     escene('product-1color.jpg', "학급 행사·체험학습 에코백,\n몇 개부터 될까요?", focus=TOP1, e=1),

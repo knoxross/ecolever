@@ -3,7 +3,7 @@
   "track": "2w22",
   "topic": "공공기관·지자체 행사용 에코백 — 수량·서류·인쇄 안내",
   "trend": "실물 클로즈업 무드형 숏폼 · 자막만으로 · 어쿠스틱",
-  "source": "brand-facts.md · 에코레버 안내 '공공기관·지자체 행사용' · 여성기업 제품 구매 안내",
+  "source": "brand-facts.md · 에코레버 안내 '공공기관·지자체 행사용' · 여성기업 제품 구매 안내 · 국가계약법 시행령 제26조(사실표 11/25)",
   "look": "natural",
   "emoji": false,
   "scenes": [
@@ -90,6 +90,24 @@
       "sub": "여성기업지원법 · 적용 기준은 기관 계약 부서에 확인"
     },
     {
+      "text": "여성기업과는 1억 원 이하\n수의계약 가능",
+      "image": "../../../assets/ecolever/doc-women-business-blur.jpg",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "textBox": {
+        "opacity": 0.92
+      },
+      "sub": "국가계약법 시행령 제26조 · 물품 계약"
+    },
+    {
       "text": "견적서 · 세금계산서 발행",
       "image": "../../../assets/ecolever/product-1color.jpg",
       "fit": "cover",
@@ -101,7 +119,7 @@
       "textAnim": "fade",
       "duration": 3.2,
       "transition": "fade",
-      "energy": 3,
+      "energy": 2,
       "focus": {
         "s": 2.6,
         "x": 0.55,
@@ -150,6 +168,6 @@
       "에코레버"
     ],
     "link": "https://www.ecolever.co.kr/",
-    "source": "에코레버 안내 '공공기관·지자체 행사용' · 여성기업 제품 구매 안내 · 음악: 영상뚝딱 자체 작곡"
+    "source": "에코레버 안내 '공공기관·지자체 행사용' · 여성기업 제품 구매 안내 · 국가계약법 시행령 제26조(사실표 11/25) · 음악: 영상뚝딱 자체 작곡"
   }
 }
