@@ -1,0 +1,178 @@
+{
+  "track": "2w29",
+  "source": "brand-facts.md · FITI 시험성적서 · 비공개 처리된 쇼츠(YueKL4Xb6NE) 대체판",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "이게 가방이냐고요?\n속이 살짝 비치는데?",
+      "image": "../../../assets/ecolever/product-2color.jpg",
+      "fit": "cover",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 2,
+      "focus": {
+        "s": 2.3,
+        "x": -0.3,
+        "y": -0.4
+      },
+      "textBox": {
+        "opacity": 0.92
+      }
+    },
+    {
+      "text": "성글게 짠 원단이라\n결이 그대로 보여요",
+      "image": "../../../assets/ecolever/product-1color.jpg",
+      "fit": "cover",
+      "motion": "panRight",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 1,
+      "focus": {
+        "s": 2.3,
+        "x": 0.15,
+        "y": 0.95
+      },
+      "textBox": {
+        "opacity": 0.92
+      },
+      "sub": "면·황마 혼방"
+    },
+    {
+      "text": "면 85.2% · 황마 10.9% · 레이온 3.9%",
+      "image": "../../../assets/ecolever/doc-fiti-test.jpg",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92
+      },
+      "sub": "FITI 시험성적서 기준"
+    },
+    {
+      "text": "합성섬유 0%",
+      "image": "../../../assets/ecolever/doc-fiti-test.jpg",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "textBox": {
+        "opacity": 0.92
+      },
+      "sub": "성적서 혼용률 기준"
+    },
+    {
+      "text": "장당 약 70g · 40×37cm",
+      "image": "../../../assets/ecolever/product-1color.jpg",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92
+      },
+      "sub": "가볍게 들고 다니는 가방"
+    },
+    {
+      "text": "로고 인쇄 없이 50장부터",
+      "image": "../../../assets/ecolever/product-2color.jpg",
+      "fit": "cover",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "focus": {
+        "s": 2.1,
+        "x": 0.2,
+        "y": 0.9
+      },
+      "textBox": {
+        "opacity": 0.92
+      },
+      "sub": "장당 1칼라 1,000원 · 2칼라 1,200원(부가세 별도)"
+    }
+  ],
+  "outro": "샘플 먼저\n받아 보세요",
+  "outro_sub": "ecolever.co.kr · 02-6368-9989",
+  "card": {
+    "bg": [
+      "#1F2A21",
+      "#1F2A21"
+    ],
+    "bgStyle": "solid",
+    "color": "#EFE9DC"
+  },
+  "logo": {
+    "image": "../../../assets/ecolever/symbol-ecolever-light.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/ecolever/qr-instagram.png",
+    "text": "QR · 인스타그램",
+    "size": 0.2
+  },
+  "music": {
+    "style": "acoustic",
+    "meter": "4/4",
+    "bpm": 90,
+    "seed": 3729
+  },
+  "upload": {
+    "title": "속이 살짝 비치는 에코백? 성글게 짠 면·황마 혼방이라서",
+    "hashtags": [
+      "에코백",
+      "면황마",
+      "시험성적서",
+      "에코백추천",
+      "에코레버"
+    ],
+    "link": "https://www.ecolever.co.kr/",
+    "source": "FITI 시험성적서 · 비공개 처리된 쇼츠(YueKL4Xb6NE) 대체판 · 음악: 영상뚝딱 자체 작곡"
+  },
+  "footer": "(주)알앤케이그린월드",
+  "aspect": "4:5",
+  "platform": "reels",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 9.5,
+    "name": "2w-29-ecolever-feed"
+  }
+}

@@ -1,0 +1,154 @@
+{
+  "track": "2w27",
+  "source": "brand-facts.md · 에코레버 자주 묻는 질문 · FITI 시험성적서",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "Q. 크기와 원단은\n어떻게 되나요?",
+      "image": "../../../assets/ecolever/product-1color.jpg",
+      "fit": "cover",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 1,
+      "focus": {
+        "s": 2.3,
+        "x": 0.15,
+        "y": 0.95
+      },
+      "textBox": {
+        "opacity": 0.92
+      }
+    },
+    {
+      "text": "40×37cm · 손잡이 40cm",
+      "image": "../../../assets/ecolever/product-1color.jpg",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92
+      },
+      "sub": "장당 약 70g"
+    },
+    {
+      "text": "1칼라 크림톤 단색 ·\n2칼라 그레이·크림 투톤",
+      "image": "../../../assets/ecolever/product-2color.jpg",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92
+      }
+    },
+    {
+      "text": "면 85.2% · 황마 10.9% · 레이온 3.9%",
+      "image": "../../../assets/ecolever/doc-fiti-test.jpg",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92
+      },
+      "sub": "FITI 시험성적서 기준"
+    },
+    {
+      "text": "폴리에스터 같은\n합성섬유는 없어요",
+      "image": "../../../assets/ecolever/product-2color.jpg",
+      "fit": "cover",
+      "motion": "panLeft",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "focus": {
+        "s": 2.3,
+        "x": -0.3,
+        "y": -0.4
+      },
+      "textBox": {
+        "opacity": 0.92
+      },
+      "sub": "성적서 혼용률 기준"
+    }
+  ],
+  "outro": "샘플 먼저\n받아 보세요",
+  "outro_sub": "ecolever.co.kr · 02-6368-9989",
+  "card": {
+    "bg": [
+      "#1F2A21",
+      "#1F2A21"
+    ],
+    "bgStyle": "solid",
+    "color": "#EFE9DC"
+  },
+  "logo": {
+    "image": "../../../assets/ecolever/symbol-ecolever-light.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/ecolever/qr-instagram.png",
+    "text": "QR · 인스타그램",
+    "size": 0.2
+  },
+  "music": {
+    "style": "luxury",
+    "meter": "4/4",
+    "bpm": 78,
+    "seed": 3727
+  },
+  "upload": {
+    "title": "Q. 크기와 원단은? A. 40×37cm, 면·황마 혼방",
+    "hashtags": [
+      "에코백",
+      "면황마",
+      "시험성적서",
+      "자주묻는질문",
+      "에코레버"
+    ],
+    "link": "https://www.ecolever.co.kr/",
+    "source": "에코레버 자주 묻는 질문 · FITI 시험성적서 · 음악: 영상뚝딱 자체 작곡"
+  },
+  "footer": "(주)알앤케이그린월드",
+  "aspect": "9:16",
+  "platform": "shorts",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 9.5,
+    "name": "2w-27-ecolever-shorts"
+  }
+}
