@@ -32,7 +32,7 @@ jobs:
           for c in www public_html html htdocs; do if printf '%s\n' "$LIST" | sed 's#.*/##' | grep -qx "$c"; then WEB="$c/"; break; fi; done
           echo "web folder: /$WEB"
           shopt -s nullglob
-          for f in index.html .htaccess robots.txt sitemap.xml llms.txt abf0e43b3caf459fadaf9491a62b47d9.txt css/* js/* imgs/* guide/* faq/*; do
+          for f in index.html .htaccess robots.txt sitemap.xml llms.txt abf0e43b3caf459fadaf9491a62b47d9.txt css/* js/* imgs/* guide/*; do
             [ -f "$f" ] || continue
             curl -sS --disable-epsv --retry 2 --retry-delay 3 --netrc-file "$RUNNER_TEMP/netrc" --ftp-create-dirs -m 60 -T "$f" "ftp://211.47.74.75/$WEB$f"
             echo "uploaded $f"
