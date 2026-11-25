@@ -14,7 +14,7 @@ GitHub compare API 에서 바뀐 파일을 받아 주소로 바꿉니다. 바뀐
 import json, os, re, sys, urllib.request
 
 ENDPOINTS = ["https://api.indexnow.org/indexnow", "https://searchadvisor.naver.com/indexnow"]
-SKIP = re.compile(r"(^|/)(data|api|docs|tools|guides-src|\.github)/|(^|/)404\.html$")
+SKIP = re.compile(r"(^|/)(data|api|docs|tools|guides-src|brand|promo|\.github)/|(^|/)404\.html$")
 
 
 def get(url, token=None, timeout=30):
