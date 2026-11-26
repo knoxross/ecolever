@@ -456,7 +456,7 @@ var a=document.getElementById("preorder-go"),b=document.getElementById("preorder
           <div><span>공급가</span><b id="calcSupply">100,000원</b></div>
           <div><span>부가세(10%)</span><b id="calcVat">10,000원</b></div>
           <div class="calc-total"><span>합계</span><b id="calcTotal">110,000원</b></div>
-          <p class="calc-note" id="calcNote">택배비는 수량·지역에 따라 따로 안내드립니다.</p>
+          <p class="calc-note" id="calcNote">견적서·세금계산서 발행.</p>
           <a href="#inquiry" class="btn btn-moss btn-block" id="calcGo">이 수량으로 주문 문의</a>
         </div>
       </div>
@@ -484,7 +484,7 @@ var a=document.getElementById("preorder-go"),b=document.getElementById("preorder
       function won(n){return n.toLocaleString("ko-KR")+"원"}
       function upd(){var n=Math.max(0,parseInt(q.value,10)||0),sup=n*unit,vat=Math.round(sup*0.1);
         document.getElementById("calcSupply").textContent=won(sup);document.getElementById("calcVat").textContent=won(vat);document.getElementById("calcTotal").textContent=won(sup+vat);
-        var note=document.getElementById("calcNote");if(n>0&&n<50){note.textContent="최소 주문은 50장입니다.";note.className="calc-note warn"}else{note.textContent="택배비는 수량·지역에 따라 따로 안내드립니다. 견적서·세금계산서 발행.";note.className="calc-note"}}
+        var note=document.getElementById("calcNote");if(n>0&&n<50){note.textContent="최소 주문은 50장입니다.";note.className="calc-note warn"}else{note.textContent="견적서·세금계산서 발행.";note.className="calc-note"}}
       document.querySelectorAll(".calc-seg button").forEach(function(b){b.addEventListener("click",function(){document.querySelectorAll(".calc-seg button").forEach(function(x){x.classList.remove("on");x.setAttribute("aria-checked","false")});b.classList.add("on");b.setAttribute("aria-checked","true");unit=+b.dataset.unit;line=b.dataset.line;upd()})});
       document.querySelectorAll(".calc-quick button").forEach(function(b){b.addEventListener("click",function(){q.value=b.dataset.q;upd()})});
       q.addEventListener("input",upd);
