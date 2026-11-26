@@ -178,6 +178,11 @@ document.addEventListener('click', function(e){
   const errorEl = $('formError');
   const doneEl = $('inquiryDone');
   const btn = $('inqSubmit');
+  // 메일 utm으로 들어온 경우 어느 메일에서 왔는지 문의와 함께 남깁니다(이 탭에서만 기억).
+  try{
+    const q = new URLSearchParams(location.search);
+    if(q.get('utm_source')) sessionStorage.setItem('eco_src', [q.get('utm_source'), q.get('utm_medium'), q.get('utm_campaign')].filter(Boolean).join('/').slice(0, 120));
+  }catch(_){}
   const qty = $('inqQty');
   const qtyHint = $('qtyHint');
 
@@ -253,17 +258,33 @@ document.addEventListener('click', function(e){
       btn.textContent = originalBtnText;
     }
 
-    try{
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 10000);
-      const res = await fetch('https://formsubmit.co/ajax/' + INQUIRY_EMAIL, {
+    // 1) 서버 저장(관리자 문의함) 2) 메일 전송(FormSubmit)을 함께 보냅니다. 둘 중 하나라도 되면 접수로 봅니다.
+    function withTimeout(ms){ const c = new AbortController(); const t = setTimeout(() => c.abort(), ms); return { signal: c.signal, done: () => clearTimeout(t) }; }
+    let src = '';
+    try{ src = sessionStorage.getItem('eco_src') || ''; }catch(_){}
+    const saveReq = (function(){
+      const w = withTimeout(10000);
+      return fetch('/api/inquiry.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(Object.assign({ agree: true, src: src, _honey: form._honey ? form._honey.value : '' }, d)),
+        signal: w.signal
+      }).then(r => { w.done(); if(!r.ok) throw new Error('store ' + r.status); return r.json(); })
+        .then(j => { if(!j || !j.ok) throw new Error('store not ok'); return j; });
+    })();
+    const mailReq = (function(){
+      const w = withTimeout(10000);
+      return fetch('https://formsubmit.co/ajax/' + INQUIRY_EMAIL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify(Object.assign({ '_subject': subjectText, '_template': 'table', '_replyto': d.email || undefined }, fields)),
-        signal: controller.signal
-      });
-      clearTimeout(timeout);
-      if(!res.ok) throw new Error('formsubmit non-ok response');
+        signal: w.signal
+      }).then(r => { w.done(); if(!r.ok) throw new Error('formsubmit non-ok response'); return r; });
+    })();
+
+    try{
+      const results = await Promise.allSettled([saveReq, mailReq]);
+      if(results.every(x => x.status === 'rejected')) throw new Error('both failed');
 
       track('generate_lead', { form_name: 'inquiry', lineup: d.lineup, sample_request: d.sample });
       form.reset();
