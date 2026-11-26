@@ -1,7 +1,7 @@
 <?php
 // 에코레버 관리 화면: 오늘 · 문의함(진행 단계·메모·CSV)
-// 지마당 admin.php 구조를 따릅니다. 처음 설정은 대표님 인증 앱 6자리(지마당 OTP 서명 확인)가 있어야 하고,
-// 로그인은 비밀번호 → 2단계(대표님 인증 앱 6자리를 지마당 OTP 서버가 확인·서명, 여기서 고정 공개키로 검증)입니다.
+// 지마당 admin.php 구조를 따릅니다. 로그인은 지마당 관리 비밀번호를 지마당 허브가 확인·서명하고, 여기서 고정 공개키로 검증합니다.
+// 2단계(OTP)는 꺼 두었습니다(ADMIN_2FA, 대표님 지시 2026-11-26 밤).
 declare(strict_types=1);
 require __DIR__ . '/_lib.php';
 require __DIR__ . '/_sec.php';
@@ -12,7 +12,7 @@ header('X-Frame-Options: DENY'); header('X-Content-Type-Options: nosniff'); head
 header("Content-Security-Policy: default-src 'self'; style-src 'unsafe-inline'; img-src 'self' data:; form-action 'self'; frame-ancestors 'none'");
 header('X-Robots-Tag: noindex, nofollow');
 
-$dir = eco_dir(); $pw = $dir . '/admin-pass.php';
+$dir = eco_dir();
 const STEPS = ['접수', '견적 발송', '주문 확정', '출고', '세금계산서', '종료'];
 
 function tok(): string { if (empty($_SESSION['t'])) $_SESSION['t'] = bin2hex(random_bytes(16)); return $_SESSION['t']; }
@@ -34,37 +34,8 @@ function page(string $title, string $body): void {
   exit;
 }
 
-// ---- 처음 한 번: 대표님 인증 앱 6자리(지마당 OTP 서버 서명 확인)가 맞아야 관리 비밀번호를 정할 수 있습니다 ----
-// 주소가 먼저 알려져도 OTP가 없는 사람은 관리자 자리를 차지할 수 없습니다.
-// (처음에는 회사 메일로 코드를 보내려 했으나, 가비아 서버 메일이 Google에 막혀 OTP로 바꿨습니다. 2026-11-26)
-if (!is_file($pw)) {
-  $mk = function (string $msg = ''): string {
-    $_SESSION['setup_nonce'] = rtrim(strtr(base64_encode(random_bytes(24)), '+/', '-_'), '=');
-    return '<h1>에코레버 관리 — 처음 설정</h1>' . ($msg !== '' ? '<p class="msg">' . eco_h($msg) . '</p>' : '')
-      . '<p>관리 비밀번호를 정합니다. 대표님 휴대폰 인증 앱의 <b>(주)알앤케이그린월드</b> 6자리가 있어야 합니다(지마당 관리와 같은 번호).</p><form method="post">' . hid()
-      . '<input type="hidden" name="act" value="setup"><p><input name="code" inputmode="numeric" pattern="\d{6}" maxlength="6" placeholder="인증 앱 6자리" required autocomplete="one-time-code" style="width:140px;letter-spacing:4px"></p>'
-      . '<p><input type="password" name="p1" placeholder="새 비밀번호 (10자 이상)" required minlength="10" autocomplete="new-password"></p><p><input type="password" name="p2" placeholder="한 번 더" required autocomplete="new-password"></p><button>정하기</button></form>';
-  };
-  if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
-    chk();
-    $lkf = $dir . '/lock-' . substr(hash('sha256', 'setup' . ($_SERVER['REMOTE_ADDR'] ?? '0')), 0, 16) . '.php';
-    $n = (is_file($lkf) && filemtime($lkf) >= time() - 900) ? (int)preg_replace('/^<\?php.*?\?>\n/s', '', (string)file_get_contents($lkf)) : 0;
-    if ($n >= 5) { sec_audit('setup_locked'); http_response_code(429); page('잠김', '<h1>에코레버 관리</h1><p>여러 번 틀려 15분 동안 잠겼습니다.</p>'); }
-    $a = (string)($_POST['p1'] ?? '');
-    if (strlen($a) < 10 || $a !== (string)($_POST['p2'] ?? '')) page('처음 설정', $mk('비밀번호는 10자 이상, 두 번 같게 입력해 주세요.'));
-    $nonce = (string)($_SESSION['setup_nonce'] ?? ''); unset($_SESSION['setup_nonce']);
-    [$ok, $why] = $nonce === '' ? [false, 'no_nonce'] : otp_remote_verify((string)($_POST['code'] ?? ''), $nonce);
-    if (!$ok) {
-      sec_audit('setup_otp_fail', ['why' => $why]);
-      if (!in_array($why, ['no_pub', 'hub_down', 'hub_bad', 'hub_no_key', 'kid'], true)) { @file_put_contents($lkf, ECO_GUARD . ($n + 1), LOCK_EX); sleep(1); }
-      page('처음 설정', $mk(in_array($why, ['no_pub', 'hub_down', 'hub_bad', 'hub_no_key', 'kid'], true) ? '지금은 인증 번호를 확인할 수 없어 설정할 수 없습니다(' . $why . ').' : '인증 번호가 맞지 않거나 이미 쓴 번호입니다.'));
-    }
-    file_put_contents($pw, '<?php return ' . var_export(password_hash($a, PASSWORD_DEFAULT), true) . ';', LOCK_EX); @chmod($pw, 0640);
-    @unlink($lkf); sec_audit('setup_done');
-    page('처음 설정', '<h1>에코레버 관리</h1><p>관리 비밀번호를 정했습니다. <a href="admin.php">로그인</a></p>');
-  }
-  page('처음 설정', $mk());
-}
+// 에코레버는 자기 비밀번호를 두지 않습니다. 지마당 관리 비밀번호 하나로 두 곳에 들어갑니다(대표님 지시 2026-11-26 밤).
+// 처음 설정 화면이 없으므로, 주소가 먼저 알려져도 관리자 자리를 차지할 수 없습니다.
 
 if (isset($_GET['out'])) { sec_audit('logout'); $_SESSION = []; session_destroy(); header('Location: admin.php'); exit; }
 
@@ -72,45 +43,59 @@ if (isset($_GET['out'])) { sec_audit('logout'); $_SESSION = []; session_destroy(
 if (!empty($_SESSION['ok']) && time() - (int)($_SESSION['seen'] ?? 0) > IDLE_LIMIT) { sec_audit('idle_logout'); $_SESSION = []; session_regenerate_id(true); }
 if (!empty($_SESSION['ok'])) $_SESSION['seen'] = time();
 
-// ---- 로그인: 1단계 비밀번호 → 2단계 지마당 OTP (틀린 횟수는 서버 파일에: 같은 곳 15분 5번, 전체 15분 30번이면 15분 잠금) ----
+// ---- 로그인: 비밀번호를 지마당 허브가 확인·서명 → 여기서 고정 공개키로 검증 ----
+// 틀린 횟수는 이곳 서버에도 셉니다(같은 곳 15분 5번, 전체 15분 30번이면 15분 잠금). 지마당도 자기 관리 화면과 함께 셉니다.
 if (empty($_SESSION['ok'])) {
   $lk = fn(string $id): string => $dir . '/lock-' . substr(hash('sha256', $id), 0, 16) . '.php';
   $cnt = function (string $f): int { if (!is_file($f) || filemtime($f) < time() - 900) return 0; return (int)preg_replace('/^<\?php.*?\?>\n/s', '', (string)file_get_contents($f)); };
   $mine = $lk('ip' . ($_SERVER['REMOTE_ADDR'] ?? '0')); $all = $lk('all');
   $fail = function () use ($mine, $all, $cnt): void { foreach ([$mine, $all] as $lf) @file_put_contents($lf, ECO_GUARD . ($cnt($lf) + 1), LOCK_EX); sleep(1); };
-  $pwForm = '<form method="post">' . hid() . '<input type="hidden" name="act" value="pw"><input type="password" name="p" placeholder="관리 비밀번호" required autofocus autocomplete="current-password"> <button>다음</button></form>';
-  $otpForm = function (): string {
-    $_SESSION['otp_nonce'] = rtrim(strtr(base64_encode(random_bytes(24)), '+/', '-_'), '=');
-    return '<p>대표님 휴대폰 인증 앱의 <b>(주)알앤케이그린월드</b> 6자리를 넣어 주세요. 지마당 관리와 같은 번호입니다.</p><form method="post">' . hid()
+  $nonceNew = function (string $k): string { return $_SESSION[$k] = rtrim(strtr(base64_encode(random_bytes(24)), '+/', '-_'), '='); };
+  $pwForm = function (string $msg = '') use ($nonceNew): string {
+    $nonceNew('pw_nonce');
+    return '<h1>에코레버 관리</h1>' . ($msg !== '' ? '<p class="msg">' . eco_h($msg) . '</p>' : '')
+      . '<p class="note">지마당 관리 비밀번호로 들어갑니다(두 곳이 같은 비밀번호).</p><form method="post">' . hid()
+      . '<input type="hidden" name="act" value="pw"><input type="password" name="p" placeholder="관리 비밀번호" required autofocus autocomplete="current-password"> <button>들어가기</button></form>';
+  };
+  $otpForm = function (string $msg = '') use ($nonceNew): string {
+    $nonceNew('otp_nonce');
+    return '<h1>에코레버 관리 — 2단계 확인</h1>' . ($msg !== '' ? '<p class="msg">' . eco_h($msg) . '</p>' : '')
+      . '<p>대표님 휴대폰 인증 앱의 <b>(주)알앤케이그린월드</b> 6자리를 넣어 주세요.</p><form method="post">' . hid()
       . '<input type="hidden" name="act" value="otp"><input name="code" inputmode="numeric" pattern="\d{6}" maxlength="6" placeholder="6자리" required autofocus autocomplete="one-time-code" style="width:120px;letter-spacing:4px"> <button>들어가기</button></form><p class="note"><a href="admin.php?out=1">처음부터 다시</a></p>';
   };
+  $hubDown = ['no_pub', 'hub_down', 'hub_bad', 'hub_no_key', 'kid'];
+  $enter = function () use ($mine): void { @unlink($mine); session_regenerate_id(true); unset($_SESSION['pw_ok'], $_SESSION['pw_nonce'], $_SESSION['otp_nonce']); $_SESSION['ok'] = 1; $_SESSION['seen'] = time(); $_SESSION['t'] = bin2hex(random_bytes(16)); sec_audit('login_ok'); header('Location: admin.php'); exit; };
   if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     chk();
     if ($cnt($mine) >= 5 || $cnt($all) >= 30) { sec_audit('locked'); http_response_code(429); page('잠김', '<h1>에코레버 관리</h1><p>여러 번 틀려 15분 동안 잠겼습니다. 잠시 후 다시 시도해 주세요.</p>'); }
     $act = (string)($_POST['act'] ?? 'pw');
     if ($act === 'pw') {
-      if (password_verify((string)($_POST['p'] ?? ''), (string)(require $pw))) {
-        session_regenerate_id(true); $_SESSION['t'] = bin2hex(random_bytes(16)); sec_audit('pw_ok');
-        if (!ADMIN_2FA) { @unlink($mine); $_SESSION['ok'] = 1; $_SESSION['seen'] = time(); sec_audit('login_ok'); header('Location: admin.php'); exit; }
-        $_SESSION['pw_ok'] = time();
-        page('2단계 확인', '<h1>에코레버 관리 — 2단계 확인</h1>' . $otpForm());
+      $nonce = (string)($_SESSION['pw_nonce'] ?? ''); unset($_SESSION['pw_nonce']);     // 한 번 쓰면 버림
+      [$ok, $why] = $nonce === '' ? [false, 'no_nonce'] : pw_remote_verify((string)($_POST['p'] ?? ''), $nonce);
+      if ($ok) {
+        sec_audit('pw_ok');
+        if (!ADMIN_2FA) $enter();
+        session_regenerate_id(true); $_SESSION['t'] = bin2hex(random_bytes(16)); $_SESSION['pw_ok'] = time();
+        page('2단계 확인', $otpForm());
       }
-      sec_audit('pw_fail'); $fail();
-      page('로그인', '<h1>에코레버 관리</h1><p class="msg">비밀번호가 맞지 않습니다.</p>' . $pwForm);
+      sec_audit('pw_fail', ['why' => $why]);
+      if (in_array($why, $hubDown, true)) page('로그인', $pwForm('지금은 비밀번호를 확인할 수 없어 들어갈 수 없습니다(' . $why . '). 잠시 후 다시 해 주세요.'));
+      $fail();
+      page('로그인', $pwForm('비밀번호가 맞지 않습니다.'));
     }
     if ($act === 'otp' && ADMIN_2FA) {
-      if (time() - (int)($_SESSION['pw_ok'] ?? 0) > 300) { unset($_SESSION['pw_ok'], $_SESSION['otp_nonce']); page('로그인', '<h1>에코레버 관리</h1><p class="msg">시간이 지났습니다. 비밀번호부터 다시 넣어 주세요.</p>' . $pwForm); }
-      $nonce = (string)($_SESSION['otp_nonce'] ?? ''); unset($_SESSION['otp_nonce']);   // 한 번 쓰면 버림
+      if (time() - (int)($_SESSION['pw_ok'] ?? 0) > 300) { unset($_SESSION['pw_ok'], $_SESSION['otp_nonce']); page('로그인', $pwForm('시간이 지났습니다. 비밀번호부터 다시 넣어 주세요.')); }
+      $nonce = (string)($_SESSION['otp_nonce'] ?? ''); unset($_SESSION['otp_nonce']);
       [$ok, $why] = $nonce === '' ? [false, 'no_nonce'] : otp_remote_verify((string)($_POST['code'] ?? ''), $nonce);
-      if ($ok) { @unlink($mine); session_regenerate_id(true); unset($_SESSION['pw_ok']); $_SESSION['ok'] = 1; $_SESSION['seen'] = time(); $_SESSION['t'] = bin2hex(random_bytes(16)); sec_audit('login_ok'); header('Location: admin.php'); exit; }
+      if ($ok) $enter();
       sec_audit('otp_fail', ['why' => $why]);
-      if (in_array($why, ['no_pub', 'hub_down', 'hub_bad', 'hub_no_key', 'kid'], true)) page('2단계 확인', '<h1>에코레버 관리 — 2단계 확인</h1><p class="msg">지금은 2단계 확인을 할 수 없어 들어갈 수 없습니다(' . eco_h($why) . '). 잠시 후 다시 해 주세요.</p>' . $otpForm());
+      if (in_array($why, $hubDown, true)) page('2단계 확인', $otpForm('지금은 2단계 확인을 할 수 없어 들어갈 수 없습니다(' . $why . ').'));
       $fail();
-      page('2단계 확인', '<h1>에코레버 관리 — 2단계 확인</h1><p class="msg">인증 번호가 맞지 않거나 이미 쓴 번호입니다.</p>' . $otpForm());
+      page('2단계 확인', $otpForm('인증 번호가 맞지 않거나 이미 쓴 번호입니다.'));
     }
   }
-  if (!empty($_SESSION['pw_ok']) && time() - (int)$_SESSION['pw_ok'] <= 300) page('2단계 확인', '<h1>에코레버 관리 — 2단계 확인</h1>' . $otpForm());
-  page('로그인', '<h1>에코레버 관리</h1>' . $pwForm);
+  if (ADMIN_2FA && !empty($_SESSION['pw_ok']) && time() - (int)$_SESSION['pw_ok'] <= 300) page('2단계 확인', $otpForm());
+  page('로그인', $pwForm());
 }
 
 // ---- 여기부터 로그인한 사람만 ----
