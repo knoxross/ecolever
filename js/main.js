@@ -279,7 +279,9 @@ document.addEventListener('click', function(e){
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify(Object.assign({ '_subject': subjectText, '_template': 'table', '_replyto': d.email || undefined }, fields)),
         signal: w.signal
-      }).then(r => { w.done(); if(!r.ok) throw new Error('formsubmit non-ok response'); return r; });
+      }).then(r => { w.done(); if(!r.ok) throw new Error('formsubmit non-ok response'); return r.json().catch(() => ({})); })
+        // FormSubmit은 활성화 전이나 거절 때도 200을 주고 본문에 success:"false"를 넣습니다. 그 경우는 실패로 봅니다.
+        .then(j => { if(j && (j.success === false || j.success === 'false')) throw new Error('formsubmit: ' + (j.message || 'not delivered')); return j; });
     })();
 
     try{
