@@ -44,25 +44,6 @@ jobs:
           curl -sS --disable-epsv --retry 2 --retry-delay 3 --netrc-file "$RUNNER_TEMP/netrc" -m 30 -T "$RUNNER_TEMP/deploy-stamp.txt" "ftp://211.47.74.75/${WEB}deploy-stamp.txt" || true
           rm -f "$RUNNER_TEMP/netrc"
           if [ -n "$FAILED" ]; then echo "$FAILED" > "$RUNNER_TEMP/upload-failed.txt"; echo "::error::FTP에 못 올린 파일:$FAILED"; fi
-      - name: PHP 확장 확인(sodium·openssl·allow_url_fopen) — 임시 파일을 올려 보고 바로 지움, 실패해도 배포는 계속
-        continue-on-error: true
-        timeout-minutes: 3
-        env:
-          FTP_USER: ${{ secrets.FTP_USER }}
-          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-        run: |
-          if [ -z "$FTP_USER" ] || [ -z "$FTP_PASSWORD" ]; then echo "secrets 없음 — 건너뜀"; exit 0; fi
-          umask 077
-          N="$RUNNER_TEMP/netrc"; F="ftp://211.47.74.75"
-          printf 'machine 211.47.74.75\nlogin %s\npassword %s\n' "$FTP_USER" "$FTP_PASSWORD" > "$N"
-          T="extcheck-$(date +%s)-$RANDOM.php"
-          printf '<?php header("Content-Type: text/plain"); echo "php ", PHP_VERSION, " sodium=", extension_loaded("sodium") ? 1 : 0, " verify=", function_exists("sodium_crypto_sign_verify_detached") ? 1 : 0, " openssl=", extension_loaded("openssl") ? 1 : 0, " url_fopen=", ini_get("allow_url_fopen") ? 1 : 0, " fcgi_finish=", function_exists("fastcgi_finish_request") ? 1 : 0;\n' > "$RUNNER_TEMP/$T"
-          if curl -sS --disable-epsv --netrc-file "$N" -m 60 -T "$RUNNER_TEMP/$T" "$F/api/$T"; then
-            sleep 2
-            echo "확인 결과: $(curl -s -m 20 "https://www.ecolever.co.kr/api/$T" | head -c 200)"
-            curl -sS --disable-epsv --netrc-file "$N" -m 30 -Q "DELE api/$T" "$F/" -o /dev/null && echo "지움: /api/$T"
-          else echo "::warning::확인 파일 올리기 실패"; fi
-          rm -f "$N" "$RUNNER_TEMP/$T"
       - name: IndexNow — 이번 배포에서 바뀐 페이지만 빙·네이버 등에 알림(실패해도 배포는 계속)
         continue-on-error: true
         timeout-minutes: 3

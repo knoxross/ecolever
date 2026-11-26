@@ -20,12 +20,18 @@ function sec_audit(string $ev, array $x = []): void {
   try { eco_append('audit', $row); } catch (Throwable $e) {}
 }
 
-// 지마당 허브에 POST(HTTPS, 인증서 확인, 8초). 연결 못 하면 null.
+// 지마당 허브에 POST(HTTPS, 인증서 확인, 연결 5초·전체 8초). 연결 못 하면 null.
+// 가비아 에코레버 서버는 allow_url_fopen이 꺼져 있어(2026-11-26 확인) curl 확장으로 보냅니다.
+// curl이 없으면 'unreachable' 를 돌려 로그인을 막습니다(fail-closed).
 function hub_post(string $url, array $f): ?string {
-  $ctx = stream_context_create(['http' => ['method' => 'POST', 'header' => "Content-Type: application/x-www-form-urlencoded\r\n", 'content' => http_build_query($f), 'timeout' => 8, 'ignore_errors' => true],
-    'ssl' => ['verify_peer' => true, 'verify_peer_name' => true]]);
-  $r = @file_get_contents($url, false, $ctx);
-  return $r === false ? null : $r;
+  if (!function_exists('curl_init')) return 'unreachable';
+  $c = curl_init($url);
+  curl_setopt_array($c, [CURLOPT_POST => true, CURLOPT_POSTFIELDS => http_build_query($f), CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_CONNECTTIMEOUT => 5, CURLOPT_TIMEOUT => 8, CURLOPT_SSL_VERIFYPEER => true, CURLOPT_SSL_VERIFYHOST => 2,
+    CURLOPT_FOLLOWLOCATION => false, CURLOPT_PROTOCOLS => CURLPROTO_HTTPS, CURLOPT_HTTPHEADER => ['Accept: application/json']]);
+  $r = curl_exec($c);
+  curl_close($c);
+  return is_string($r) ? $r : null;
 }
 
 // 허브 응답 {payload, sig, kid} 검증. payload = {"ok":bool,"nonce":..,"ts":..,"site":"ecolever","kind":"pw"|"otp"}
@@ -34,6 +40,7 @@ function hub_check(?string $res, string $nonce, string $kind): array {
   if (!function_exists('sodium_crypto_sign_verify_detached')) return [false, 'no_pub'];
   $pub = base64_decode(GMADANG_OTP_PUB, true);
   if ($pub === false || strlen($pub) !== 32 || substr(hash('sha256', $pub), 0, 16) !== GMADANG_OTP_KID) return [false, 'no_pub'];
+  if ($res === 'unreachable') return [false, 'hub_unreachable'];             // 서버에 curl이 없음
   if ($res === null) return [false, 'hub_down'];                                     // 지마당에 연결 못 함 → 막음(fail-closed)
   $r = json_decode($res, true);
   if (is_array($r) && ($r['err'] ?? '') === 'no_key') return [false, 'hub_no_key'];

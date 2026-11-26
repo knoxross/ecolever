@@ -63,7 +63,7 @@ if (empty($_SESSION['ok'])) {
       . '<p>대표님 휴대폰 인증 앱의 <b>(주)알앤케이그린월드</b> 6자리를 넣어 주세요.</p><form method="post">' . hid()
       . '<input type="hidden" name="act" value="otp"><input name="code" inputmode="numeric" pattern="\d{6}" maxlength="6" placeholder="6자리" required autofocus autocomplete="one-time-code" style="width:120px;letter-spacing:4px"> <button>들어가기</button></form><p class="note"><a href="admin.php?out=1">처음부터 다시</a></p>';
   };
-  $hubDown = ['no_pub', 'hub_down', 'hub_bad', 'hub_no_key', 'kid'];
+  $hubDown = ['no_pub', 'hub_down', 'hub_bad', 'hub_no_key', 'kid', 'hub_unreachable'];
   $enter = function () use ($mine): void { @unlink($mine); session_regenerate_id(true); unset($_SESSION['pw_ok'], $_SESSION['pw_nonce'], $_SESSION['otp_nonce']); $_SESSION['ok'] = 1; $_SESSION['seen'] = time(); $_SESSION['t'] = bin2hex(random_bytes(16)); sec_audit('login_ok'); header('Location: admin.php'); exit; };
   if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     chk();
