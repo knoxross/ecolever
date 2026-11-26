@@ -87,3 +87,52 @@ function eco_rate_ok(string $key, int $max, int $win): bool {
   @file_put_contents($f, ECO_GUARD . implode(',', $list), LOCK_EX);
   return true;
 }
+
+// ---- 메일 보내기 ----
+// SMTP 설정(data/mail.php, 관리 화면 '메일 설정'에서만 넣음)이 있으면 SMTP(465 SSL 또는 587 STARTTLS)로,
+// 없으면 서버 기본 mail()로 보냅니다. 앱 비밀번호는 data/ 에만 있고 화면에 다시 보이지 않습니다.
+// 제목·본문은 UTF-8 base64라서 손님이 넣은 글자가 메일 머리말을 바꿀 수 없습니다.
+const ECO_NOTIFY_TO = 'knox@ecolever.co.kr';
+function eco_mail_conf(): array {
+  $p = eco_dir() . '/mail.php'; $c = is_file($p) ? (require $p) : [];
+  return (is_array($c) ? $c : []) + ['host' => '', 'port' => 465, 'user' => '', 'pass' => '', 'from' => '', 'last' => ''];
+}
+function eco_mail_save(array $c): void {
+  $p = eco_dir() . '/mail.php';
+  file_put_contents($p, '<?php return ' . var_export($c, true) . ';', LOCK_EX); @chmod($p, 0640);
+}
+function eco_smtp_cmd($s, string $cmd, array $ok): string {
+  if ($cmd !== '') fwrite($s, $cmd . "\r\n");
+  $r = ''; while (($l = fgets($s, 1024)) !== false) { $r .= $l; if (strlen($l) < 4 || $l[3] === ' ') break; }
+  if (!in_array((int)substr($r, 0, 3), $ok, true)) throw new RuntimeException(trim(substr($r, 0, 200)) ?: 'SMTP 응답 없음');
+  return $r;
+}
+// 돌려주는 값: 'ok' 또는 실패 이유(비밀번호는 넣지 않음)
+function eco_mail_send(string $subject, string $text, string $replyTo = '', string $to = ECO_NOTIFY_TO, string $fromName = '에코레버 홈페이지'): string {
+  if (!filter_var($to, FILTER_VALIDATE_EMAIL)) return '받는 주소 오류';
+  $c = eco_mail_conf();
+  $host = preg_replace('/[^a-z0-9.-]/i', '', (string)($_SERVER['HTTP_HOST'] ?? 'www.ecolever.co.kr'));
+  $from = filter_var($c['from'] ?: $c['user'], FILTER_VALIDATE_EMAIL) ? ($c['from'] ?: $c['user']) : 'noreply@' . preg_replace('/^www\./', '', $host);
+  $hdr = 'From: =?UTF-8?B?' . base64_encode($fromName) . "?= <$from>\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64";
+  if ($replyTo !== '' && filter_var($replyTo, FILTER_VALIDATE_EMAIL) && !preg_match('/[\r\n]/', $replyTo)) $hdr .= "\r\nReply-To: <$replyTo>";
+  $subj = '=?UTF-8?B?' . base64_encode($subject) . '?=';
+  $body = chunk_split(base64_encode($text));
+  if ($c['host'] === '' || $c['user'] === '' || $c['pass'] === '') return @mail($to, $subj, $body, $hdr) ? 'ok' : '서버 기본 메일 실패';
+  try {
+    $port = (int)$c['port'] === 587 ? 587 : 465;
+    $ctx = stream_context_create(['ssl' => ['verify_peer' => true, 'verify_peer_name' => true]]);
+    $s = @stream_socket_client(($port === 465 ? 'ssl://' : 'tcp://') . $c['host'] . ':' . $port, $en, $es, 20, STREAM_CLIENT_CONNECT, $ctx);
+    if (!$s) throw new RuntimeException('접속 실패: ' . $es);
+    stream_set_timeout($s, 20);
+    eco_smtp_cmd($s, '', [220]); eco_smtp_cmd($s, "EHLO $host", [250]);
+    if ($port === 587) { eco_smtp_cmd($s, 'STARTTLS', [220]); if (!stream_socket_enable_crypto($s, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) throw new RuntimeException('TLS 실패'); eco_smtp_cmd($s, "EHLO $host", [250]); }
+    eco_smtp_cmd($s, 'AUTH LOGIN', [334]); eco_smtp_cmd($s, base64_encode($c['user']), [334]); eco_smtp_cmd($s, base64_encode($c['pass']), [235]);
+    eco_smtp_cmd($s, "MAIL FROM:<$from>", [250]); eco_smtp_cmd($s, "RCPT TO:<$to>", [250, 251]); eco_smtp_cmd($s, 'DATA', [354]);
+    $msg = "To: <$to>\r\nSubject: $subj\r\nDate: " . date('r') . "\r\n$hdr\r\n\r\n$body";
+    $msg = (string)preg_replace('/^\./m', '..', str_replace(["\r\n", "\n"], ["\n", "\r\n"], $msg));
+    eco_smtp_cmd($s, $msg . "\r\n.", [250]); @eco_smtp_cmd($s, 'QUIT', [221]); fclose($s);
+    return 'ok';
+  } catch (Throwable $e) { return 'SMTP 오류: ' . substr(preg_replace('/[^\x20-\x7E가-힣]/u', ' ', $e->getMessage()) ?? '', 0, 160); }
+}
+// 예전 이름(문의 알림에서 씀): 성공 여부만 돌려줌
+function eco_mail(string $subject, string $text, string $replyTo = ''): bool { return eco_mail_send($subject, $text, $replyTo) === 'ok'; }

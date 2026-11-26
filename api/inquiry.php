@@ -39,6 +39,7 @@ $r = [
   'sample'  => !empty($d['sample']),
   'msg'     => eco_cut($d['msg'] ?? '', 2000),
   'src'     => eco_cut($d['src'] ?? '', 120),   // utm_source/medium/campaign (있을 때만)
+  'ref'     => preg_match('/^[a-z0-9.-]{1,80}$/', strtolower((string)($d['ref'] ?? ''))) ? strtolower((string)$d['ref']) : '',   // 처음 들어온 사이트
 ];
 
 if ($r['company'] === '' || $r['name'] === '') out(422, ['ok' => false, 'error' => 'required']);
@@ -51,4 +52,24 @@ if (empty($d['agree'])) out(422, ['ok' => false, 'error' => 'agree']);
 $id = 'Q' . date('ymd-His') . '-' . bin2hex(random_bytes(2));
 $row = ['id' => $id, 'at' => date('Y-m-d H:i:s')] + $r + ['vk' => $vk];
 try { eco_append('inquiry', $row); } catch (Throwable $e) { out(500, ['ok' => false, 'error' => 'store']); }
-out(200, ['ok' => true, 'id' => $id]);
+
+// 저장이 끝났으면 먼저 손님에게 "접수됨"을 돌려주고, 그 뒤에 담당자 알림 메일을 보냅니다.
+// 메일이 실패해도 접수는 성공입니다(관리 화면 문의함에 남아 있음). 결과는 data/mail-log 에 한 줄 남깁니다.
+http_response_code(200);
+echo json_encode(['ok' => true, 'id' => $id], JSON_UNESCAPED_UNICODE);
+if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
+$qtyTxt = $r['qty'] !== '' ? number_format((int)$r['qty']) . '개' : '수량 미입력';
+$lines = [
+  '새 견적 문의가 들어왔습니다.', '',
+  '접수 번호: ' . $id, '접수 시각: ' . $row['at'], '',
+  '회사·기관: ' . $r['company'], '담당자: ' . $r['name'], '연락처: ' . $r['phone'], '이메일: ' . ($r['email'] ?: '(없음)'),
+  '라인업: ' . ($r['lineup'] ?: '-'), '사이즈: ' . ($r['size'] ?: '-'), '수량: ' . $qtyTxt, '희망 납기: ' . ($r['due'] ?: '-'),
+  '로고 인쇄: ' . ($r['print'] ?: '-'), '자료(사진·성적서) 요청: ' . ($r['sample'] ? '예' : '아니오'), '',
+  '문의 내용:', $r['msg'] !== '' ? $r['msg'] : '(내용 없음)', '',
+  '출처(utm): ' . ($r['src'] ?: '(없음)'), '처음 들어온 사이트: ' . ($r['ref'] ?: '(직접·알 수 없음)'),
+  '관리 화면: https://www.ecolever.co.kr/api/admin.php?f=inbox#' . $id, '',
+  '이 메일에 바로 답장하면 손님 이메일로 갑니다(손님이 이메일을 남긴 경우).',
+];
+$ok = eco_mail('[에코레버 문의] ' . $r['company'] . ' · ' . $qtyTxt, implode("\n", $lines), $r['email']);
+@file_put_contents(eco_dir() . '/mail-log.php', (is_file(eco_dir() . '/mail-log.php') ? '' : ECO_GUARD) . date('Y-m-d H:i:s') . " $id " . ($ok ? 'ok' : 'fail') . "\n", FILE_APPEND | LOCK_EX);
+exit;

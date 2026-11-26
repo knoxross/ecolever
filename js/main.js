@@ -181,6 +181,8 @@ document.addEventListener('click', function(e){
   // 메일 utm으로 들어온 경우 어느 메일에서 왔는지 문의와 함께 남깁니다(이 탭에서만 기억).
   try{
     const q = new URLSearchParams(location.search);
+    // 처음 들어온 사이트(리퍼러 호스트)도 이 탭에서 한 번만 기억합니다(유튜브·지마당·검색 구분용)
+    if(!sessionStorage.getItem('eco_ref')){ let h=''; try{ h=document.referrer ? new URL(document.referrer).hostname : ''; }catch(_){} if(h && h!==location.hostname) sessionStorage.setItem('eco_ref', h.slice(0,80)); else sessionStorage.setItem('eco_ref', '-'); }
     if(q.get('utm_source')) sessionStorage.setItem('eco_src', [q.get('utm_source'), q.get('utm_medium'), q.get('utm_campaign')].filter(Boolean).join('/').slice(0, 120));
   }catch(_){}
   const qty = $('inqQty');
@@ -258,33 +260,25 @@ document.addEventListener('click', function(e){
       btn.textContent = originalBtnText;
     }
 
-    // 1) 서버 저장(관리자 문의함) 2) 메일 전송(FormSubmit)을 함께 보냅니다. 둘 중 하나라도 되면 접수로 봅니다.
+    // 문의는 우리 서버에 저장하고, 서버가 담당자 메일로 바로 알립니다(외부 전달 서비스 없음).
+    // 서버 저장이 안 되면 메일 앱 열기로 넘어갑니다.
     function withTimeout(ms){ const c = new AbortController(); const t = setTimeout(() => c.abort(), ms); return { signal: c.signal, done: () => clearTimeout(t) }; }
     let src = '';
     try{ src = sessionStorage.getItem('eco_src') || ''; }catch(_){}
-    const saveReq = (function(){
-      const w = withTimeout(10000);
-      return fetch('/api/inquiry.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify(Object.assign({ agree: true, src: src, _honey: form._honey ? form._honey.value : '' }, d)),
-        signal: w.signal
-      }).then(r => { w.done(); if(!r.ok) throw new Error('store ' + r.status); return r.json(); })
-        .then(j => { if(!j || !j.ok) throw new Error('store not ok'); return j; });
-    })();
-    const mailReq = (function(){
-      const w = withTimeout(10000);
-      return fetch('https://formsubmit.co/ajax/' + INQUIRY_EMAIL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify(Object.assign({ '_subject': subjectText, '_template': 'table', '_replyto': d.email || undefined }, fields)),
-        signal: w.signal
-      }).then(r => { w.done(); if(!r.ok) throw new Error('formsubmit non-ok response'); return r; });
-    })();
+    let ref = '';
+    try{ ref = (sessionStorage.getItem('eco_ref') || '').replace(/^-$/, ''); }catch(_){}
 
     try{
-      const results = await Promise.allSettled([saveReq, mailReq]);
-      if(results.every(x => x.status === 'rejected')) throw new Error('both failed');
+      const w = withTimeout(15000);
+      const r = await fetch('/api/inquiry.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(Object.assign({ agree: true, src: src, ref: ref, _honey: form._honey ? form._honey.value : '' }, d)),
+        signal: w.signal
+      });
+      w.done();
+      const j = r.ok ? await r.json().catch(() => null) : null;
+      if(!j || !j.ok) throw new Error('store ' + r.status);
 
       track('generate_lead', { form_name: 'inquiry', lineup: d.lineup, sample_request: d.sample });
       form.reset();
