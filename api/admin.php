@@ -65,8 +65,11 @@ if (empty($_SESSION['ok'])) {
 $S = eco_read_json('inq-status');                 // {문의 id: {st, note, at, log:[...]}}
 $DM = eco_read_json('dm') + ['sent' => 0, 'reply' => 0, 'quote' => 0, 'order' => 0, 'at' => ''];
 $L = eco_read_json('ledger');                     // {장부 id: {...}} 견적·주문 장부
-$f = in_array($_GET['f'] ?? 'today', ['today', 'inbox', 'ledger'], true) ? (string)($_GET['f'] ?? 'today') : 'today';
+$f = in_array($_GET['f'] ?? 'today', ['today', 'inbox', 'ledger', 'visits'], true) ? (string)($_GET['f'] ?? 'today') : 'today';
 const COLORS = ['1칼라' => 1000, '2칼라' => 1200];
+// 방문 집계 읽기(api/pv.php 가 쌓은 것)
+function pv_day(string $d): array { $m = eco_read_json('pv-' . substr($d, 0, 7)); return ($m[$d] ?? []) + ['pv' => 0, 'uv' => 0, 'nv' => 0, 'p' => [], 'r' => [], 'u' => [], 'sc' => [], 'dv' => []]; }
+const SRC = ['youtube' => '유튜브', 'gmadang' => '지마당', 'utm' => '메일·캠페인(utm)', 'search' => '검색', 'sns' => 'SNS·블로그', 'mail' => '웹메일', 'site' => '다른 사이트', 'direct' => '직접'];
 function led_date($v): string { $v = (string)$v; return preg_match('/^\d{4}-\d{2}-\d{2}$/', $v) ? $v : ''; }
 $M = isset($_SESSION['msg']) ? '<p class="msg">' . eco_h($_SESSION['msg']) . '</p>' : ''; unset($_SESSION['msg']);
 
@@ -119,6 +122,28 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
   header('Location: admin.php'); exit;
 }
 
+// ---- 방문 리포트 ----
+if ($f === 'visits') {
+  $rows = ''; $tp = []; $tr = []; $tu = []; $ts = []; $s7 = 0; $s30 = 0; $vals = [];
+  for ($i = 0; $i < 30; $i++) { $k = date('Y-m-d', strtotime("-$i day")); $x = pv_day($k); $s30 += (int)$x['uv']; if ($i < 7) $s7 += (int)$x['uv']; $vals[$k] = (int)$x['uv'];
+    if ($i < 14) { foreach ($x['p'] as $a => $b) $tp[$a] = ($tp[$a] ?? 0) + (int)$b; foreach ($x['r'] as $a => $b) $tr[$a] = ($tr[$a] ?? 0) + (int)$b; foreach ($x['u'] as $a => $b) $tu[$a] = ($tu[$a] ?? 0) + (int)$b; foreach ($x['sc'] as $a => $b) $ts[$a] = ($ts[$a] ?? 0) + (int)$b;
+      $sc = ''; foreach ($x['sc'] as $a => $b) $sc .= eco_h(SRC[$a] ?? $a) . ' ' . (int)$b . ' · ';
+      $rows .= '<tr><td>' . eco_h($k) . ($i === 0 ? ' (오늘)' : '') . '</td><td style="text-align:right"><b>' . (int)$x['uv'] . '</b></td><td style="text-align:right">' . (int)$x['nv'] . '</td><td style="text-align:right">' . (int)$x['pv'] . '</td><td style="text-align:right">' . (int)($x['dv']['mobile'] ?? 0) . ' / ' . (int)($x['dv']['pc'] ?? 0) . '</td><td class="note">' . rtrim($sc, ' · ') . '</td></tr>'; } }
+  if (isset($_GET['csv'])) { header('Content-Type: text/csv; charset=utf-8'); header('Content-Disposition: attachment; filename="ecolever-visits-' . date('Ymd') . '.csv"'); echo "ï»¿"; $o = fopen('php://output', 'w');
+    fputcsv($o, array_merge(['날짜', '방문자', '신규', '페이지 보기', '모바일', 'PC', '태블릿'], array_values(SRC)));
+    for ($i = 89; $i >= 0; $i--) { $k = date('Y-m-d', strtotime("-$i day")); $x = pv_day($k); $r = [$k, $x['uv'], $x['nv'], $x['pv'], $x['dv']['mobile'] ?? 0, $x['dv']['pc'] ?? 0, $x['dv']['tablet'] ?? 0]; foreach (array_keys(SRC) as $z) $r[] = $x['sc'][$z] ?? 0; fputcsv($o, array_map('csv_safe', $r)); }
+    exit; }
+  $top = function (array $a, string $lab, ?array $names = null): string { arsort($a); $o = ''; foreach (array_slice($a, 0, 12, true) as $k => $v) $o .= '<tr><td>' . eco_h($names[$k] ?? $k) . '</td><td style="text-align:right">' . (int)$v . '</td></tr>'; return '<div class="wrap"><table><tr><th>' . eco_h($lab) . '</th><th>수</th></tr>' . ($o ?: '<tr><td colspan="2">기록 없음</td></tr>') . '</table></div>'; };
+  $mx = max(1, max($vals)); $bars = '<div style="display:flex;align-items:flex-end;gap:2px;height:110px;background:#fff;border:1px solid var(--l);border-radius:10px;padding:8px">';
+  foreach (array_reverse($vals, true) as $k => $v) $bars .= '<div title="' . eco_h($k) . ' ' . $v . '" style="flex:1;height:' . (int)round($v * 100 / $mx) . '%;background:#7fb08a;border-radius:3px 3px 0 0;min-height:1px"></div>';
+  $bars .= '</div>';
+  $tabsV = '<p class="tabs"><a href="?f=today">오늘</a><a href="?f=inbox">문의함</a><a href="?f=ledger">견적·주문 장부</a><a href="?f=visits" class="on">방문 리포트</a><a href="?out=1">나가기</a></p>';
+  page('방문 리포트', '<h1>에코레버 관리</h1>' . $tabsV . '<div class="cards"><div class="card"><div class="note">최근 7일 방문자</div><div class="v">' . $s7 . '명</div></div><div class="card"><div class="note">최근 30일 방문자</div><div class="v">' . $s30 . '명</div></div></div>'
+    . '<h2>최근 30일</h2>' . $bars . '<p class="note">방문자 = 같은 기기·같은 날 한 명(IP 저장 안 함). 검색 로봇과 내부 점검(?qa=1로 한 번 연 브라우저)은 세지 않습니다. <a href="?f=visits&csv=1">90일 CSV 내려받기</a></p>'
+    . '<h2>최근 14일</h2><div class="wrap"><table><tr><th>날짜</th><th>방문자</th><th>신규</th><th>페이지 보기</th><th>모바일 / PC</th><th>들어온 경로(첫 방문)</th></tr>' . $rows . '</table></div>'
+    . '<h2>14일 들어온 경로</h2>' . $top($ts, '경로', SRC) . '<h2>14일 utm(메일·캠페인)</h2>' . $top($tu, 'utm_source/medium/campaign') . '<h2>14일 들어온 사이트</h2>' . $top($tr, '사이트') . '<h2>14일 많이 본 화면</h2>' . $top($tp, '주소'));
+}
+
 // ---- 견적·주문 장부 ----
 if ($f === 'ledger') {
   uasort($L, fn($a, $b) => strcmp((string)($b['made'] ?? ''), (string)($a['made'] ?? '')));
@@ -157,7 +182,7 @@ if ($f === 'ledger') {
       . '<td class="note">입금 ' . eco_h(($y['paid'] ?? '') ?: '-') . '<br>출고 ' . eco_h(($y['shipped'] ?? '') ?: '-') . '<br>계산서 ' . (!empty($y['tax']) ? '발행' : '-') . '</td>'
       . '<td><a href="?f=ledger&e=' . eco_h(rawurlencode($id)) . '">고치기</a><form method="post" class="inl" style="margin-top:4px">' . hid() . '<input type="hidden" name="act" value="led_del"><input type="hidden" name="id" value="' . eco_h($id) . '"><label class="note"><input type="checkbox" name="yes" value="1" required> 지우기 확인</label><button style="background:#9a3d10">지우기</button></form></td></tr>';
   }
-  $tabsL = '<p class="tabs"><a href="?f=today">오늘</a><a href="?f=inbox">문의함</a><a href="?f=ledger" class="on">견적·주문 장부</a><a href="?out=1">나가기</a></p>';
+  $tabsL = '<p class="tabs"><a href="?f=today">오늘</a><a href="?f=inbox">문의함</a><a href="?f=ledger" class="on">견적·주문 장부</a><a href="?f=visits">방문 리포트</a><a href="?out=1">나가기</a></p>';
   page('장부', '<h1>에코레버 관리</h1>' . $tabsL . $M . '<h2>' . ($edit !== '' ? '장부 고치기' : '새 견적·주문') . '</h2>' . $form
     . '<h2>월 합계</h2><div class="wrap"><table><tr><th>월</th><th>견적(작성일 기준, 취소 제외)</th><th>입금 건수</th><th>매출 공급가(입금일 기준)</th><th>부가세</th></tr>' . ($mrows ?: '<tr><td colspan="5">아직 없음</td></tr>') . '</table></div>'
     . '<h2>장부 <a class="note" href="?f=ledger&csv=1">CSV 내려받기</a></h2><div class="wrap"><table><tr><th>번호</th><th>업체</th><th>단계</th><th>품목</th><th>공급가(배송 포함)</th><th>합계</th><th>입금·출고·계산서</th><th></th></tr>' . ($rows ?: '<tr><td colspan="8">아직 없음 — 첫 매출 기록이 여기에 남습니다.</td></tr>') . '</table></div>');
@@ -176,7 +201,7 @@ if ($f === 'inbox' && isset($_GET['csv'])) {
   exit;
 }
 
-$tabs = '<p class="tabs"><a href="?f=today"' . ($f === 'today' ? ' class="on"' : '') . '>오늘</a><a href="?f=inbox"' . ($f === 'inbox' ? ' class="on"' : '') . '>문의함</a><a href="?f=ledger">견적·주문 장부</a><a href="?out=1">나가기</a></p>';
+$tabs = '<p class="tabs"><a href="?f=today"' . ($f === 'today' ? ' class="on"' : '') . '>오늘</a><a href="?f=inbox"' . ($f === 'inbox' ? ' class="on"' : '') . '>문의함</a><a href="?f=ledger">견적·주문 장부</a><a href="?f=visits"' . ($f === 'visits' ? ' class="on"' : '') . '>방문 리포트</a><a href="?out=1">나가기</a></p>';
 $H = '<h1>에코레버 관리</h1>' . $tabs . $M;
 
 if ($f === 'today') {
@@ -199,7 +224,8 @@ if ($f === 'today') {
     . '<h2>이메일 DM 숫자</h2><p class="note">메일은 knox@ 계정에서 보내므로 이 숫자는 손으로 고칩니다(누적).</p><form method="post" class="inl">' . hid() . '<input type="hidden" name="act" value="dm">'
     . '<label>보냄 <input name="sent" type="number" min="0" value="' . (int)$DM['sent'] . '" style="width:90px"></label><label>답장 <input name="reply" type="number" min="0" value="' . (int)$DM['reply'] . '" style="width:80px"></label>'
     . '<label>견적 <input name="quote" type="number" min="0" value="' . (int)$DM['quote'] . '" style="width:80px"></label><label>주문 <input name="order" type="number" min="0" value="' . (int)$DM['order'] . '" style="width:80px"></label><button>저장</button></form>'
-    . '<h2>어제 방문자</h2><p class="note">방문 리포트(④ 단계)를 붙이면 여기에 외부 방문자 수와 유입 경로가 나옵니다. 그 전까지는 GA4에서 봅니다.</p>');
+    . (function () { $y = pv_day(date('Y-m-d', strtotime('-1 day'))); $t = pv_day(date('Y-m-d')); $sc = ''; arsort($y['sc']); foreach ($y['sc'] as $k => $v) $sc .= '<span class="badge">' . eco_h(SRC[$k] ?? $k) . ' ' . (int)$v . '</span> ';
+      return '<h2>방문자</h2><div class="cards"><div class="card"><div class="note">어제 외부 방문자</div><div class="v">' . (int)$y['uv'] . '명</div><div class="note">페이지 보기 ' . (int)$y['pv'] . ' · 신규 ' . (int)$y['nv'] . '</div></div><div class="card"><div class="note">오늘 지금까지</div><div class="v">' . (int)$t['uv'] . '명</div></div></div><p>' . ($sc ?: '<span class="note">어제 유입 기록 없음</span>') . '</p><p class="note">내부 점검(?qa=1 브라우저)·검색 로봇 제외. <a href="?f=visits">방문 리포트 자세히</a></p>'; })());
 }
 
 // ---- 문의함 ----

@@ -54,7 +54,7 @@ HEAD = """<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-85K19J7B8D"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments);}}gtag('js',new Date());gtag('config','G-85K19J7B8D');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments);}}gtag('js',new Date());gtag('config','G-85K19J7B8D');</script><script src="/js/pv.js" defer></script>
 <title>{title} | ECOLEVER 에코레버</title>
 <meta name="description" content="{desc}">
 <link rel="canonical" href="{url}">
