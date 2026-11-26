@@ -50,13 +50,14 @@ flock($fh, LOCK_UN); fclose($fh);
 $mp = eco_dir() . '/pv-' . substr($d, 0, 7) . '.json.php';
 $fh = fopen($mp, 'c+'); flock($fh, LOCK_EX);
 $M = json_decode((string)preg_replace('/^<\?php.*?\?>\n/s', '', (string)stream_get_contents($fh)), true) ?: [];
-$t = ($M[$d] ?? []) + ['pv' => 0, 'uv' => 0, 'nv' => 0, 'p' => [], 'r' => [], 'u' => [], 'sc' => [], 'dv' => []];
+$t = ($M[$d] ?? []) + ['pv' => 0, 'uv' => 0, 'nv' => 0, 'p' => [], 'r' => [], 'u' => [], 'sc' => [], 'dv' => [], 'h' => []];
 $t['pv']++;
 if (!$seen) {
   $t['uv']++;
   if (($_POST['n'] ?? '') === '1') $t['nv']++;
   $sc = eco_source($ref, $utm); $t['sc'][$sc] = (int)($t['sc'][$sc] ?? 0) + 1;
   $dv = eco_device($ua); $t['dv'][$dv] = (int)($t['dv'][$dv] ?? 0) + 1;
+  $hk = date('G'); $t['h'][$hk] = (int)($t['h'][$hk] ?? 0) + 1;   // 시간대(그날 첫 방문 기준)
   if ($utm !== '' && (isset($t['u'][$utm]) || count($t['u']) < 100)) $t['u'][$utm] = (int)($t['u'][$utm] ?? 0) + 1;
 }
 if (isset($t['p'][$path]) || count($t['p']) < 300) $t['p'][$path] = (int)($t['p'][$path] ?? 0) + 1;
