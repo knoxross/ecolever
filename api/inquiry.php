@@ -39,6 +39,7 @@ $r = [
   'sample'  => !empty($d['sample']),
   'msg'     => eco_cut($d['msg'] ?? '', 2000),
   'src'     => eco_cut($d['src'] ?? '', 120),   // utm_source/medium/campaign (있을 때만)
+  'ref'     => preg_match('/^[a-z0-9.-]{1,80}$/', strtolower((string)($d['ref'] ?? ''))) ? strtolower((string)$d['ref']) : '',   // 처음 들어온 사이트
 ];
 
 if ($r['company'] === '' || $r['name'] === '') out(422, ['ok' => false, 'error' => 'required']);

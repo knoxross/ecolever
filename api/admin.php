@@ -1,8 +1,10 @@
 <?php
 // 에코레버 관리 화면: 오늘 · 문의함(진행 단계·메모·CSV)
-// 지마당 admin.php 구조를 따릅니다. 처음 접속한 사람이 관리 비밀번호를 정하고, 그 뒤에는 비밀번호로만 들어옵니다.
+// 지마당 admin.php 구조를 따릅니다. 처음 설정은 회사 메일로 받은 일회용 코드가 있어야 하고,
+// 로그인은 비밀번호 → 2단계(대표님 인증 앱 6자리를 지마당 OTP 서버가 확인·서명, 여기서 고정 공개키로 검증)입니다.
 declare(strict_types=1);
 require __DIR__ . '/_lib.php';
+require __DIR__ . '/_sec.php';
 session_name('ECOADM');
 session_set_cookie_params(['httponly' => true, 'secure' => !empty($_SERVER['HTTPS']), 'samesite' => 'Strict', 'path' => '/api/']);
 session_start();
@@ -27,43 +29,92 @@ function page(string $title, string $body): void {
     . '.wrap{overflow-x:auto}input,select,button,textarea{font:inherit;padding:7px 9px;border-radius:8px;border:1px solid #c9d3cb;max-width:100%}button{background:var(--g);color:#fff;border:0;cursor:pointer}'
     . '.note{color:var(--m);font-size:13px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}.card{background:#fff;border:1px solid var(--l);border-radius:10px;padding:10px 12px}'
     . '.card .v{font-size:26px;font-weight:800;color:var(--g)}.badge{display:inline-block;padding:1px 8px;border-radius:99px;background:#eef3ec;font-size:12px}.new{background:#fde8d8;color:#9a3d10}'
-    . 'form.inl{display:flex;flex-wrap:wrap;gap:4px}.msg{background:#fff;border:1px solid var(--g);padding:8px 10px;border-radius:8px}</style></head><body><main>' . $body . '</main></body></html>';
+    . 'form.inl{display:flex;flex-wrap:wrap;gap:4px}.warn{background:#fde8d8;border:1px solid #e8a77f;color:#7a2e08;padding:8px 10px;border-radius:8px;margin:8px 0}.deal{background:#fff;border:2px solid var(--g);border-radius:10px;padding:10px 12px;font-weight:700;margin:0 0 10px}'
+    . '@media(max-width:600px){.wrap table,.wrap tbody,.wrap tr,.wrap td{display:block;width:100%}.wrap tr:first-child{display:none}.wrap tr{background:#fff;border:1px solid var(--l);border-radius:10px;margin:0 0 8px;padding:4px}.wrap td{border:0;padding:4px 6px}}.msg{background:#fff;border:1px solid var(--g);padding:8px 10px;border-radius:8px}</style></head><body><main>' . $body . '</main></body></html>';
   exit;
 }
 
-// ---- 처음 한 번: 관리 비밀번호 정하기 ----
+// ---- 처음 한 번: 메일로 받은 설정 코드를 넣어야 관리 비밀번호를 정할 수 있습니다 ----
 if (!is_file($pw)) {
+  $form = '<form method="post">' . hid() . '<input type="hidden" name="act" value="setup"><p><input name="code" placeholder="메일로 받은 설정 코드 8자리" required maxlength="12" autocomplete="one-time-code"></p>'
+    . '<p><input type="password" name="p1" placeholder="새 비밀번호 (10자 이상)" required minlength="10" autocomplete="new-password"></p><p><input type="password" name="p2" placeholder="한 번 더" required autocomplete="new-password"></p><button>정하기</button></form>';
+  $send = '<form method="post">' . hid() . '<input type="hidden" name="act" value="sendcode"><button>설정 코드를 ' . eco_h(SETUP_MAIL_TO) . '로 보내기</button></form>';
   if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
-    chk(); $a = (string)($_POST['p1'] ?? '');
-    if (strlen($a) < 10 || $a !== (string)($_POST['p2'] ?? '')) page('처음 설정', '<h1>에코레버 관리 — 처음 설정</h1><p>비밀번호는 10자 이상, 두 번 같게 입력해 주세요. <a href="admin.php">다시</a></p>');
+    chk();
+    if (($_POST['act'] ?? '') === 'sendcode') {
+      $r = setup_code_send();
+      $m = ['ok' => '설정 코드를 보냈습니다. 30분 안에 넣어 주세요(스팸함도 확인).', 'too_many' => '코드는 한 시간에 3번까지 보낼 수 있습니다. 잠시 후 다시 해 주세요.', 'mail_fail' => '메일을 보내지 못했습니다. 잠시 후 다시 해 주세요.'][$r];
+      page('처음 설정', '<h1>에코레버 관리 — 처음 설정</h1><p class="msg">' . eco_h($m) . '</p>' . $form . '<p class="note">코드가 오지 않으면: ' . $send . '</p>');
+    }
+    $a = (string)($_POST['p1'] ?? '');
+    if (!setup_code_check((string)($_POST['code'] ?? ''))) { sec_audit('setup_code_fail'); sleep(1); page('처음 설정', '<h1>에코레버 관리 — 처음 설정</h1><p class="msg">설정 코드가 맞지 않거나 30분이 지났습니다.</p>' . $form . '<p class="note">' . $send . '</p>'); }
+    if (strlen($a) < 10 || $a !== (string)($_POST['p2'] ?? '')) page('처음 설정', '<h1>에코레버 관리 — 처음 설정</h1><p class="msg">비밀번호는 10자 이상, 두 번 같게 입력해 주세요.</p>' . $form);
     file_put_contents($pw, '<?php return ' . var_export(password_hash($a, PASSWORD_DEFAULT), true) . ';', LOCK_EX); @chmod($pw, 0640);
+    @unlink($dir . '/setup-code.php'); sec_audit('setup_done');
     page('처음 설정', '<h1>에코레버 관리</h1><p>관리 비밀번호를 정했습니다. <a href="admin.php">로그인</a></p>');
   }
-  page('처음 설정', '<h1>에코레버 관리 — 처음 설정</h1><p>관리 비밀번호를 정합니다. 10자 이상. 정한 뒤에는 이 화면이 다시 나오지 않습니다.</p><form method="post">' . hid()
-    . '<p><input type="password" name="p1" placeholder="새 비밀번호" required minlength="10" autocomplete="new-password"></p><p><input type="password" name="p2" placeholder="한 번 더" required autocomplete="new-password"></p><button>정하기</button></form>');
+  page('처음 설정', '<h1>에코레버 관리 — 처음 설정</h1><p>관리 비밀번호를 정하려면 먼저 회사 메일로 설정 코드를 받습니다. 코드는 30분 동안 쓸 수 있습니다.</p>' . $send . '<h2>코드를 받았다면</h2>' . $form);
 }
 
-if (isset($_GET['out'])) { $_SESSION = []; session_destroy(); header('Location: admin.php'); exit; }
+if (isset($_GET['out'])) { sec_audit('logout'); $_SESSION = []; session_destroy(); header('Location: admin.php'); exit; }
 
-// ---- 로그인 (틀린 횟수는 서버 파일에: 같은 곳 15분 5번, 전체 15분 30번이면 15분 잠금) ----
+// 30분 동안 아무것도 안 하면 자동 로그아웃
+if (!empty($_SESSION['ok']) && time() - (int)($_SESSION['seen'] ?? 0) > IDLE_LIMIT) { sec_audit('idle_logout'); $_SESSION = []; session_regenerate_id(true); }
+if (!empty($_SESSION['ok'])) $_SESSION['seen'] = time();
+
+// ---- 로그인: 1단계 비밀번호 → 2단계 지마당 OTP (틀린 횟수는 서버 파일에: 같은 곳 15분 5번, 전체 15분 30번이면 15분 잠금) ----
 if (empty($_SESSION['ok'])) {
   $lk = fn(string $id): string => $dir . '/lock-' . substr(hash('sha256', $id), 0, 16) . '.php';
   $cnt = function (string $f): int { if (!is_file($f) || filemtime($f) < time() - 900) return 0; return (int)preg_replace('/^<\?php.*?\?>\n/s', '', (string)file_get_contents($f)); };
   $mine = $lk('ip' . ($_SERVER['REMOTE_ADDR'] ?? '0')); $all = $lk('all');
+  $fail = function () use ($mine, $all, $cnt): void { foreach ([$mine, $all] as $lf) @file_put_contents($lf, ECO_GUARD . ($cnt($lf) + 1), LOCK_EX); sleep(1); };
+  $pwForm = '<form method="post">' . hid() . '<input type="hidden" name="act" value="pw"><input type="password" name="p" placeholder="관리 비밀번호" required autofocus autocomplete="current-password"> <button>다음</button></form>';
+  $otpForm = function (): string {
+    $_SESSION['otp_nonce'] = rtrim(strtr(base64_encode(random_bytes(24)), '+/', '-_'), '=');
+    return '<p>대표님 휴대폰 인증 앱의 <b>(주)알앤케이그린월드</b> 6자리를 넣어 주세요. 지마당 관리와 같은 번호입니다.</p><form method="post">' . hid()
+      . '<input type="hidden" name="act" value="otp"><input name="code" inputmode="numeric" pattern="\d{6}" maxlength="6" placeholder="6자리" required autofocus autocomplete="one-time-code" style="width:120px;letter-spacing:4px"> <button>들어가기</button></form><p class="note"><a href="admin.php?out=1">처음부터 다시</a></p>';
+  };
   if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     chk();
-    if ($cnt($mine) >= 5 || $cnt($all) >= 30) { http_response_code(429); page('잠김', '<h1>에코레버 관리</h1><p>비밀번호를 여러 번 틀려 15분 동안 잠겼습니다. 잠시 후 다시 시도해 주세요.</p>'); }
-    if (password_verify((string)($_POST['p'] ?? ''), (string)(require $pw))) { @unlink($mine); session_regenerate_id(true); $_SESSION['ok'] = 1; $_SESSION['t'] = bin2hex(random_bytes(16)); header('Location: admin.php'); exit; }
-    foreach ([$mine, $all] as $lf) @file_put_contents($lf, ECO_GUARD . ($cnt($lf) + 1), LOCK_EX);
-    sleep(1);
-    page('로그인', '<h1>에코레버 관리</h1><p class="msg">비밀번호가 맞지 않습니다.</p><form method="post">' . hid() . '<input type="password" name="p" placeholder="관리 비밀번호" required autofocus autocomplete="current-password"> <button>들어가기</button></form>');
+    if ($cnt($mine) >= 5 || $cnt($all) >= 30) { sec_audit('locked'); http_response_code(429); page('잠김', '<h1>에코레버 관리</h1><p>여러 번 틀려 15분 동안 잠겼습니다. 잠시 후 다시 시도해 주세요.</p>'); }
+    $act = (string)($_POST['act'] ?? 'pw');
+    if ($act === 'pw') {
+      if (password_verify((string)($_POST['p'] ?? ''), (string)(require $pw))) {
+        session_regenerate_id(true); $_SESSION['t'] = bin2hex(random_bytes(16)); sec_audit('pw_ok');
+        if (!ADMIN_2FA) { @unlink($mine); $_SESSION['ok'] = 1; $_SESSION['seen'] = time(); sec_audit('login_ok'); header('Location: admin.php'); exit; }
+        $_SESSION['pw_ok'] = time();
+        page('2단계 확인', '<h1>에코레버 관리 — 2단계 확인</h1>' . $otpForm());
+      }
+      sec_audit('pw_fail'); $fail();
+      page('로그인', '<h1>에코레버 관리</h1><p class="msg">비밀번호가 맞지 않습니다.</p>' . $pwForm);
+    }
+    if ($act === 'otp' && ADMIN_2FA) {
+      if (time() - (int)($_SESSION['pw_ok'] ?? 0) > 300) { unset($_SESSION['pw_ok'], $_SESSION['otp_nonce']); page('로그인', '<h1>에코레버 관리</h1><p class="msg">시간이 지났습니다. 비밀번호부터 다시 넣어 주세요.</p>' . $pwForm); }
+      $nonce = (string)($_SESSION['otp_nonce'] ?? ''); unset($_SESSION['otp_nonce']);   // 한 번 쓰면 버림
+      [$ok, $why] = $nonce === '' ? [false, 'no_nonce'] : otp_remote_verify((string)($_POST['code'] ?? ''), $nonce);
+      if ($ok) { @unlink($mine); session_regenerate_id(true); unset($_SESSION['pw_ok']); $_SESSION['ok'] = 1; $_SESSION['seen'] = time(); $_SESSION['t'] = bin2hex(random_bytes(16)); sec_audit('login_ok'); header('Location: admin.php'); exit; }
+      sec_audit('otp_fail', ['why' => $why]);
+      if (in_array($why, ['no_pub', 'hub_down', 'hub_bad'], true)) page('2단계 확인', '<h1>에코레버 관리 — 2단계 확인</h1><p class="msg">지금은 2단계 확인을 할 수 없어 들어갈 수 없습니다(' . eco_h($why) . '). 잠시 후 다시 해 주세요.</p>' . $otpForm());
+      $fail();
+      page('2단계 확인', '<h1>에코레버 관리 — 2단계 확인</h1><p class="msg">인증 번호가 맞지 않거나 이미 쓴 번호입니다.</p>' . $otpForm());
+    }
   }
-  page('로그인', '<h1>에코레버 관리</h1><form method="post">' . hid() . '<input type="password" name="p" placeholder="관리 비밀번호" required autofocus autocomplete="current-password"> <button>들어가기</button></form>');
+  if (!empty($_SESSION['pw_ok']) && time() - (int)$_SESSION['pw_ok'] <= 300) page('2단계 확인', '<h1>에코레버 관리 — 2단계 확인</h1>' . $otpForm());
+  page('로그인', '<h1>에코레버 관리</h1>' . $pwForm);
 }
 
 // ---- 여기부터 로그인한 사람만 ----
 $S = eco_read_json('inq-status');                 // {문의 id: {st, note, at, log:[...]}}
-$DM = eco_read_json('dm') + ['sent' => 0, 'reply' => 0, 'quote' => 0, 'order' => 0, 'at' => ''];
+$DM = eco_read_json('dm') + ['sent' => 0, 'form' => 0, 'reply' => 0, 'quote' => 0, 'order' => 0, 'at' => ''];
+// 문의가 어디서 왔는지 다섯 갈래로 묶습니다(메일 utm · 유튜브 · 지마당 카드 · 검색 · 직접/기타)
+function inq_src(array $r): string {
+  $u = strtolower((string)($r['src'] ?? '')); $ref = strtolower((string)($r['ref'] ?? ''));
+  if (strpos($u, 'gmadang') !== false || preg_match('/(^|\.)gmadang\.com$/', $ref)) return '지마당 카드';
+  if (strpos($u, 'youtube') !== false || preg_match('/(^|\.)(youtube\.com|youtu\.be)$/', $ref)) return '유튜브';
+  if ($u !== '') return '메일·캠페인(utm)';
+  if (preg_match('/(^|\.)(google\.[a-z.]+|naver\.com|daum\.net|bing\.com|zum\.com|nate\.com)$/', $ref)) return '검색';
+  return '직접·기타';
+}
 $L = eco_read_json('ledger');                     // {장부 id: {...}} 견적·주문 장부
 $f = in_array($_GET['f'] ?? 'today', ['today', 'inbox', 'ledger'], true) ? (string)($_GET['f'] ?? 'today') : 'today';
 const COLORS = ['1칼라' => 1000, '2칼라' => 1200];
@@ -86,7 +137,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     header('Location: admin.php?f=inbox#' . rawurlencode($id)); exit;
   }
   if ($act === 'dm') {
-    foreach (['sent', 'reply', 'quote', 'order'] as $k) $DM[$k] = max(0, min(100000, (int)($_POST[$k] ?? 0)));
+    foreach (['sent', 'form', 'reply', 'quote', 'order'] as $k) $DM[$k] = max(0, min(100000, (int)($_POST[$k] ?? 0)));
     $DM['at'] = date('Y-m-d H:i'); eco_write_json('dm', $DM); $_SESSION['msg'] = '이메일 DM 숫자를 저장했습니다.';
     header('Location: admin.php'); exit;
   }
@@ -115,6 +166,18 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     $id = (string)($_POST['id'] ?? '');
     if (isset($L[$id]) && ($_POST['yes'] ?? '') === '1') { unset($L[$id]); eco_write_json('ledger', $L); $_SESSION['msg'] = "장부 $id 를 지웠습니다."; }
     header('Location: admin.php?f=ledger'); exit;
+  }
+  if ($act === 'inq_del') {
+    // 문의 지우기(처리 완료 후 1년이 지난 것, 시험 접수 등). 확인 체크가 있어야 지웁니다.
+    $id = (string)($_POST['id'] ?? '');
+    if (preg_match('/^Q\d{6}-\d{6}-[0-9a-f]{4}$/', $id) && ($_POST['yes'] ?? '') === '1') {
+      $pf = eco_dir() . '/inquiry.jsonl.php'; $fh = @fopen($pf, 'c+');
+      if ($fh) { flock($fh, LOCK_EX); $keep = []; $hit = false;
+        foreach (explode("\n", (string)stream_get_contents($fh)) as $l) { if ($l === '' || strncmp($l, '<?php', 5) === 0) continue; $j = json_decode($l, true); if (is_array($j) && ($j['id'] ?? '') === $id) { $hit = true; continue; } $keep[] = $l; }
+        ftruncate($fh, 0); rewind($fh); fwrite($fh, ECO_GUARD . ($keep ? implode("\n", $keep) . "\n" : '')); fflush($fh); flock($fh, LOCK_UN); fclose($fh);
+        if ($hit) { unset($S[$id]); eco_write_json('inq-status', $S); sec_audit('inq_delete', ['id' => $id]); $_SESSION['msg'] = "$id 문의를 지웠습니다."; } }
+    }
+    header('Location: admin.php?f=inbox'); exit;
   }
   header('Location: admin.php'); exit;
 }
@@ -183,24 +246,29 @@ if ($f === 'today') {
   $cut = date('Y-m-d H:i:s', time() - 86400);
   $new24 = array_filter($R, fn($r) => ($r['at'] ?? '') >= $cut);
   $open = array_filter($R, fn($r) => $stOf($r) === '접수');
+  $stale = array_filter($open, fn($r) => ($r['at'] ?? '') < $cut);            // 24시간 넘게 처리 안 한 문의
   $byStep = array_fill_keys(STEPS, 0); foreach ($R as $r) $byStep[$stOf($r)] = ($byStep[$stOf($r)] ?? 0) + 1;
-  $src = []; foreach ($R as $r) { $k = ($r['src'] ?? '') !== '' ? (string)$r['src'] : '(직접·알 수 없음)'; $src[$k] = ($src[$k] ?? 0) + 1; } arsort($src);
+  $src = array_fill_keys(['메일·캠페인(utm)', '유튜브', '지마당 카드', '검색', '직접·기타'], 0); foreach ($R as $r) $src[inq_src($r)]++;
   $card = fn(string $l, string $v, string $s = ''): string => '<div class="card"><div class="note">' . eco_h($l) . '</div><div class="v">' . eco_h($v) . '</div>' . ($s !== '' ? '<div class="note">' . eco_h($s) . '</div>' : '') . '</div>';
-  $list = ''; foreach (array_slice($open, 0, 10) as $r) $list .= '<tr><td><a href="?f=inbox#' . eco_h(rawurlencode((string)$r['id'])) . '">' . eco_h($r['id']) . '</a><br><span class="note">' . eco_h(substr((string)$r['at'], 0, 16)) . '</span></td><td>' . eco_h($r['company'] ?? '') . ' · ' . eco_h($r['name'] ?? '') . '</td><td>' . eco_h(($r['qty'] ?? '') !== '' ? number_format((int)$r['qty']) . '개' : '-') . '</td></tr>';
-  $sl = ''; foreach (array_slice($src, 0, 8, true) as $k => $v) $sl .= '<tr><td>' . eco_h($k) . '</td><td style="text-align:right">' . (int)$v . '</td></tr>';
+  $list = ''; foreach (array_slice($open, 0, 10) as $r) $list .= '<tr><td><a href="?f=inbox#' . eco_h(rawurlencode((string)$r['id'])) . '">' . eco_h($r['id']) . '</a> <span class="note">' . eco_h(substr((string)$r['at'], 0, 16)) . '</span>' . (($r['at'] ?? '') < $cut ? ' <span class="badge new">24시간 넘음</span>' : '') . '</td><td>' . eco_h($r['company'] ?? '') . ' · ' . eco_h($r['name'] ?? '') . '</td><td>' . eco_h(($r['qty'] ?? '') !== '' ? number_format((int)$r['qty']) . '개' : '-') . '</td></tr>';
+  $sl = ''; foreach ($src as $k => $v) $sl .= $card($k, $v . '건');
   $steps = ''; foreach ($byStep as $k => $v) $steps .= '<span class="badge">' . eco_h($k) . ' ' . (int)$v . '</span> ';
+  $deal = '첫 거래 진행: 이메일 ' . number_format((int)$DM['sent']) . ' / 양식 ' . (int)$DM['form'] . ' · 답장 ' . (int)$DM['reply'] . ' / 견적 ' . (int)$DM['quote'] . ' / 주문 ' . (int)$DM['order'];
   page('오늘', $H
-    . '<div class="cards">' . $card('새 문의 (24시간)', count($new24) . '건') . $card('미처리 (접수 단계)', count($open) . '건') . $card('전체 문의', count($R) . '건')
-    . $card('이메일 DM 보냄', number_format((int)$DM['sent']) . '통', $DM['at'] !== '' ? '숫자 고친 때 ' . $DM['at'] : '아래에서 입력')
-    . $card('답장 / 견적 / 주문', (int)$DM['reply'] . ' / ' . (int)$DM['quote'] . ' / ' . (int)$DM['order']) . '</div>'
+    . '<div class="deal">' . eco_h($deal) . '<div class="note" style="font-weight:400">' . ($DM['at'] !== '' ? '숫자 고친 때 ' . eco_h($DM['at']) : '아래 「이메일 DM 숫자」에서 입력') . '</div></div>'
+    . ($stale ? '<div class="warn">⚠ 24시간 넘게 처리하지 않은 문의가 <b>' . count($stale) . '건</b> 있습니다. <a href="?f=inbox&st=접수">문의함에서 보기</a></div>' : '')
+    . (function () use ($L, $card) { $m = date('Y-m'); $q = 0; $qa = 0; $n = 0; $sa = 0; foreach ($L as $x) { if (($x['stage'] ?? '') === '취소') continue; if (substr((string)($x['made'] ?? ''), 0, 7) === $m) { $q++; $qa += (int)($x['total'] ?? 0); } if (substr((string)($x['paid'] ?? ''), 0, 7) === $m) { $n++; $sa += (int)($x['supply'] ?? 0) + (int)($x['ship'] ?? 0); } }
+      return '<h2>이번 달 장부 (' . eco_h($m) . ')</h2><div class="cards">' . $card('견적', $q . '건', number_format($qa) . '원(부가세 포함)') . $card('입금된 매출', number_format($sa) . '원', $n . '건 · 공급가 기준') . '</div><p class="note"><a href="?f=ledger">장부 자세히</a></p>'; })()
+    . '<div class="cards">' . $card('새 문의 (24시간)', count($new24) . '건') . $card('미처리 (접수 단계)', count($open) . '건') . $card('전체 문의', count($R) . '건') . '</div>'
     . '<p>' . $steps . '</p>'
+    . '<h2>문의 출처</h2><div class="cards">' . $sl . '</div><p class="note">메일 utm·유튜브·지마당 카드는 주소의 utm이나 들어온 사이트로 나눕니다. 리퍼러가 없으면 직접·기타입니다.</p>'
     . '<h2>미처리 문의</h2><div class="wrap"><table><tr><th>번호</th><th>회사 · 담당자</th><th>수량</th></tr>' . ($list ?: '<tr><td colspan="3">없음</td></tr>') . '</table></div>'
-    . '<h2>문의가 들어온 곳</h2><div class="wrap"><table><tr><th>유입(utm)</th><th>문의</th></tr>' . ($sl ?: '<tr><td colspan="2">아직 없음</td></tr>') . '</table></div>'
     . '<h2>이메일 DM 숫자</h2><p class="note">메일은 knox@ 계정에서 보내므로 이 숫자는 손으로 고칩니다(누적).</p><form method="post" class="inl">' . hid() . '<input type="hidden" name="act" value="dm">'
-    . '<label>보냄 <input name="sent" type="number" min="0" value="' . (int)$DM['sent'] . '" style="width:90px"></label><label>답장 <input name="reply" type="number" min="0" value="' . (int)$DM['reply'] . '" style="width:80px"></label>'
-    . '<label>견적 <input name="quote" type="number" min="0" value="' . (int)$DM['quote'] . '" style="width:80px"></label><label>주문 <input name="order" type="number" min="0" value="' . (int)$DM['order'] . '" style="width:80px"></label><button>저장</button></form>'
+    . '<label>이메일 <input name="sent" type="number" min="0" value="' . (int)$DM['sent'] . '" style="width:90px"></label><label>양식 <input name="form" type="number" min="0" value="' . (int)$DM['form'] . '" style="width:70px"></label><label>답장 <input name="reply" type="number" min="0" value="' . (int)$DM['reply'] . '" style="width:70px"></label>'
+    . '<label>견적 <input name="quote" type="number" min="0" value="' . (int)$DM['quote'] . '" style="width:70px"></label><label>주문 <input name="order" type="number" min="0" value="' . (int)$DM['order'] . '" style="width:70px"></label><button>저장</button></form>'
     . '<h2>어제 방문자</h2><p class="note">방문 리포트(④ 단계)를 붙이면 여기에 외부 방문자 수와 유입 경로가 나옵니다. 그 전까지는 GA4에서 봅니다.</p>');
 }
+
 
 // ---- 문의함 ----
 $q = eco_cut($_GET['q'] ?? '', 40); $only = in_array($_GET['st'] ?? '', STEPS, true) ? (string)$_GET['st'] : '';
@@ -218,7 +286,8 @@ foreach ($R as $r) {
     . '<td><form method="post" class="inl">' . hid() . '<input type="hidden" name="act" value="stage"><input type="hidden" name="id" value="' . eco_h($id) . '"><select name="st">' . $opts . '</select>'
     . '<input name="note" value="' . eco_h($cur['note'] ?? '') . '" placeholder="메모 (예: 견적서 ECO-20261127-01 보냄)" maxlength="300"><button>저장</button></form>'
     . ($log !== '' ? '<details><summary class="note">기록</summary><div class="note">' . $log . '</div></details>' : '')
-    . '<a class="note" href="?f=ledger&inq=' . eco_h(rawurlencode($id)) . '&co=' . eco_h(rawurlencode((string)($r['company'] ?? ''))) . '">→ 장부에 견적 쓰기</a></td></tr>';
+    . '<a class="note" href="?f=ledger&inq=' . eco_h(rawurlencode($id)) . '&co=' . eco_h(rawurlencode((string)($r['company'] ?? ''))) . '">→ 장부에 견적 쓰기</a>'
+    . '<details><summary class="note">지우기</summary><form method="post" class="inl">' . hid() . '<input type="hidden" name="act" value="inq_del"><input type="hidden" name="id" value="' . eco_h($id) . '"><label class="note"><input type="checkbox" name="yes" value="1" required> 이 문의를 지웁니다(되돌릴 수 없음)</label><button style="background:#9a3d10">지우기</button></form></details></td></tr>';
 }
 $filt = '<form method="get" class="inl"><input type="hidden" name="f" value="inbox"><input name="q" value="' . eco_h($q) . '" placeholder="회사·담당자·연락처 검색"><select name="st"><option value="">모든 단계</option>';
 foreach (STEPS as $s) $filt .= '<option' . ($only === $s ? ' selected' : '') . '>' . eco_h($s) . '</option>';
