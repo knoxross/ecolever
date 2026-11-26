@@ -87,3 +87,14 @@ function eco_rate_ok(string $key, int $max, int $win): bool {
   @file_put_contents($f, ECO_GUARD . implode(',', $list), LOCK_EX);
   return true;
 }
+
+// 서버 기본 메일(가비아)로 보냅니다. 받는 사람은 코드에 고정된 회사 주소만 씁니다.
+// 제목·본문은 UTF-8 base64라서 손님이 넣은 글자가 메일 머리말을 바꿀 수 없습니다.
+const ECO_NOTIFY_TO = 'knox@ecolever.co.kr';
+function eco_mail(string $subject, string $text, string $replyTo = ''): bool {
+  $host = preg_replace('/[^a-z0-9.-]/i', '', (string)($_SERVER['HTTP_HOST'] ?? 'www.ecolever.co.kr'));
+  $from = 'noreply@' . preg_replace('/^www\./', '', $host);
+  $hdr = 'From: =?UTF-8?B?' . base64_encode('에코레버 홈페이지') . "?= <$from>\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64";
+  if ($replyTo !== '' && filter_var($replyTo, FILTER_VALIDATE_EMAIL) && !preg_match('/[\r\n]/', $replyTo)) $hdr .= "\r\nReply-To: <$replyTo>";
+  return @mail(ECO_NOTIFY_TO, '=?UTF-8?B?' . base64_encode($subject) . '?=', chunk_split(base64_encode($text)), $hdr);
+}
