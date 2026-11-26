@@ -39,6 +39,7 @@ $r = [
   'sample'  => !empty($d['sample']),
   'msg'     => eco_cut($d['msg'] ?? '', 2000),
   'src'     => eco_cut($d['src'] ?? '', 120),   // utm_source/medium/campaign (있을 때만)
+  'ref'     => preg_match('/^[a-z0-9.-]{1,80}$/', strtolower((string)($d['ref'] ?? ''))) ? strtolower((string)$d['ref']) : '',   // 처음 들어온 사이트
 ];
 
 if ($r['company'] === '' || $r['name'] === '') out(422, ['ok' => false, 'error' => 'required']);
@@ -65,7 +66,7 @@ $lines = [
   '라인업: ' . ($r['lineup'] ?: '-'), '사이즈: ' . ($r['size'] ?: '-'), '수량: ' . $qtyTxt, '희망 납기: ' . ($r['due'] ?: '-'),
   '로고 인쇄: ' . ($r['print'] ?: '-'), '자료(사진·성적서) 요청: ' . ($r['sample'] ? '예' : '아니오'), '',
   '문의 내용:', $r['msg'] !== '' ? $r['msg'] : '(내용 없음)', '',
-  '출처(utm): ' . ($r['src'] ?: '(없음)'),
+  '출처(utm): ' . ($r['src'] ?: '(없음)'), '처음 들어온 사이트: ' . ($r['ref'] ?: '(직접·알 수 없음)'),
   '관리 화면: https://www.ecolever.co.kr/api/admin.php?f=inbox#' . $id, '',
   '이 메일에 바로 답장하면 손님 이메일로 갑니다(손님이 이메일을 남긴 경우).',
 ];
