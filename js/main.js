@@ -181,6 +181,8 @@ document.addEventListener('click', function(e){
   // 메일 utm으로 들어온 경우 어느 메일에서 왔는지 문의와 함께 남깁니다(이 탭에서만 기억).
   try{
     const q = new URLSearchParams(location.search);
+    // 처음 들어온 사이트(리퍼러 호스트)도 이 탭에서 한 번만 기억합니다(유튜브·지마당·검색 구분용)
+    if(!sessionStorage.getItem('eco_ref')){ let h=''; try{ h=document.referrer ? new URL(document.referrer).hostname : ''; }catch(_){} if(h && h!==location.hostname) sessionStorage.setItem('eco_ref', h.slice(0,80)); else sessionStorage.setItem('eco_ref', '-'); }
     if(q.get('utm_source')) sessionStorage.setItem('eco_src', [q.get('utm_source'), q.get('utm_medium'), q.get('utm_campaign')].filter(Boolean).join('/').slice(0, 120));
   }catch(_){}
   const qty = $('inqQty');
@@ -262,12 +264,14 @@ document.addEventListener('click', function(e){
     function withTimeout(ms){ const c = new AbortController(); const t = setTimeout(() => c.abort(), ms); return { signal: c.signal, done: () => clearTimeout(t) }; }
     let src = '';
     try{ src = sessionStorage.getItem('eco_src') || ''; }catch(_){}
+    let ref = '';
+    try{ ref = (sessionStorage.getItem('eco_ref') || '').replace(/^-$/, ''); }catch(_){}
     const saveReq = (function(){
       const w = withTimeout(10000);
       return fetch('/api/inquiry.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify(Object.assign({ agree: true, src: src, _honey: form._honey ? form._honey.value : '' }, d)),
+        body: JSON.stringify(Object.assign({ agree: true, src: src, ref: ref, _honey: form._honey ? form._honey.value : '' }, d)),
         signal: w.signal
       }).then(r => { w.done(); if(!r.ok) throw new Error('store ' + r.status); return r.json(); })
         .then(j => { if(!j || !j.ok) throw new Error('store not ok'); return j; });
