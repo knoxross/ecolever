@@ -8,7 +8,8 @@ const ADMIN_2FA = true;                                   // 2단계 인증 켜�
 const GMADANG_OTP_URL = 'https://www.gmadang.com/api/otp_verify.php';
 // 지마당 OTP 서명 공개키(ed25519, base64 32바이트). 지마당 /api/otp_pub.php 의 pub 값을 받아 고정합니다.
 // 비어 있으면 2단계를 통과할 수 없습니다(fail-closed).
-const GMADANG_OTP_PUB = '';
+const GMADANG_OTP_PUB = 'Bgr0oC/73bm5yHH1P0iCFN6RE2xs2qbNcEJ73VuJgOI=';   // 2026-11-26 지마당 운영 /api/otp_pub.php 값(RNK·총괄 각각 확인)
+const GMADANG_OTP_KID = 'dab99a118cc63a51';   // = sha256(공개키 32바이트) 앞 16자. 응답의 kid가 이 값과 같아야 함
 const IDLE_LIMIT = 1800;                                  // 30분 동안 아무것도 안 하면 자동 로그아웃
 
 // 감사 로그: 언제 무엇이 있었는지만 남깁니다. 비밀번호·코드·OTP 번호·IP 원문은 남기지 않습니다(IP는 해시 앞 12자).
@@ -23,7 +24,7 @@ function otp_remote_verify(string $code, string $nonce, ?callable $post = null):
   if (!preg_match('/^\d{6}$/', $code)) return [false, 'format'];
   if (GMADANG_OTP_PUB === '' || !function_exists('sodium_crypto_sign_verify_detached')) return [false, 'no_pub'];
   $pub = base64_decode(GMADANG_OTP_PUB, true);
-  if ($pub === false || strlen($pub) !== 32) return [false, 'no_pub'];
+  if ($pub === false || strlen($pub) !== 32 || substr(hash('sha256', $pub), 0, 16) !== GMADANG_OTP_KID) return [false, 'no_pub'];
   $post = $post ?? function (array $f): ?string {
     $ctx = stream_context_create(['http' => ['method' => 'POST', 'header' => "Content-Type: application/x-www-form-urlencoded\r\n", 'content' => http_build_query($f), 'timeout' => 8, 'ignore_errors' => true],
       'ssl' => ['verify_peer' => true, 'verify_peer_name' => true]]);
@@ -33,7 +34,9 @@ function otp_remote_verify(string $code, string $nonce, ?callable $post = null):
   $res = $post(['code' => $code, 'nonce' => $nonce, 'site' => 'ecolever']);
   if ($res === null) return [false, 'hub_down'];                 // 지마당에 연결 못 함 → 막음
   $r = json_decode($res, true);
+  if (is_array($r) && ($r['err'] ?? '') === 'no_key') return [false, 'hub_no_key'];   // 지마당에 OTP 키가 아직 등록되지 않음
   if (!is_array($r) || !isset($r['payload'], $r['sig'])) return [false, 'hub_bad'];
+  if (!hash_equals(GMADANG_OTP_KID, (string)($r['kid'] ?? ''))) return [false, 'kid'];   // 지마당 키가 바뀌었으면 막음(공개키를 새로 고정해야 함)
   $pl = (string)$r['payload']; $sig = base64_decode((string)$r['sig'], true);
   if ($sig === false || strlen($sig) !== 64 || !sodium_crypto_sign_verify_detached($sig, $pl, $pub)) return [false, 'sig'];
   $p = json_decode($pl, true);

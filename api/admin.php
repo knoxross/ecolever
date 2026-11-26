@@ -56,8 +56,8 @@ if (!is_file($pw)) {
     [$ok, $why] = $nonce === '' ? [false, 'no_nonce'] : otp_remote_verify((string)($_POST['code'] ?? ''), $nonce);
     if (!$ok) {
       sec_audit('setup_otp_fail', ['why' => $why]);
-      if (!in_array($why, ['no_pub', 'hub_down', 'hub_bad'], true)) { @file_put_contents($lkf, ECO_GUARD . ($n + 1), LOCK_EX); sleep(1); }
-      page('처음 설정', $mk(in_array($why, ['no_pub', 'hub_down', 'hub_bad'], true) ? '지금은 인증 번호를 확인할 수 없어 설정할 수 없습니다(' . $why . ').' : '인증 번호가 맞지 않거나 이미 쓴 번호입니다.'));
+      if (!in_array($why, ['no_pub', 'hub_down', 'hub_bad', 'hub_no_key', 'kid'], true)) { @file_put_contents($lkf, ECO_GUARD . ($n + 1), LOCK_EX); sleep(1); }
+      page('처음 설정', $mk(in_array($why, ['no_pub', 'hub_down', 'hub_bad', 'hub_no_key', 'kid'], true) ? '지금은 인증 번호를 확인할 수 없어 설정할 수 없습니다(' . $why . ').' : '인증 번호가 맞지 않거나 이미 쓴 번호입니다.'));
     }
     file_put_contents($pw, '<?php return ' . var_export(password_hash($a, PASSWORD_DEFAULT), true) . ';', LOCK_EX); @chmod($pw, 0640);
     @unlink($lkf); sec_audit('setup_done');
@@ -104,7 +104,7 @@ if (empty($_SESSION['ok'])) {
       [$ok, $why] = $nonce === '' ? [false, 'no_nonce'] : otp_remote_verify((string)($_POST['code'] ?? ''), $nonce);
       if ($ok) { @unlink($mine); session_regenerate_id(true); unset($_SESSION['pw_ok']); $_SESSION['ok'] = 1; $_SESSION['seen'] = time(); $_SESSION['t'] = bin2hex(random_bytes(16)); sec_audit('login_ok'); header('Location: admin.php'); exit; }
       sec_audit('otp_fail', ['why' => $why]);
-      if (in_array($why, ['no_pub', 'hub_down', 'hub_bad'], true)) page('2단계 확인', '<h1>에코레버 관리 — 2단계 확인</h1><p class="msg">지금은 2단계 확인을 할 수 없어 들어갈 수 없습니다(' . eco_h($why) . '). 잠시 후 다시 해 주세요.</p>' . $otpForm());
+      if (in_array($why, ['no_pub', 'hub_down', 'hub_bad', 'hub_no_key', 'kid'], true)) page('2단계 확인', '<h1>에코레버 관리 — 2단계 확인</h1><p class="msg">지금은 2단계 확인을 할 수 없어 들어갈 수 없습니다(' . eco_h($why) . '). 잠시 후 다시 해 주세요.</p>' . $otpForm());
       $fail();
       page('2단계 확인', '<h1>에코레버 관리 — 2단계 확인</h1><p class="msg">인증 번호가 맞지 않거나 이미 쓴 번호입니다.</p>' . $otpForm());
     }
