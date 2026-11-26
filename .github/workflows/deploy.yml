@@ -32,7 +32,7 @@ jobs:
           for c in www public_html html htdocs; do if printf '%s\n' "$LIST" | sed 's#.*/##' | grep -qx "$c"; then WEB="$c/"; break; fi; done
           echo "web folder: /$WEB"
           shopt -s nullglob; FAILED=""
-          for f in index.html .htaccess robots.txt sitemap.xml llms.txt abf0e43b3caf459fadaf9491a62b47d9.txt css/* js/* imgs/* guide/*; do
+          for f in index.html .htaccess robots.txt sitemap.xml llms.txt abf0e43b3caf459fadaf9491a62b47d9.txt css/* js/* imgs/* guide/* api/*.php data/.htaccess; do
             [ -f "$f" ] || continue
             if curl -sS --disable-epsv --retry 2 --retry-delay 3 --netrc-file "$RUNNER_TEMP/netrc" --ftp-create-dirs -m 60 -T "$f" "ftp://211.47.74.75/$WEB$f"; then
               echo "uploaded $f"
@@ -44,34 +44,6 @@ jobs:
           curl -sS --disable-epsv --retry 2 --retry-delay 3 --netrc-file "$RUNNER_TEMP/netrc" -m 30 -T "$RUNNER_TEMP/deploy-stamp.txt" "ftp://211.47.74.75/${WEB}deploy-stamp.txt" || true
           rm -f "$RUNNER_TEMP/netrc"
           if [ -n "$FAILED" ]; then echo "$FAILED" > "$RUNNER_TEMP/upload-failed.txt"; echo "::error::FTP에 못 올린 파일:$FAILED"; fi
-      - name: PHP 동작·폴더 만들기 확인 (임시 파일을 올려 보고 바로 지움, 실패해도 배포는 계속)
-        continue-on-error: true
-        timeout-minutes: 3
-        env:
-          FTP_USER: ${{ secrets.FTP_USER }}
-          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-        run: |
-          if [ -z "$FTP_USER" ] || [ -z "$FTP_PASSWORD" ]; then echo "secrets 없음 — 건너뜀"; exit 0; fi
-          umask 077
-          N="$RUNNER_TEMP/netrc"; F="ftp://211.47.74.75"
-          printf 'machine 211.47.74.75\nlogin %s\npassword %s\n' "$FTP_USER" "$FTP_PASSWORD" > "$N"
-          LIST=$(curl -sS --disable-epsv --netrc-file "$N" --list-only -m 30 "$F/" || true)
-          WEB=""
-          for c in www public_html html htdocs; do if printf '%s\n' "$LIST" | sed 's#.*/##' | grep -qx "$c"; then WEB="$c/"; break; fi; done
-          T="phpcheck-$(date +%s)-$RANDOM.php"
-          printf '<?php header("Content-Type: text/plain; charset=utf-8"); echo "php-ok ", PHP_MAJOR_VERSION, ".", PHP_MINOR_VERSION;\n' > "$RUNNER_TEMP/$T"
-          for D in "api/" ""; do
-            if curl -sS --disable-epsv --netrc-file "$N" --ftp-create-dirs -m 60 -T "$RUNNER_TEMP/$T" "$F/$WEB$D$T"; then
-              echo "올리기 OK: /$WEB$D$T"
-              sleep 2
-              echo "응답(/$D$T): $(curl -s -m 20 "https://www.ecolever.co.kr/$D$T" | head -c 80)"
-              curl -sS --disable-epsv --netrc-file "$N" -m 30 -Q "DELE $WEB$D$T" "$F/" -o /dev/null && echo "지움: /$WEB$D$T"
-              break
-            else
-              echo "::warning::/$WEB$D 에 올리기 실패(폴더를 못 만들었을 수 있음)"
-            fi
-          done
-          rm -f "$N" "$RUNNER_TEMP/$T"
       - name: IndexNow — 이번 배포에서 바뀐 페이지만 빙·네이버 등에 알림(실패해도 배포는 계속)
         continue-on-error: true
         timeout-minutes: 3

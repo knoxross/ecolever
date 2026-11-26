@@ -2,3 +2,7 @@
 Thumbs.db
 desktop.ini
 .vscode/
+
+# 서버 저장 자료(문의·장부·비밀번호)는 절대 올리지 않음. 접근 차단 파일만 올림
+data/*
+!data/.htaccess
