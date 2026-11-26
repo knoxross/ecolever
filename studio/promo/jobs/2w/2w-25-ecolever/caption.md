@@ -13,7 +13,7 @@ A. 로고 인쇄 없이 50개부터
 기관·기업 로고 인쇄는 10,000개부터
 수량과 관계없이 같은 장당 가격
 다른 질문은 누리집 FAQ에서
-샘플 먼저 받아 보세요 · ecolever.co.kr · 02-6368-9989
+견적·자료 문의 · ecolever.co.kr · 02-6368-9989
 https://www.ecolever.co.kr/?utm_source=youtube&utm_medium=social&utm_campaign=2w25-ecolever
 출처: 에코레버 자주 묻는 질문 · 음악: 영상뚝딱 자체 작곡
 #에코백 #단체에코백 #자주묻는질문 #Shorts
@@ -25,7 +25,7 @@ Q. 단체 에코백, 몇 개부터 주문돼요?
 · 수량과 관계없이 같은 장당 가격
 · 다른 질문은 누리집 FAQ에서
 
-샘플 먼저 받아 보세요 · ecolever.co.kr · 02-6368-9989
+견적·자료 문의 · ecolever.co.kr · 02-6368-9989
 🔗 프로필 링크 (https://www.ecolever.co.kr/?utm_source=instagram&utm_medium=social&utm_campaign=2w25-ecolever)
 출처: 에코레버 자주 묻는 질문 · 음악: 영상뚝딱 자체 작곡
 
@@ -45,7 +45,7 @@ https://www.ecolever.co.kr/?utm_source=threads&utm_medium=social&utm_campaign=2w
 - 기관·기업 로고 인쇄는 10,000개부터
 - 수량과 관계없이 같은 장당 가격
 - 다른 질문은 누리집 FAQ에서
-[끝] 샘플 먼저 받아 보세요 · ecolever.co.kr · 02-6368-9989
+[끝] 견적·자료 문의 · ecolever.co.kr · 02-6368-9989
 링크: https://www.ecolever.co.kr/?utm_source=naver&utm_medium=social&utm_campaign=2w25-ecolever
 출처: 에코레버 자주 묻는 질문 · 음악: 영상뚝딱 자체 작곡
 (QR 이미지는 글 맨 아래)

@@ -13,7 +13,7 @@
 꾸미기 수업엔 인쇄 없는 가방
 학교 이름 인쇄는 10,000개부터
 행정실 견적서 · 세금계산서
-샘플 먼저 받아 보세요 · ecolever.co.kr · 02-6368-9989
+견적·자료 문의 · ecolever.co.kr · 02-6368-9989
 https://www.ecolever.co.kr/?utm_source=youtube&utm_medium=social&utm_campaign=2w23-ecolever
 출처: 에코레버 안내 '학교·학원 행사용' · 음악: 영상뚝딱 자체 작곡
 #학교행사 #학원 #체험학습 #Shorts
@@ -25,7 +25,7 @@ https://www.ecolever.co.kr/?utm_source=youtube&utm_medium=social&utm_campaign=2w
 · 학교 이름 인쇄는 10,000개부터
 · 행정실 견적서 · 세금계산서
 
-샘플 먼저 받아 보세요 · ecolever.co.kr · 02-6368-9989
+견적·자료 문의 · ecolever.co.kr · 02-6368-9989
 🔗 프로필 링크 (https://www.ecolever.co.kr/?utm_source=instagram&utm_medium=social&utm_campaign=2w23-ecolever)
 출처: 에코레버 안내 '학교·학원 행사용' · 음악: 영상뚝딱 자체 작곡
 
@@ -45,7 +45,7 @@ https://www.ecolever.co.kr/?utm_source=threads&utm_medium=social&utm_campaign=2w
 - 꾸미기 수업엔 인쇄 없는 가방
 - 학교 이름 인쇄는 10,000개부터
 - 행정실 견적서 · 세금계산서
-[끝] 샘플 먼저 받아 보세요 · ecolever.co.kr · 02-6368-9989
+[끝] 견적·자료 문의 · ecolever.co.kr · 02-6368-9989
 링크: https://www.ecolever.co.kr/?utm_source=naver&utm_medium=social&utm_campaign=2w23-ecolever
 출처: 에코레버 안내 '학교·학원 행사용' · 음악: 영상뚝딱 자체 작곡
 (QR 이미지는 글 맨 아래)

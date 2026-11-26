@@ -13,7 +13,7 @@
 40×37cm · 약 70g
 로고 인쇄 없이 50장부터
 견적서 · 세금계산서 발행
-샘플 먼저 받아 보세요 · ecolever.co.kr · 02-6368-9989
+견적·자료 문의 · ecolever.co.kr · 02-6368-9989
 https://www.ecolever.co.kr/?utm_source=youtube&utm_medium=social&utm_campaign=2w14-ecolever
 출처: brand-facts.md · 음악: 영상뚝딱 자체 작곡
 #송년회 #워크숍 #기념품 #Shorts
@@ -25,7 +25,7 @@ https://www.ecolever.co.kr/?utm_source=youtube&utm_medium=social&utm_campaign=2w
 · 로고 인쇄 없이 50장부터
 · 견적서 · 세금계산서 발행
 
-샘플 먼저 받아 보세요 · ecolever.co.kr · 02-6368-9989
+견적·자료 문의 · ecolever.co.kr · 02-6368-9989
 🔗 프로필 링크 (https://www.ecolever.co.kr/?utm_source=instagram&utm_medium=social&utm_campaign=2w14-ecolever)
 출처: brand-facts.md · 음악: 영상뚝딱 자체 작곡
 
@@ -45,7 +45,7 @@ https://www.ecolever.co.kr/?utm_source=threads&utm_medium=social&utm_campaign=2w
 - 40×37cm · 약 70g
 - 로고 인쇄 없이 50장부터
 - 견적서 · 세금계산서 발행
-[끝] 샘플 먼저 받아 보세요 · ecolever.co.kr · 02-6368-9989
+[끝] 견적·자료 문의 · ecolever.co.kr · 02-6368-9989
 링크: https://www.ecolever.co.kr/?utm_source=naver&utm_medium=social&utm_campaign=2w14-ecolever
 출처: brand-facts.md · 음악: 영상뚝딱 자체 작곡
 (QR 이미지는 글 맨 아래)
