@@ -1,6 +1,6 @@
 <?php
 // 에코레버 관리 화면: 오늘 · 문의함(진행 단계·메모·CSV)
-// 지마당 admin.php 구조를 따릅니다. 처음 설정은 회사 메일로 받은 일회용 코드가 있어야 하고,
+// 지마당 admin.php 구조를 따릅니다. 처음 설정은 대표님 인증 앱 6자리(지마당 OTP 서명 확인)가 있어야 하고,
 // 로그인은 비밀번호 → 2단계(대표님 인증 앱 6자리를 지마당 OTP 서버가 확인·서명, 여기서 고정 공개키로 검증)입니다.
 declare(strict_types=1);
 require __DIR__ . '/_lib.php';
@@ -34,26 +34,36 @@ function page(string $title, string $body): void {
   exit;
 }
 
-// ---- 처음 한 번: 메일로 받은 설정 코드를 넣어야 관리 비밀번호를 정할 수 있습니다 ----
+// ---- 처음 한 번: 대표님 인증 앱 6자리(지마당 OTP 서버 서명 확인)가 맞아야 관리 비밀번호를 정할 수 있습니다 ----
+// 주소가 먼저 알려져도 OTP가 없는 사람은 관리자 자리를 차지할 수 없습니다.
+// (처음에는 회사 메일로 코드를 보내려 했으나, 가비아 서버 메일이 Google에 막혀 OTP로 바꿨습니다. 2026-11-26)
 if (!is_file($pw)) {
-  $form = '<form method="post">' . hid() . '<input type="hidden" name="act" value="setup"><p><input name="code" placeholder="메일로 받은 설정 코드 8자리" required maxlength="12" autocomplete="one-time-code"></p>'
-    . '<p><input type="password" name="p1" placeholder="새 비밀번호 (10자 이상)" required minlength="10" autocomplete="new-password"></p><p><input type="password" name="p2" placeholder="한 번 더" required autocomplete="new-password"></p><button>정하기</button></form>';
-  $send = '<form method="post">' . hid() . '<input type="hidden" name="act" value="sendcode"><button>설정 코드를 ' . eco_h(SETUP_MAIL_TO) . '로 보내기</button></form>';
+  $mk = function (string $msg = ''): string {
+    $_SESSION['setup_nonce'] = rtrim(strtr(base64_encode(random_bytes(24)), '+/', '-_'), '=');
+    return '<h1>에코레버 관리 — 처음 설정</h1>' . ($msg !== '' ? '<p class="msg">' . eco_h($msg) . '</p>' : '')
+      . '<p>관리 비밀번호를 정합니다. 대표님 휴대폰 인증 앱의 <b>(주)알앤케이그린월드</b> 6자리가 있어야 합니다(지마당 관리와 같은 번호).</p><form method="post">' . hid()
+      . '<input type="hidden" name="act" value="setup"><p><input name="code" inputmode="numeric" pattern="\d{6}" maxlength="6" placeholder="인증 앱 6자리" required autocomplete="one-time-code" style="width:140px;letter-spacing:4px"></p>'
+      . '<p><input type="password" name="p1" placeholder="새 비밀번호 (10자 이상)" required minlength="10" autocomplete="new-password"></p><p><input type="password" name="p2" placeholder="한 번 더" required autocomplete="new-password"></p><button>정하기</button></form>';
+  };
   if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     chk();
-    if (($_POST['act'] ?? '') === 'sendcode') {
-      $r = setup_code_send();
-      $m = ['ok' => '설정 코드를 보냈습니다. 30분 안에 넣어 주세요(스팸함도 확인).', 'too_many' => '코드는 한 시간에 3번까지 보낼 수 있습니다. 잠시 후 다시 해 주세요.', 'mail_fail' => '메일을 보내지 못했습니다. 잠시 후 다시 해 주세요.'][$r];
-      page('처음 설정', '<h1>에코레버 관리 — 처음 설정</h1><p class="msg">' . eco_h($m) . '</p>' . $form . '<p class="note">코드가 오지 않으면: ' . $send . '</p>');
-    }
+    $lkf = $dir . '/lock-' . substr(hash('sha256', 'setup' . ($_SERVER['REMOTE_ADDR'] ?? '0')), 0, 16) . '.php';
+    $n = (is_file($lkf) && filemtime($lkf) >= time() - 900) ? (int)preg_replace('/^<\?php.*?\?>\n/s', '', (string)file_get_contents($lkf)) : 0;
+    if ($n >= 5) { sec_audit('setup_locked'); http_response_code(429); page('잠김', '<h1>에코레버 관리</h1><p>여러 번 틀려 15분 동안 잠겼습니다.</p>'); }
     $a = (string)($_POST['p1'] ?? '');
-    if (!setup_code_check((string)($_POST['code'] ?? ''))) { sec_audit('setup_code_fail'); sleep(1); page('처음 설정', '<h1>에코레버 관리 — 처음 설정</h1><p class="msg">설정 코드가 맞지 않거나 30분이 지났습니다.</p>' . $form . '<p class="note">' . $send . '</p>'); }
-    if (strlen($a) < 10 || $a !== (string)($_POST['p2'] ?? '')) page('처음 설정', '<h1>에코레버 관리 — 처음 설정</h1><p class="msg">비밀번호는 10자 이상, 두 번 같게 입력해 주세요.</p>' . $form);
+    if (strlen($a) < 10 || $a !== (string)($_POST['p2'] ?? '')) page('처음 설정', $mk('비밀번호는 10자 이상, 두 번 같게 입력해 주세요.'));
+    $nonce = (string)($_SESSION['setup_nonce'] ?? ''); unset($_SESSION['setup_nonce']);
+    [$ok, $why] = $nonce === '' ? [false, 'no_nonce'] : otp_remote_verify((string)($_POST['code'] ?? ''), $nonce);
+    if (!$ok) {
+      sec_audit('setup_otp_fail', ['why' => $why]);
+      if (!in_array($why, ['no_pub', 'hub_down', 'hub_bad'], true)) { @file_put_contents($lkf, ECO_GUARD . ($n + 1), LOCK_EX); sleep(1); }
+      page('처음 설정', $mk(in_array($why, ['no_pub', 'hub_down', 'hub_bad'], true) ? '지금은 인증 번호를 확인할 수 없어 설정할 수 없습니다(' . $why . ').' : '인증 번호가 맞지 않거나 이미 쓴 번호입니다.'));
+    }
     file_put_contents($pw, '<?php return ' . var_export(password_hash($a, PASSWORD_DEFAULT), true) . ';', LOCK_EX); @chmod($pw, 0640);
-    @unlink($dir . '/setup-code.php'); sec_audit('setup_done');
+    @unlink($lkf); sec_audit('setup_done');
     page('처음 설정', '<h1>에코레버 관리</h1><p>관리 비밀번호를 정했습니다. <a href="admin.php">로그인</a></p>');
   }
-  page('처음 설정', '<h1>에코레버 관리 — 처음 설정</h1><p>관리 비밀번호를 정하려면 먼저 회사 메일로 설정 코드를 받습니다. 코드는 30분 동안 쓸 수 있습니다.</p>' . $send . '<h2>코드를 받았다면</h2>' . $form);
+  page('처음 설정', $mk());
 }
 
 if (isset($_GET['out'])) { sec_audit('logout'); $_SESSION = []; session_destroy(); header('Location: admin.php'); exit; }
@@ -115,7 +125,7 @@ function inq_src(array $r): string {
   if (preg_match('/(^|\.)(google\.[a-z.]+|naver\.com|daum\.net|bing\.com|zum\.com|nate\.com)$/', $ref)) return '검색';
   return '직접·기타';
 }
-$f = in_array($_GET['f'] ?? 'today', ['today', 'inbox'], true) ? (string)($_GET['f'] ?? 'today') : 'today';
+$f = in_array($_GET['f'] ?? 'today', ['today', 'inbox', 'mail'], true) ? (string)($_GET['f'] ?? 'today') : 'today';
 $M = isset($_SESSION['msg']) ? '<p class="msg">' . eco_h($_SESSION['msg']) . '</p>' : ''; unset($_SESSION['msg']);
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
@@ -138,6 +148,25 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     $DM['at'] = date('Y-m-d H:i'); eco_write_json('dm', $DM); $_SESSION['msg'] = '이메일 DM 숫자를 저장했습니다.';
     header('Location: admin.php'); exit;
   }
+  if ($act === 'mail_save') {
+    // 메일 설정: 앱 비밀번호는 바꿀 때만 받고, 화면에는 다시 보여 주지 않습니다.
+    $c = eco_mail_conf();
+    $c['host'] = (string)preg_replace('/[^a-z0-9.-]/i', '', (string)($_POST['host'] ?? ''));
+    $c['port'] = (int)($_POST['port'] ?? 465) === 587 ? 587 : 465;
+    $u = trim((string)($_POST['user'] ?? '')); $c['user'] = filter_var($u, FILTER_VALIDATE_EMAIL) ? $u : '';
+    $fr = trim((string)($_POST['from'] ?? '')); $c['from'] = filter_var($fr, FILTER_VALIDATE_EMAIL) ? $fr : '';
+    if (!empty($_POST['clearpass'])) $c['pass'] = '';
+    elseif ((string)($_POST['pass'] ?? '') !== '') $c['pass'] = str_replace(' ', '', (string)$_POST['pass']);   // Google 앱 비밀번호의 띄어쓰기는 빼고 저장
+    eco_mail_save($c); sec_audit('mail_conf_save', ['smtp' => $c['host'] !== '' && $c['pass'] !== '' ? 'on' : 'off']);
+    $_SESSION['msg'] = '메일 설정을 저장했습니다.';
+    header('Location: admin.php?f=mail'); exit;
+  }
+  if ($act === 'mail_test') {
+    $r = eco_mail_send('[에코레버 관리] 시험 메일', "에코레버 관리 화면에서 보낸 시험 메일입니다.\n" . date('Y-m-d H:i') . "\n\n이 메일이 받은편지함에 오면 문의 알림 메일도 같은 길로 옵니다.");
+    $c = eco_mail_conf(); $c['last'] = date('Y-m-d H:i') . ' ' . $r; eco_mail_save($c); sec_audit('mail_test', ['res' => $r === 'ok' ? 'ok' : 'fail']);
+    $_SESSION['msg'] = $r === 'ok' ? '시험 메일을 보냈습니다. ' . ECO_NOTIFY_TO . ' 받은편지함(스팸함 포함)을 확인하세요.' : '보내지 못했습니다: ' . $r;
+    header('Location: admin.php?f=mail'); exit;
+  }
   if ($act === 'inq_del') {
     // 문의 지우기(처리 완료 후 1년이 지난 것, 시험 접수 등). 확인 체크가 있어야 지웁니다.
     $id = (string)($_POST['id'] ?? '');
@@ -153,6 +182,23 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
   header('Location: admin.php'); exit;
 }
 
+// ---- 메일 설정 ----
+if ($f === 'mail') {
+  $c = eco_mail_conf(); $smtp = $c['host'] !== '' && $c['user'] !== '' && $c['pass'] !== '';
+  $mtabs = '<p class="tabs"><a href="?f=today">오늘</a><a href="?f=inbox">문의함</a><a href="?f=mail" class="on">메일 설정</a><a href="?out=1">나가기</a></p>';
+  page('메일 설정', '<h1>에코레버 관리</h1>' . $mtabs . $M
+    . '<p>새 문의가 들어오면 <b>' . eco_h(ECO_NOTIFY_TO) . '</b> 로 알림 메일을 보냅니다. 지금 방식: <b>' . ($smtp ? 'Google SMTP' : '서버 기본 메일(가비아) — Google 메일함에 도착하지 않을 수 있음') . '</b></p>'
+    . '<p class="note">Google(Workspace)로 보내려면: 서버 smtp.gmail.com · 포트 465 · 계정 ' . eco_h(ECO_NOTIFY_TO) . ' · <b>앱 비밀번호 16자리</b>(Google 계정 → 보안 → 2단계 인증 → 앱 비밀번호). 평소 로그인 비밀번호는 넣지 마세요. 앱 비밀번호는 이 화면에만 넣고 채팅·메일에 붙여 넣지 마세요.</p>'
+    . '<form method="post">' . hid() . '<input type="hidden" name="act" value="mail_save">'
+    . '<p>SMTP 서버<br><input name="host" value="' . eco_h($c['host'] ?: 'smtp.gmail.com') . '" size="28"> 포트 <select name="port"><option' . ((int)$c['port'] !== 587 ? ' selected' : '') . '>465</option><option' . ((int)$c['port'] === 587 ? ' selected' : '') . '>587</option></select></p>'
+    . '<p>계정 이메일<br><input name="user" type="email" value="' . eco_h($c['user'] ?: ECO_NOTIFY_TO) . '" size="32"></p>'
+    . '<p>보내는 주소(비우면 계정 이메일)<br><input name="from" type="email" value="' . eco_h($c['from']) . '" size="32"></p>'
+    . '<p>앱 비밀번호 ' . ($c['pass'] !== '' ? '<b>(저장되어 있음 — 바꿀 때만 입력)</b>' : '(없음)') . '<br><input name="pass" type="password" autocomplete="new-password" size="32"> <label class="note"><input type="checkbox" name="clearpass" value="1"> 지우기</label></p>'
+    . '<button>저장</button></form>'
+    . '<form method="post" style="margin-top:10px">' . hid() . '<input type="hidden" name="act" value="mail_test"><button>시험 메일 보내기</button></form>'
+    . ($c['last'] !== '' ? '<p class="note">최근 시험: ' . eco_h($c['last']) . '</p>' : ''));
+}
+
 $R = eco_rows('inquiry');
 $stOf = fn(array $r): string => (string)($S[$r['id'] ?? '']['st'] ?? '접수');
 
@@ -166,7 +212,7 @@ if ($f === 'inbox' && isset($_GET['csv'])) {
   exit;
 }
 
-$tabs = '<p class="tabs"><a href="?f=today"' . ($f === 'today' ? ' class="on"' : '') . '>오늘</a><a href="?f=inbox"' . ($f === 'inbox' ? ' class="on"' : '') . '>문의함</a><span class="note">견적·주문 장부와 방문 리포트는 다음 단계에서 붙습니다</span><a href="?out=1">나가기</a></p>';
+$tabs = '<p class="tabs"><a href="?f=today"' . ($f === 'today' ? ' class="on"' : '') . '>오늘</a><a href="?f=inbox"' . ($f === 'inbox' ? ' class="on"' : '') . '>문의함</a><a href="?f=mail">메일 설정</a><a href="?out=1">나가기</a></p>';
 $H = '<h1>에코레버 관리</h1>' . $tabs . $M;
 
 if ($f === 'today') {
