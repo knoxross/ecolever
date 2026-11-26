@@ -64,7 +64,10 @@ if (empty($_SESSION['ok'])) {
 // ---- 여기부터 로그인한 사람만 ----
 $S = eco_read_json('inq-status');                 // {문의 id: {st, note, at, log:[...]}}
 $DM = eco_read_json('dm') + ['sent' => 0, 'reply' => 0, 'quote' => 0, 'order' => 0, 'at' => ''];
-$f = in_array($_GET['f'] ?? 'today', ['today', 'inbox'], true) ? (string)($_GET['f'] ?? 'today') : 'today';
+$L = eco_read_json('ledger');                     // {장부 id: {...}} 견적·주문 장부
+$f = in_array($_GET['f'] ?? 'today', ['today', 'inbox', 'ledger'], true) ? (string)($_GET['f'] ?? 'today') : 'today';
+const COLORS = ['1칼라' => 1000, '2칼라' => 1200];
+function led_date($v): string { $v = (string)$v; return preg_match('/^\d{4}-\d{2}-\d{2}$/', $v) ? $v : ''; }
 $M = isset($_SESSION['msg']) ? '<p class="msg">' . eco_h($_SESSION['msg']) . '</p>' : ''; unset($_SESSION['msg']);
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
@@ -87,7 +90,77 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     $DM['at'] = date('Y-m-d H:i'); eco_write_json('dm', $DM); $_SESSION['msg'] = '이메일 DM 숫자를 저장했습니다.';
     header('Location: admin.php'); exit;
   }
+  if ($act === 'led_save') {
+    $id = (string)($_POST['id'] ?? '');
+    if ($id === '') $id = 'L' . date('ymd-His') . '-' . bin2hex(random_bytes(2));
+    if (preg_match('/^L\d{6}-\d{6}-[0-9a-f]{4}$/', $id)) {
+      $color = array_key_exists($_POST['color'] ?? '', COLORS) ? (string)$_POST['color'] : '1칼라';
+      $qty = max(0, min(10000000, (int)($_POST['qty'] ?? 0)));
+      $unit = (int)($_POST['unit'] ?? 0); if ($unit <= 0) $unit = COLORS[$color];
+      $supply = (int)($_POST['supply'] ?? 0); if ($supply <= 0) $supply = $qty * $unit;      // 비우면 수량×단가
+      $ship = max(0, (int)($_POST['ship'] ?? 0));                                             // 배송비(공급가에 더함)
+      $base = $supply + $ship; $vat = (int)round($base * 0.1);
+      $L[$id] = [
+        'made' => led_date($_POST['made'] ?? '') ?: date('Y-m-d'), 'company' => eco_cut($_POST['company'] ?? '', 80), 'inq' => eco_cut($_POST['inq'] ?? '', 24),
+        'color' => $color, 'qty' => $qty, 'unit' => $unit, 'supply' => $supply, 'ship' => $ship, 'vat' => $vat, 'total' => $base + $vat,
+        'stage' => in_array($_POST['stage'] ?? '', ['견적', '주문 확정', '취소'], true) ? (string)$_POST['stage'] : '견적',
+        'paid' => led_date($_POST['paid'] ?? ''), 'shipped' => led_date($_POST['shipped'] ?? ''), 'tax' => !empty($_POST['tax']), 'note' => eco_cut($_POST['note'] ?? '', 200), 'at' => date('Y-m-d H:i'),
+      ];
+      if ($L[$id]['company'] === '') { unset($L[$id]); $_SESSION['msg'] = '업체 이름을 넣어 주세요.'; }
+      else { eco_write_json('ledger', $L); $_SESSION['msg'] = "장부 $id 를 저장했습니다."; }
+    }
+    header('Location: admin.php?f=ledger'); exit;
+  }
+  if ($act === 'led_del') {
+    $id = (string)($_POST['id'] ?? '');
+    if (isset($L[$id]) && ($_POST['yes'] ?? '') === '1') { unset($L[$id]); eco_write_json('ledger', $L); $_SESSION['msg'] = "장부 $id 를 지웠습니다."; }
+    header('Location: admin.php?f=ledger'); exit;
+  }
   header('Location: admin.php'); exit;
+}
+
+// ---- 견적·주문 장부 ----
+if ($f === 'ledger') {
+  uasort($L, fn($a, $b) => strcmp((string)($b['made'] ?? ''), (string)($a['made'] ?? '')));
+  if (isset($_GET['csv'])) {
+    header('Content-Type: text/csv; charset=utf-8'); header('Content-Disposition: attachment; filename="ecolever-ledger-' . date('Ymd') . '.csv"');
+    echo "\xEF\xBB\xBF"; $o = fopen('php://output', 'w');
+    fputcsv($o, ['번호', '작성일', '업체', '문의 번호', '단계', '색상', '수량', '단가', '공급가', '배송비', '부가세', '합계', '입금일', '출고일', '세금계산서', '메모']);
+    foreach ($L as $id => $x) fputcsv($o, array_map('csv_safe', [$id, $x['made'] ?? '', $x['company'] ?? '', $x['inq'] ?? '', $x['stage'] ?? '', $x['color'] ?? '', $x['qty'] ?? 0, $x['unit'] ?? 0, $x['supply'] ?? 0, $x['ship'] ?? 0, $x['vat'] ?? 0, $x['total'] ?? 0, $x['paid'] ?? '', $x['shipped'] ?? '', !empty($x['tax']) ? '발행' : '', $x['note'] ?? '']));
+    exit;
+  }
+  // 월 합계: 매출은 입금일 기준(입금된 것만), 견적은 작성일 기준
+  $mon = [];
+  foreach ($L as $x) {
+    if (($x['stage'] ?? '') === '취소') continue;
+    $mq = substr((string)($x['made'] ?? ''), 0, 7); if ($mq !== '') { $mon[$mq]['q'] = ($mon[$mq]['q'] ?? 0) + 1; $mon[$mq]['qa'] = ($mon[$mq]['qa'] ?? 0) + (int)($x['total'] ?? 0); }
+    $mp = substr((string)($x['paid'] ?? ''), 0, 7); if ($mp !== '') { $mon[$mp]['n'] = ($mon[$mp]['n'] ?? 0) + 1; $mon[$mp]['s'] = ($mon[$mp]['s'] ?? 0) + (int)($x['supply'] ?? 0) + (int)($x['ship'] ?? 0); $mon[$mp]['v'] = ($mon[$mp]['v'] ?? 0) + (int)($x['vat'] ?? 0); }
+  }
+  krsort($mon);
+  $mrows = ''; foreach ($mon as $m => $v) $mrows .= '<tr><td>' . eco_h($m) . '</td><td style="text-align:right">' . (int)($v['q'] ?? 0) . '건 · ' . number_format((int)($v['qa'] ?? 0)) . '원</td><td style="text-align:right">' . (int)($v['n'] ?? 0) . '건</td><td style="text-align:right"><b>' . number_format((int)($v['s'] ?? 0)) . '원</b></td><td style="text-align:right">' . number_format((int)($v['v'] ?? 0)) . '원</td></tr>';
+  $edit = isset($_GET['e'], $L[$_GET['e']]) ? (string)$_GET['e'] : ''; $x = $edit !== '' ? $L[$edit] : ['made' => date('Y-m-d'), 'color' => '1칼라', 'stage' => '견적', 'inq' => eco_cut($_GET['inq'] ?? '', 24), 'company' => eco_cut($_GET['co'] ?? '', 80)];
+  $co = ''; foreach (COLORS as $c => $u) $co .= '<option value="' . eco_h($c) . '"' . (($x['color'] ?? '') === $c ? ' selected' : '') . '>' . eco_h($c) . ' (' . number_format($u) . '원)</option>';
+  $sg = ''; foreach (['견적', '주문 확정', '취소'] as $s) $sg .= '<option' . (($x['stage'] ?? '') === $s ? ' selected' : '') . '>' . eco_h($s) . '</option>';
+  $v = fn(string $k) => eco_h($x[$k] ?? '');
+  $form = '<form method="post" class="inl" style="background:#fff;border:1px solid var(--l);border-radius:10px;padding:10px">' . hid() . '<input type="hidden" name="act" value="led_save"><input type="hidden" name="id" value="' . eco_h($edit) . '">'
+    . '<label>작성일 <input type="date" name="made" value="' . $v('made') . '"></label><label>업체 <input name="company" value="' . $v('company') . '" required maxlength="80"></label><label>문의 번호 <input name="inq" value="' . $v('inq') . '" placeholder="Q…(선택)" maxlength="24" style="width:170px"></label>'
+    . '<label>단계 <select name="stage">' . $sg . '</select></label><label>색상 <select name="color">' . $co . '</select></label><label>수량 <input type="number" name="qty" min="0" value="' . (int)($x['qty'] ?? 0) . '" style="width:100px"></label>'
+    . '<label>단가 <input type="number" name="unit" min="0" value="' . (((int)($x['unit'] ?? 0)) ?: '') . '" placeholder="비우면 색상 단가" style="width:100px"></label><label>공급가 <input type="number" name="supply" min="0" value="' . (((int)($x['supply'] ?? 0)) ?: '') . '" placeholder="비우면 수량×단가" style="width:120px"></label>'
+    . '<label>배송비 <input type="number" name="ship" min="0" value="' . (int)($x['ship'] ?? 0) . '" style="width:100px"></label><label>입금일 <input type="date" name="paid" value="' . $v('paid') . '"></label><label>출고일 <input type="date" name="shipped" value="' . $v('shipped') . '"></label>'
+    . '<label><input type="checkbox" name="tax" value="1"' . (!empty($x['tax']) ? ' checked' : '') . '> 세금계산서 발행</label><label>메모 <input name="note" value="' . $v('note') . '" maxlength="200"></label>'
+    . '<button>' . ($edit !== '' ? '고쳐 저장' : '장부에 넣기') . '</button>' . ($edit !== '' ? ' <a href="?f=ledger">새로 쓰기</a>' : '') . '</form><p class="note">공급가를 비우면 수량×단가, 단가를 비우면 색상 단가(1칼라 1,000원 · 2칼라 1,200원). 부가세는 (공급가+배송비)의 10%로 계산합니다. 계좌번호는 여기에 적지 않습니다.</p>';
+  $rows = '';
+  foreach ($L as $id => $y) {
+    $rows .= '<tr><td>' . eco_h($id) . '<br><span class="note">' . eco_h($y['made'] ?? '') . '</span></td><td><b>' . eco_h($y['company'] ?? '') . '</b>' . (($y['inq'] ?? '') !== '' ? '<br><span class="note">' . eco_h($y['inq']) . '</span>' : '') . '</td>'
+      . '<td>' . eco_h($y['stage'] ?? '') . '</td><td>' . eco_h($y['color'] ?? '') . ' ' . number_format((int)($y['qty'] ?? 0)) . '개 × ' . number_format((int)($y['unit'] ?? 0)) . '</td>'
+      . '<td style="text-align:right">' . number_format((int)($y['supply'] ?? 0) + (int)($y['ship'] ?? 0)) . '<br><span class="note">부가세 ' . number_format((int)($y['vat'] ?? 0)) . '</span></td><td style="text-align:right"><b>' . number_format((int)($y['total'] ?? 0)) . '</b></td>'
+      . '<td class="note">입금 ' . eco_h(($y['paid'] ?? '') ?: '-') . '<br>출고 ' . eco_h(($y['shipped'] ?? '') ?: '-') . '<br>계산서 ' . (!empty($y['tax']) ? '발행' : '-') . '</td>'
+      . '<td><a href="?f=ledger&e=' . eco_h(rawurlencode($id)) . '">고치기</a><form method="post" class="inl" style="margin-top:4px">' . hid() . '<input type="hidden" name="act" value="led_del"><input type="hidden" name="id" value="' . eco_h($id) . '"><label class="note"><input type="checkbox" name="yes" value="1" required> 지우기 확인</label><button style="background:#9a3d10">지우기</button></form></td></tr>';
+  }
+  $tabsL = '<p class="tabs"><a href="?f=today">오늘</a><a href="?f=inbox">문의함</a><a href="?f=ledger" class="on">견적·주문 장부</a><a href="?out=1">나가기</a></p>';
+  page('장부', '<h1>에코레버 관리</h1>' . $tabsL . $M . '<h2>' . ($edit !== '' ? '장부 고치기' : '새 견적·주문') . '</h2>' . $form
+    . '<h2>월 합계</h2><div class="wrap"><table><tr><th>월</th><th>견적(작성일 기준, 취소 제외)</th><th>입금 건수</th><th>매출 공급가(입금일 기준)</th><th>부가세</th></tr>' . ($mrows ?: '<tr><td colspan="5">아직 없음</td></tr>') . '</table></div>'
+    . '<h2>장부 <a class="note" href="?f=ledger&csv=1">CSV 내려받기</a></h2><div class="wrap"><table><tr><th>번호</th><th>업체</th><th>단계</th><th>품목</th><th>공급가(배송 포함)</th><th>합계</th><th>입금·출고·계산서</th><th></th></tr>' . ($rows ?: '<tr><td colspan="8">아직 없음 — 첫 매출 기록이 여기에 남습니다.</td></tr>') . '</table></div>');
 }
 
 $R = eco_rows('inquiry');
@@ -103,7 +176,7 @@ if ($f === 'inbox' && isset($_GET['csv'])) {
   exit;
 }
 
-$tabs = '<p class="tabs"><a href="?f=today"' . ($f === 'today' ? ' class="on"' : '') . '>오늘</a><a href="?f=inbox"' . ($f === 'inbox' ? ' class="on"' : '') . '>문의함</a><span class="note">견적·주문 장부와 방문 리포트는 다음 단계에서 붙습니다</span><a href="?out=1">나가기</a></p>';
+$tabs = '<p class="tabs"><a href="?f=today"' . ($f === 'today' ? ' class="on"' : '') . '>오늘</a><a href="?f=inbox"' . ($f === 'inbox' ? ' class="on"' : '') . '>문의함</a><a href="?f=ledger">견적·주문 장부</a><a href="?out=1">나가기</a></p>';
 $H = '<h1>에코레버 관리</h1>' . $tabs . $M;
 
 if ($f === 'today') {
@@ -144,7 +217,8 @@ foreach ($R as $r) {
   $rows .= '<tr id="' . eco_h($id) . '"><td>' . eco_h($id) . '<br><span class="note">' . eco_h(substr((string)($r['at'] ?? ''), 0, 16)) . '</span>' . (($cur['st'] ?? '접수') === '접수' ? '<br><span class="badge new">미처리</span>' : '') . '</td><td>' . $info . '</td>'
     . '<td><form method="post" class="inl">' . hid() . '<input type="hidden" name="act" value="stage"><input type="hidden" name="id" value="' . eco_h($id) . '"><select name="st">' . $opts . '</select>'
     . '<input name="note" value="' . eco_h($cur['note'] ?? '') . '" placeholder="메모 (예: 견적서 ECO-20261127-01 보냄)" maxlength="300"><button>저장</button></form>'
-    . ($log !== '' ? '<details><summary class="note">기록</summary><div class="note">' . $log . '</div></details>' : '') . '</td></tr>';
+    . ($log !== '' ? '<details><summary class="note">기록</summary><div class="note">' . $log . '</div></details>' : '')
+    . '<a class="note" href="?f=ledger&inq=' . eco_h(rawurlencode($id)) . '&co=' . eco_h(rawurlencode((string)($r['company'] ?? ''))) . '">→ 장부에 견적 쓰기</a></td></tr>';
 }
 $filt = '<form method="get" class="inl"><input type="hidden" name="f" value="inbox"><input name="q" value="' . eco_h($q) . '" placeholder="회사·담당자·연락처 검색"><select name="st"><option value="">모든 단계</option>';
 foreach (STEPS as $s) $filt .= '<option' . ($only === $s ? ' selected' : '') . '>' . eco_h($s) . '</option>';
