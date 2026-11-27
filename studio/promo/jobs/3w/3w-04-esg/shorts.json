@@ -1,0 +1,115 @@
+{
+  "track": "3w-04-esg",
+  "source": "brand-facts.md · brand-facts.md 가격(대표님 11/17)",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "ESG 보고서 근거,\n성적서 있나요?",
+      "image": "../../../assets/ecolever/doc-fiti-test.jpg",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 2
+    },
+    {
+      "text": "FITI 혼용률\n면 85.2% · 황마 10.9%",
+      "image": "../../../assets/ecolever/photo/1color-eco-flat.jpg",
+      "fit": "cover",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "sub": "레이온 3.9% · 합성섬유 혼용 없음"
+    },
+    {
+      "text": "'친환경' 문구 대신\n숫자로 말하기",
+      "image": "../../../assets/ecolever/photo/blog-224446897489-05.jpg",
+      "fit": "cover",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 1,
+      "sub": "시험성적서 사본을 드립니다"
+    },
+    {
+      "text": "로고 인쇄는 10,000개부터",
+      "image": "../../../assets/ecolever/photo/blog-224427148917-03.jpg",
+      "fit": "cover",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "sub": "소량은 인쇄 없이 50개부터"
+    }
+  ],
+  "outro": "견적·자료 문의",
+  "outro_sub": "ecolever.co.kr · 02-6368-9989",
+  "card": {
+    "bg": [
+      "#1F2A21",
+      "#1F2A21"
+    ],
+    "bgStyle": "solid",
+    "color": "#EFE9DC"
+  },
+  "logo": {
+    "image": "../../../assets/ecolever/symbol-ecolever-light.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/ecolever/qr-instagram.png",
+    "text": "QR · 인스타그램",
+    "size": 0.2
+  },
+  "music": {
+    "style": "acoustic",
+    "meter": "4/4",
+    "bpm": 88,
+    "seed": 3104
+  },
+  "upload": {
+    "title": "ESG 보고서 근거, 성적서 있나요? | 면·황마 혼방 에코백",
+    "hashtags": [
+      "ESG",
+      "ESG굿즈",
+      "친환경굿즈",
+      "시험성적서",
+      "에코레버"
+    ],
+    "link": "https://www.ecolever.co.kr/?utm_source=youtube&utm_medium=social&utm_campaign=3w-04-esg",
+    "source": "brand-facts.md · 음악: 영상뚝딱 자체 작곡"
+  },
+  "footer": "(주)알앤케이그린월드",
+  "aspect": "9:16",
+  "platform": "shorts",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 9.5,
+    "name": "3w-04-esg-shorts"
+  }
+}
