@@ -124,7 +124,7 @@ FOOT = """
         <a href="/#process">주문절차</a>
         <a href="/#faq">자주 묻는 질문</a>
         <a href="/guide/">에코백 대량 구매 가이드</a>
-        <a href="https://www.gmadang.com/" rel="noopener">계열 서비스 · 지마당(서울 동네 신문)</a>
+        <a href="https://www.gmadang.com/" rel="noopener">계열 서비스 · 지마당(서울 동네 소식지 · 시범 운영 중)</a>
       </nav>
       <div class="footer-col">
         <h5>고객센터</h5>
@@ -206,7 +206,7 @@ def main():
             "",
             "## 운영사·계열 서비스",
             "- 운영사: (주)알앤케이그린월드 (여성기업, 서울특별시 동작구 성대로25길 11, 대표이사 김국화, 사업자등록번호 522-87-02135) — [회사 소개](https://www.gmadang.com/rnk/)",
-            "- [지마당](https://www.gmadang.com/): 서울 25개 구 구정소식 동네 신문 (같은 운영사)",
+            "- [지마당](https://www.gmadang.com/): 서울 25개 구 구정소식 동네 소식지 · 시범 운영 중 (같은 운영사)",
             "- [더블유 STUDY & SEMINAR SPACE](https://www.gmadang.com/w/): 서울 동작구 상도동 공간대여 (같은 운영사)",
             "",
             "## 용도별 안내"] + [f"- [{t}]({SITE}/guide/{u}.html): {d}" for u, t, d in USES] + ["", "## 구매 가이드"] + [f"- [{m['title']}]({SITE}/guide/{m['slug']}.html): {m['description']}" for m in posts]
