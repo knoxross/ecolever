@@ -6,7 +6,7 @@
   "scenes": [
     {
       "text": "공공기관 행사 에코백,\n어디서부터 볼까요?",
-      "image": "../../../assets/ecolever/product-1color.jpg",
+      "image": "../../../assets/ecolever/photo/blog-224446897489-06.jpg",
       "fit": "cover",
       "motion": "zoomIn",
       "font": "serif",
@@ -17,11 +17,6 @@
       "duration": 3.2,
       "transition": "none",
       "energy": 1,
-      "focus": {
-        "s": 2.3,
-        "x": 0.15,
-        "y": 0.95
-      },
       "textBox": {
         "opacity": 0.92
       }
@@ -65,7 +60,7 @@
     },
     {
       "text": "여성기업 제품 구매 목표\n물품·용역 5% 이상",
-      "image": "../../../assets/ecolever/product-2color.jpg",
+      "image": "../../../assets/ecolever/photo/blog-224363122105-06.jpg",
       "fit": "cover",
       "motion": "panLeft",
       "font": "serif",
@@ -76,11 +71,6 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 2,
-      "focus": {
-        "s": 2.3,
-        "x": -0.3,
-        "y": -0.4
-      },
       "textBox": {
         "opacity": 0.92
       },
@@ -106,7 +96,7 @@
     },
     {
       "text": "견적서 · 세금계산서 발행",
-      "image": "../../../assets/ecolever/product-1color.jpg",
+      "image": "../../../assets/ecolever/photo/1color-eco-flat.jpg",
       "fit": "cover",
       "motion": "panRight",
       "font": "serif",
@@ -117,11 +107,6 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 2,
-      "focus": {
-        "s": 2.6,
-        "x": 0.55,
-        "y": 0.95
-      },
       "textBox": {
         "opacity": 0.92
       },
