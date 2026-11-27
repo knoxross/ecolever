@@ -1,0 +1,115 @@
+{
+  "track": "3w-01-hospital",
+  "source": "brand-facts.md · brand-facts.md 가격(대표님 11/17)",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "병원 행사 기념품,\n매일 쓰실 걸로?",
+      "image": "../../../assets/ecolever/photo/blog-224466104854-08.png",
+      "fit": "cover",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 2
+    },
+    {
+      "text": "장바구니처럼\n매일 드는 가방",
+      "image": "../../../assets/ecolever/photo/blog-224466104854-10.png",
+      "fit": "cover",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 1,
+      "sub": "면·황마 혼방 · 40×37cm"
+    },
+    {
+      "text": "로고 인쇄 없이 50개부터",
+      "image": "../../../assets/ecolever/photo/blog-224427148917-06.jpg",
+      "fit": "cover",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "sub": "1칼라 장당 1,000원 · 부가세 별도"
+    },
+    {
+      "text": "견적서 · 세금계산서 발행",
+      "image": "../../../assets/ecolever/doc-women-business-blur.jpg",
+      "fit": "blur",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "sub": "여성기업 확인서 · FITI 시험성적서"
+    }
+  ],
+  "outro": "견적·자료 문의",
+  "outro_sub": "ecolever.co.kr · 02-6368-9989",
+  "card": {
+    "bg": [
+      "#1F2A21",
+      "#1F2A21"
+    ],
+    "bgStyle": "solid",
+    "color": "#EFE9DC"
+  },
+  "logo": {
+    "image": "../../../assets/ecolever/symbol-ecolever-light.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/ecolever/qr-instagram.png",
+    "text": "QR · 인스타그램",
+    "size": 0.2
+  },
+  "music": {
+    "style": "acoustic",
+    "meter": "4/4",
+    "bpm": 88,
+    "seed": 3101
+  },
+  "upload": {
+    "title": "병원 행사 기념품, 매일 쓰실 걸로? | 에코백 50개부터",
+    "hashtags": [
+      "병원행사",
+      "기념품",
+      "에코백",
+      "단체에코백",
+      "에코레버"
+    ],
+    "link": "https://www.ecolever.co.kr/?utm_source=youtube&utm_medium=social&utm_campaign=3w-01-hospital",
+    "source": "brand-facts.md · 음악: 영상뚝딱 자체 작곡"
+  },
+  "footer": "(주)알앤케이그린월드",
+  "aspect": "9:16",
+  "platform": "shorts",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 9.5,
+    "name": "3w-01-hospital-shorts"
+  }
+}

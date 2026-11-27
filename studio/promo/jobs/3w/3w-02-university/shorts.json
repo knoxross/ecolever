@@ -1,0 +1,115 @@
+{
+  "track": "3w-02-university",
+  "source": "brand-facts.md · brand-facts.md 가격(대표님 11/17)",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "학생회비로 50개,\n얼마일까요?",
+      "image": "../../../assets/ecolever/photo/blog-224446897489-02.jpg",
+      "fit": "cover",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 2
+    },
+    {
+      "text": "전공책이 들어가는\n40×37cm",
+      "image": "../../../assets/ecolever/photo/blog-224328257497-06.jpg",
+      "fit": "cover",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 1,
+      "sub": "손잡이 40cm · 약 70g"
+    },
+    {
+      "text": "1칼라 50개\n부가세 포함 55,000원",
+      "image": "../../../assets/ecolever/photo/blog-224427148917-04.jpg",
+      "fit": "cover",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "sub": "장당 1,000원 · 부가세 별도"
+    },
+    {
+      "text": "견적서 · 세금계산서로\n깔끔하게 정산",
+      "image": "../../../assets/ecolever/photo/blog-224446897489-06.jpg",
+      "fit": "cover",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "sub": "문의 한 번이면 됩니다"
+    }
+  ],
+  "outro": "견적·자료 문의",
+  "outro_sub": "ecolever.co.kr · 02-6368-9989",
+  "card": {
+    "bg": [
+      "#1F2A21",
+      "#1F2A21"
+    ],
+    "bgStyle": "solid",
+    "color": "#EFE9DC"
+  },
+  "logo": {
+    "image": "../../../assets/ecolever/symbol-ecolever-light.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/ecolever/qr-instagram.png",
+    "text": "QR · 인스타그램",
+    "size": 0.2
+  },
+  "music": {
+    "style": "acoustic",
+    "meter": "4/4",
+    "bpm": 88,
+    "seed": 3102
+  },
+  "upload": {
+    "title": "학생회비로 에코백 50개, 얼마일까요? | 1칼라 55,000원(부가세 포함)",
+    "hashtags": [
+      "대학굿즈",
+      "학생회",
+      "과잠대신",
+      "에코백",
+      "에코레버"
+    ],
+    "link": "https://www.ecolever.co.kr/?utm_source=youtube&utm_medium=social&utm_campaign=3w-02-university",
+    "source": "brand-facts.md · 음악: 영상뚝딱 자체 작곡"
+  },
+  "footer": "(주)알앤케이그린월드",
+  "aspect": "9:16",
+  "platform": "shorts",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 9.5,
+    "name": "3w-02-university-shorts"
+  }
+}
