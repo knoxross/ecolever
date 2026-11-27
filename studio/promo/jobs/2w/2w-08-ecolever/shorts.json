@@ -5,8 +5,8 @@
   "emoji": false,
   "scenes": [
     {
-      "text": "에코백 50장,\n얼마일까요?",
-      "image": "../../../assets/ecolever/product-1color.jpg",
+      "text": "에코백 50개,\n5만 원대면 끝?",
+      "image": "../../../assets/ecolever/photo/blog-224376716923-06.jpg",
       "fit": "cover",
       "motion": "zoomIn",
       "font": "serif",
@@ -16,16 +16,11 @@
       "textAnim": "fade",
       "duration": 3.2,
       "transition": "none",
-      "energy": 2,
-      "focus": {
-        "s": 2.3,
-        "x": 0.15,
-        "y": 0.95
-      }
+      "energy": 2
     },
     {
       "text": "1칼라 장당 1,000원",
-      "image": "../../../assets/ecolever/product-1color.jpg",
+      "image": "../../../assets/ecolever/photo/blog-224404699142-07.jpg",
       "fit": "blur",
       "motion": "zoomOut",
       "font": "serif",
@@ -40,7 +35,7 @@
     },
     {
       "text": "2칼라 장당 1,200원",
-      "image": "../../../assets/ecolever/product-2color.jpg",
+      "image": "../../../assets/ecolever/photo/blog-224397594394-07.jpg",
       "fit": "blur",
       "motion": "zoomIn",
       "font": "serif",
@@ -55,7 +50,7 @@
     },
     {
       "text": "1칼라 50장이면\n부가세 포함 55,000원",
-      "image": "../../../assets/ecolever/product-1color.jpg",
+      "image": "../../../assets/ecolever/photo/blog-224427148917-03.jpg",
       "fit": "cover",
       "motion": "panRight",
       "font": "serif",
@@ -66,16 +61,11 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 3,
-      "focus": {
-        "s": 2.6,
-        "x": 0.55,
-        "y": 0.95
-      },
       "sub": "수량과 관계없이 같은 장당 가격"
     },
     {
       "text": "견적서 · 세금계산서 발행",
-      "image": "../../../assets/ecolever/product-2color.jpg",
+      "image": "../../../assets/ecolever/photo/blog-224427148917-07.jpg",
       "fit": "cover",
       "motion": "panLeft",
       "font": "serif",
@@ -86,11 +76,6 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 2,
-      "focus": {
-        "s": 2.3,
-        "x": -0.3,
-        "y": -0.4
-      },
       "sub": "40×37cm · 약 70g"
     }
   ],
@@ -121,7 +106,7 @@
     "seed": 2708
   },
   "upload": {
-    "title": "에코백 50장, 얼마예요? | 장당 1,000원부터(부가세 별도)",
+    "title": "에코백 50개, 5만 원대면 끝? | 장당 1,000원(부가세 별도)",
     "hashtags": [
       "에코백",
       "단체에코백",

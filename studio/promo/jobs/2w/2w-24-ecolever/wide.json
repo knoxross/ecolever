@@ -5,8 +5,8 @@
   "emoji": false,
   "scenes": [
     {
-      "text": "판촉물,\n서랍 말고 가방으로",
-      "image": "../../../assets/ecolever/product-2color.jpg",
+      "text": "사내 행사 기념품,\n받자마자 서랍행?",
+      "image": "../../../assets/ecolever/photo/blog-224328257497-07.jpg",
       "fit": "cover",
       "motion": "zoomIn",
       "font": "serif",
@@ -17,11 +17,6 @@
       "duration": 3.2,
       "transition": "none",
       "energy": 1,
-      "focus": {
-        "s": 2.3,
-        "x": -0.3,
-        "y": -0.4
-      },
       "textBox": {
         "opacity": 0.92
       }
@@ -47,7 +42,7 @@
     },
     {
       "text": "회사 로고 인쇄는\n10,000개부터",
-      "image": "../../../assets/ecolever/product-1color.jpg",
+      "image": "../../../assets/ecolever/photo/blog-224466104854-09.png",
       "fit": "blur",
       "motion": "zoomIn",
       "font": "serif",
@@ -65,7 +60,7 @@
     },
     {
       "text": "ESG 보고에 붙일 근거",
-      "image": "../../../assets/ecolever/doc-fiti-test.jpg",
+      "image": "../../../assets/ecolever/photo/blog-224427148917-08.jpg",
       "fit": "blur",
       "motion": "zoomOut",
       "font": "serif",
@@ -83,7 +78,7 @@
     },
     {
       "text": "처음엔 소량으로 반응 보고,\n다음 행사에서 로고 인쇄로",
-      "image": "../../../assets/ecolever/product-1color.jpg",
+      "image": "../../../assets/ecolever/photo/blog-224446897489-03.jpg",
       "fit": "cover",
       "motion": "panRight",
       "font": "serif",
@@ -94,11 +89,6 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 3,
-      "focus": {
-        "s": 2.6,
-        "x": 0.55,
-        "y": 0.95
-      },
       "textBox": {
         "opacity": 0.92
       }
