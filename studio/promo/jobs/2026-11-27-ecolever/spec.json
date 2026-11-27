@@ -1,0 +1,167 @@
+{
+  "brand": "ecolever",
+  "topic": "대학 학과·동아리·학생회 단체 에코백 — 로고 인쇄 없이 50개부터",
+  "trend": "새 학기 준비 시즌(12~2월 신입생 행사 준비) · 실물 클로즈업 무드형 · 자막만",
+  "source": "brand-facts.md · 에코레버 구매 가이드(대학 단체 에코백)",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "새내기 웰컴 굿즈,\n아직 못 정했다면",
+      "image": "../../assets/ecolever/product-1color.jpg",
+      "fit": "cover",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 1,
+      "textBox": {
+        "opacity": 0.92
+      },
+      "focus": {
+        "s": 2.3,
+        "x": 0.15,
+        "y": 0.95
+      }
+    },
+    {
+      "text": "학과·동아리·학생회\n단체 에코백",
+      "image": "../../assets/ecolever/product-2color.jpg",
+      "fit": "cover",
+      "motion": "panLeft",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92
+      },
+      "focus": {
+        "s": 2.3,
+        "x": -0.3,
+        "y": -0.4
+      }
+    },
+    {
+      "text": "로고 인쇄 없이 50개부터",
+      "image": "../../assets/ecolever/product-1color.jpg",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92
+      },
+      "sub": "1칼라 1,000원 · 2칼라 1,200원(부가세 별도)"
+    },
+    {
+      "text": "전공책이 들어가는\n40×37cm",
+      "image": "../../assets/ecolever/product-2color.jpg",
+      "fit": "cover",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92
+      },
+      "sub": "손잡이 40cm · 약 70g"
+    },
+    {
+      "text": "학생회비 정산도 깔끔하게",
+      "image": "../../assets/ecolever/product-1color.jpg",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "textBox": {
+        "opacity": 0.92
+      },
+      "sub": "견적서·세금계산서 발행"
+    },
+    {
+      "text": "제품 사진·시험성적서\n바로 보내 드립니다",
+      "image": "../../assets/ecolever/doc-fiti-test.jpg",
+      "fit": "blur",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "textBox": {
+        "opacity": 0.92,
+        "dim": 0.4
+      },
+      "sub": "FITI 면 85.2% · 황마 10.9% · 레이온 3.9%"
+    }
+  ],
+  "outro": "견적·자료 문의",
+  "outro_sub": "ecolever.co.kr · 02-6368-9989",
+  "card": {
+    "bg": [
+      "#1F2A21",
+      "#1F2A21"
+    ],
+    "bgStyle": "solid",
+    "color": "#EFE9DC"
+  },
+  "logo": {
+    "image": "../../assets/ecolever/symbol-ecolever-light.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../assets/ecolever/qr-instagram.png",
+    "text": "QR · 인스타그램",
+    "size": 0.2
+  },
+  "music": {
+    "style": "calm",
+    "meter": "4/4",
+    "bpm": 82,
+    "seed": 1127
+  },
+  "upload": {
+    "title": "대학 학과·동아리 단체 에코백, 50개부터",
+    "hashtags": [
+      "에코백",
+      "단체에코백",
+      "대학굿즈",
+      "동아리굿즈",
+      "새내기",
+      "에코레버"
+    ],
+    "link": "https://www.ecolever.co.kr/guide/university-club-eco-bag.html?utm_source=youtube&utm_medium=shorts&utm_campaign=univ1127",
+    "source": "에코레버 구매 가이드 · 음악: 영상뚝딱 자체 작곡"
+  },
+  "concept": "대학 단체"
+}

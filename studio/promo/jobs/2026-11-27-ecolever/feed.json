@@ -1,0 +1,26 @@
+{
+  "ok": true,
+  "app": "영상뚝딱",
+  "version": "2.3.2",
+  "made_at": "2026-11-27T01:06:05.882Z",
+  "file": "2026-11-27-ecolever-feed.mp4",
+  "size_bytes": 8287296,
+  "width": 1080,
+  "height": 1350,
+  "duration": 19.78,
+  "codecs": "H.264 + Opus",
+  "qa": {
+    "ok": true,
+    "checked": 7,
+    "issues": []
+  },
+  "summary": " · 장면 7개 · 19.8초 · 음악 박자(82BPM)에 맞춤 · 🎼 4/4박자 82BPM 영상 맞춤 작곡(1→2→2→2→2→3→3)",
+  "warnings": [],
+  "upload": {
+    "title": "대학 학과·동아리 단체 에코백, 50개부터",
+    "description": "새내기 웰컴 굿즈,\n아직 못 정했다면 · 학과·동아리·학생회\n단체 에코백 · 로고 인쇄 없이 50개부터 · 전공책이 들어가는\n40×37cm · 학생회비 정산도 깔끔하게 · 제품 사진·시험성적서\n바로 보내 드립니다\n견적·자료 문의\nhttps://www.ecolever.co.kr/guide/university-club-eco-bag.html?utm_source=youtube&utm_medium=shorts&utm_campaign=univ1127\n출처: 에코레버 구매 가이드 · 음악: 영상뚝딱 자체 작곡",
+    "hashtags": "#에코백 #단체에코백 #대학굿즈 #동아리굿즈 #새내기 #에코레버"
+  },
+  "request": "feed.json",
+  "path": "/home/user/ecolever-vid/deliver/promo/2026-11-27-ecolever/2026-11-27-ecolever-feed.mp4"
+}
