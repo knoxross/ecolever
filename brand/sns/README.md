@@ -7,7 +7,7 @@
 |---|---|---|---|
 | 인스타그램 | evanross0928 | ecolever.official | https://www.ecolever.co.kr/?utm_source=instagram&utm_medium=social&utm_campaign=profile |
 | 틱톡 | rnkr10 | ecolever | https://www.ecolever.co.kr/?utm_source=tiktok&utm_medium=social&utm_campaign=profile |
-| 유튜브 | @RNK-u9h | @ecolever | https://www.ecolever.co.kr/?utm_source=youtube&utm_medium=social&utm_campaign=profile |
+| 유튜브 | @ecolever (11/27 변경 완료, 옛 @RNK-u9h는 14일간 이동) | @ecolever | https://www.ecolever.co.kr/?utm_source=youtube&utm_medium=social&utm_campaign=profile |
 | 네이버 블로그 | rknox (주소는 그대로) | 블로그명 '에코레버 ECOLEVER' | https://www.ecolever.co.kr/?utm_source=naverblog&utm_medium=social&utm_campaign=profile |
 
 링크 끝의 utm 값은 GA4에서 어느 SNS로 들어왔는지 보려고 붙였습니다.
