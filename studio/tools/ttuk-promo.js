@@ -73,7 +73,18 @@ const mmdd = (slug.match(/\d{4}-(\d{2})-(\d{2})/) || []).slice(1).join('') || St
 const baseLink = (spec.upload && spec.upload.link) || brand.site || '';
 const PL = { youtube: 'yt', instagram: 'ig', threads: 'th', naver: 'nb', tiktok: 'tt' };
 const linkFor = pf => {
-  if (!baseLink || /[?&](utm_|src=)/.test(baseLink)) return baseLink;
+  if (!baseLink) return baseLink;
+  // spec 링크에 utm_source가 이미 있어도 플랫폼별로 바꿔 씀(유입 경로가 한 플랫폼으로 섞이지 않게). utm_campaign·src는 spec 값 유지.
+  if (/[?&]utm_/.test(baseLink) && !/[?&]src=/.test(baseLink) && spec.brand !== 'gmadang') {
+    try {
+      const u = new URL(baseLink);
+      u.searchParams.set('utm_source', pf);
+      u.searchParams.set('utm_medium', pf === 'youtube' ? 'shorts' : 'social');
+      if (!u.searchParams.get('utm_campaign')) u.searchParams.set('utm_campaign', `${mmdd}-${spec.brand}`);
+      return u.toString();
+    } catch (e) { return baseLink; }
+  }
+  if (/[?&](utm_|src=)/.test(baseLink)) return baseLink;
   const j = baseLink.includes('?') ? '&' : '?';
   return spec.brand === 'gmadang' ? `${baseLink}${j}src=video-${mmdd}-${PL[pf]}` : `${baseLink}${j}utm_source=${pf}&utm_medium=social&utm_campaign=${mmdd}-${spec.brand}`;
 };
