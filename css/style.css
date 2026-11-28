@@ -466,3 +466,100 @@ a{color:inherit;}
 .size-cap{caption-side:top;text-align:left;font-weight:800;font-size:15px;padding:0 0 8px}
 .size-cap small{font-weight:400;color:var(--body);font-size:12px;margin-left:6px}
 @media (max-width:600px){.size-table th,.size-table td{white-space:normal;padding:9px 8px;font-size:12.5px}}
+
+/* ==== 랜딩 고도화 2026-11-28 (줄간격·여백 통일, 첫 화면 후킹, 왜 주트인가) ==== */
+.section-lead{font-size:16px;line-height:1.7;}
+.section-head h2{line-height:1.38;}
+.section-head{margin-bottom:24px;}
+/* 맨 위 안내 띠 (닫으면 다시 안 뜸) */
+.topband{background:var(--moss);color:#fff;font-size:14px;line-height:1.5;}
+.topband-inner{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:9px;padding-bottom:9px;}
+.topband a{color:#fff;font-weight:700;text-decoration:underline;text-underline-offset:3px;}
+.topband-close{flex:none;width:32px;height:32px;border:0;background:none;color:#fff;font-size:22px;line-height:1;cursor:pointer;}
+/* 머리글: 로고·전화 + 메뉴 4개 */
+.masthead{padding:10px 0;}
+.masthead .wrap{flex-direction:row;}
+.masthead-top{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.masthead-tel{font-weight:700;color:var(--moss);text-decoration:none;white-space:nowrap;font-size:15px;}
+.masthead .nav-jump{font-size:15px;gap:28px;}
+/* 첫 화면 */
+.hero2{background:#fff;border-bottom:1px solid var(--line);}
+.hero2-media{position:relative;height:min(78vh,620px);min-height:420px;overflow:hidden;background:#1B211A;}
+.hero2-media img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;}
+.hero2-media::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 35%,rgba(20,24,18,.8) 100%);}
+.hero2-text{position:absolute;left:0;right:0;bottom:22px;z-index:1;color:#fff;}
+.hero2-hook{display:inline-block;font-size:14px;font-weight:700;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.45);padding:3px 12px;border-radius:100px;margin-bottom:10px;}
+.hero2-text h1{font-family:'Gowun Batang',serif;font-size:clamp(28px,7.6vw,46px);line-height:1.3;margin-bottom:8px;color:#fff;}
+.hero2-text p{font-size:16px;line-height:1.6;opacity:.95;}
+.hero2-bar{padding:16px 0 18px;}
+.hero2-ctas{display:flex;gap:10px;}
+.hero2-ctas .btn{flex:1;text-align:center;max-width:260px;}
+.hero2-badges{list-style:none;display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:14px;font-size:14px;color:var(--body);}
+.hero2-badges li::before{content:'✓ ';color:var(--moss);font-weight:700;}
+/* 왜 주트인가 */
+.jute-layout{display:grid;grid-template-columns:1fr 1.3fr;gap:28px;align-items:start;}
+.jute-photo{margin:0;border-radius:14px;overflow:hidden;aspect-ratio:4/3;}
+.jute-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 60%;}
+.jute-list{list-style:none;counter-reset:j;display:flex;flex-direction:column;gap:10px;}
+.jute-list li{counter-increment:j;position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 16px 14px 56px;}
+.jute-list li::before{content:counter(j);position:absolute;left:14px;top:16px;width:30px;height:30px;border-radius:50%;background:var(--moss-soft);color:var(--moss);font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.jute-list b{display:block;font-size:16.5px;line-height:1.45;margin-bottom:4px;}
+.jute-list p{font-size:15.5px;line-height:1.7;color:var(--body);}
+.jute-list small{display:block;font-size:12.5px;color:var(--taupe);margin-top:6px;}
+/* 가격 */
+.price-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:640px;}
+.price-pair figure{margin:0;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+.price-pair img{width:100%;height:220px;object-fit:contain;background:#fff;}
+.price-pair figcaption{border-top:1px solid var(--line);padding:10px 12px;font-size:13.5px;color:var(--muted);line-height:1.5;}
+.price-pair figcaption b{display:block;font-size:16px;color:var(--ink);}
+.price-spec{font-size:15px;color:var(--body);margin:12px 0 22px;}
+#order-guide{margin-bottom:8px;}
+.order-card{padding:18px 18px;gap:6px;}
+.order-qty{font-size:15px;color:var(--body);}
+.order-qty b{font-family:inherit;font-size:20px;}
+.order-card p{font-size:15px;line-height:1.7;}
+.order-card .link{font-weight:700;color:var(--moss);font-size:15px;}
+.usecase-chip{font-size:14px;}
+.price-pdf{margin-top:4px;}
+/* 서류·절차 */
+.trust-public{font-size:15.5px;line-height:1.7;color:var(--body);background:var(--moss-soft);border-radius:12px;padding:14px 16px;margin:16px 0 22px;}
+.trust-public b{display:block;color:var(--moss);}
+.process b{font-size:15.5px;}
+.process li > span:last-child{font-size:14px;}
+.first-customer{font-size:15px;line-height:1.7;color:var(--body);border:1px dashed var(--line);border-radius:12px;padding:12px 16px;margin-top:6px;}
+/* 영상 1개 + SNS */
+.video-one{display:grid;grid-template-columns:260px 1fr;gap:28px;align-items:start;}
+.video-side{display:flex;flex-direction:column;gap:18px;align-items:flex-start;}
+.hashtags{font-size:14px;color:var(--moss);line-height:1.7;}
+/* FAQ 본문 */
+.faq-list details p{font-size:15.5px;line-height:1.7;}
+/* 꼬리말: 2단·14px·줄간 1.6 */
+.site-footer{font-size:14px;line-height:1.6;}
+.footer-links{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;}
+.footer-col a{font-size:14px;}
+.footer-biz span{font-size:13.5px;line-height:1.6;}
+@media (max-width:760px){
+  .section{padding:56px 0;}
+  .section-head h2{font-size:24px;}
+  .masthead{padding:8px 0 0;}
+  .masthead .wrap{flex-direction:column;gap:2px;}
+  .masthead .nav-jump{overflow:visible;display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding-bottom:0;}
+  .masthead .nav-jump a{text-align:center;padding:9px 0;}
+  .hero2-media{height:470px;min-height:0;}
+  .hero2-bar{padding:14px 0 16px;}
+  .jute-layout{grid-template-columns:1fr;gap:16px;}
+  .jute-photo{aspect-ratio:16/9;}
+  .price-pair img{height:170px;}
+  .order-grid{grid-template-columns:1fr;gap:10px;}
+  .video-one{grid-template-columns:1fr;gap:18px;}
+  .video-one .yt{max-width:240px;}
+  .footer-grid{grid-template-columns:1fr;gap:22px;padding-bottom:24px;}
+  .site-footer{padding-top:36px;}
+.hero2-media{height:440px;}  .channel-qr{display:none;}  .channel-grid{grid-template-columns:repeat(2,1fr);gap:10px;width:100%;}  .channel-tile{width:auto;flex-direction:row;justify-content:space-between;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff;}  .channel-label{text-align:left;}  .inquiry-aside ul,.inquiry-aside h4{display:none;}  .inquiry-aside{padding:14px 16px;}  .footer-brand .btn{display:none;}  .mobile-cta.cta-wait{transform:translateY(110%);}  .mobile-cta{transition:transform .2s ease;}
+.process{gap:8px;}  .process li{padding:10px 14px;flex-wrap:nowrap;align-items:baseline;}  .process li > span:last-child{flex-basis:auto;}  .process b{flex:none;}  .pnum{width:24px;height:24px;font-size:12px;flex:none;align-self:center;}  .usecase-chip{padding:8px 8px;font-size:13.5px;}
+}
+@media (max-width:340px){
+  .hero2-ctas .btn{padding-left:8px;padding-right:8px;font-size:15px;}
+  .masthead-tel{font-size:14px;}
+}
+@media (min-width:761px){.footer-links{grid-template-columns:1fr;}}
