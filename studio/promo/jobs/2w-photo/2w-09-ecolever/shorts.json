@@ -6,7 +6,7 @@
   "scenes": [
     {
       "text": "송년회 기념품,\n어떤 색이 맞을까요?",
-      "image": "../../../assets/ecolever/photo/blog-224446897489-02.jpg",
+      "image": "../../../assets/ecolever/photo/blog-224397594394-07.jpg",
       "fit": "cover",
       "motion": "zoomIn",
       "font": "serif",
@@ -20,8 +20,8 @@
     },
     {
       "text": "1칼라 · 크림톤에\n큰 ECO 기본 디자인",
-      "image": "../../../assets/ecolever/photo/blog-224466104854-09.png",
-      "fit": "cover",
+      "image": "../../../assets/ecolever/product-1color.jpg",
+      "fit": "blur",
       "motion": "zoomOut",
       "font": "serif",
       "textBg": true,
@@ -35,8 +35,8 @@
     },
     {
       "text": "2칼라 · 그레이·크림 투톤",
-      "image": "../../../assets/ecolever/photo/2color-stripe.jpg",
-      "fit": "cover",
+      "image": "../../../assets/ecolever/product-2color.jpg",
+      "fit": "blur",
       "motion": "zoomIn",
       "font": "serif",
       "textBg": true,
