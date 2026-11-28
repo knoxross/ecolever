@@ -46,22 +46,7 @@
       "duration": 3.2,
       "transition": "fade",
       "energy": 2,
-      "sub": "통신판매업 신고 완료"
-    },
-    {
-      "text": "원단은 FITI 시험성적서로",
-      "image": "../../../assets/ecolever/doc-fiti-test.jpg",
-      "fit": "blur",
-      "motion": "zoomOut",
-      "font": "serif",
-      "textBg": true,
-      "fontSize": 64,
-      "textPos": "bottom",
-      "textAnim": "fade",
-      "duration": 3.2,
-      "transition": "fade",
-      "energy": 2,
-      "sub": "면 85.2% · 황마 10.9% · 레이온 3.9%"
+      "sub": "원단 근거는 FITI 시험성적서"
     },
     {
       "text": "로고 인쇄 없이 50개부터",
