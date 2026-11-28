@@ -114,7 +114,7 @@ $L = eco_read_json('ledger');                     // {장부 id: {...}} 견적·
 $f = in_array($_GET['f'] ?? 'today', ['today', 'inbox', 'mail', 'ledger', 'visits'], true) ? (string)($_GET['f'] ?? 'today') : 'today';
 const COLORS = ['1칼라' => 1000, '2칼라' => 1200];
 // 방문 집계 읽기(api/pv.php 가 쌓은 것)
-function pv_day(string $d): array { $m = eco_read_json('pv-' . substr($d, 0, 7)); return ($m[$d] ?? []) + ['pv' => 0, 'uv' => 0, 'nv' => 0, 'p' => [], 'r' => [], 'u' => [], 'sc' => [], 'dv' => [], 'h' => []]; }
+function pv_day(string $d): array { $m = eco_read_json('pv-' . substr($d, 0, 7)); return ($m[$d] ?? []) + ['pv' => 0, 'uv' => 0, 'nv' => 0, 'p' => [], 'r' => [], 'u' => [], 'sc' => [], 'dv' => [], 'h' => [], 'ev' => [], 'sd' => []]; }
 // 집계를 시작한 날부터 오늘까지 모두 더한 값(누적). 달마다 파일 하나(pv-YYYY-MM)라 파일 수가 적습니다.
 function pv_total(): array {
   static $T = null; if ($T !== null) return $T;
@@ -147,13 +147,15 @@ function pv_all_days(): array {
 }
 // 여러 날 값을 더함(방문자·신규·페이지·기기·경로)
 function pv_add(array $T, array $x): array {
-  $T += ['uv' => 0, 'nv' => 0, 'pv' => 0, 'dv' => [], 'sc' => [], 'days' => 0];
+  $T += ['uv' => 0, 'nv' => 0, 'pv' => 0, 'dv' => [], 'sc' => [], 'ev' => [], 'days' => 0];
+  foreach ((array)($x['ev'] ?? []) as $k => $v) $T['ev'][$k] = ($T['ev'][$k] ?? 0) + (int)$v;
   $T['uv'] += (int)($x['uv'] ?? 0); $T['nv'] += (int)($x['nv'] ?? 0); $T['pv'] += (int)($x['pv'] ?? 0); $T['days']++;
   foreach ((array)($x['dv'] ?? []) as $k => $v) $T['dv'][$k] = ($T['dv'][$k] ?? 0) + (int)$v;
   foreach ((array)($x['sc'] ?? []) as $k => $v) $T['sc'][$k] = ($T['sc'][$k] ?? 0) + (int)$v;
   return $T;
 }
 const SRC = ['youtube' => '유튜브', 'gmadang' => '지마당', 'utm' => '메일·캠페인(utm)', 'search' => '검색', 'sns' => 'SNS·블로그', 'mail' => '웹메일', 'site' => '다른 사이트', 'direct' => '직접'];
+const EVN = ['calc' => '가격 계산', 'pdf' => '가격표 PDF', 'tel' => '전화 버튼', 'mail' => '메일 버튼'];
 function led_date($v): string { $v = (string)$v; return preg_match('/^\d{4}-\d{2}-\d{2}$/', $v) ? $v : ''; }
 $M = isset($_SESSION['msg']) ? '<p class="msg">' . eco_h($_SESSION['msg']) . '</p>' : ''; unset($_SESSION['msg']);
 
@@ -249,80 +251,116 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
   header('Location: admin.php'); exit;
 }
 
-// ---- 방문 리포트 ----
+// ---- 방문 리포트 (11/29 대표님 "쇼핑몰 통계처럼": 카드 4개 → 흐름 → 14일 막대 → 경로 → 많이 본 화면 → 날짜별) ----
 if ($f === 'visits') {
-  $rows = ''; $tp = []; $tr = []; $tu = []; $ts = []; $hr = array_fill(0, 24, 0); $hasH = false; $vals = []; $nvals = [];
   $td = fn($v, bool $b = false): string => '<td style="text-align:right">' . ($b ? '<b>' . $v . '</b>' : $v) . '</td>';
-  for ($i = 0; $i < 30; $i++) { $k = date('Y-m-d', strtotime("-$i day")); $x = pv_day($k); $vals[$k] = (int)$x['uv']; $nvals[$k] = (int)$x['nv'];
-    if ($i < 14) { foreach ($x['p'] as $a => $b) $tp[$a] = ($tp[$a] ?? 0) + (int)$b; foreach ($x['r'] as $a => $b) $tr[$a] = ($tr[$a] ?? 0) + (int)$b; foreach ($x['u'] as $a => $b) $tu[$a] = ($tu[$a] ?? 0) + (int)$b; foreach ($x['sc'] as $a => $b) $ts[$a] = ($ts[$a] ?? 0) + (int)$b;
-      foreach ($x['h'] as $a => $b) { $hr[(int)$a] += (int)$b; $hasH = true; }
-      $uv = (int)$x['uv']; $nv = (int)$x['nv'];
-      $rows .= '<tr><td>' . eco_h($k) . ($i === 0 ? ' (오늘)' : '') . '</td>' . $td($uv, true) . $td($nv) . $td(max(0, $uv - $nv)) . $td((int)($x['dv']['mobile'] ?? 0)) . $td((int)($x['dv']['pc'] ?? 0)) . $td((int)($x['dv']['tablet'] ?? 0)) . $td((int)$x['pv']) . $td($uv > 0 ? round((int)$x['pv'] / $uv, 1) : 0) . '<td class="note">' . eco_h(pv_scline($x['sc'])) . '</td></tr>'; } }
-  // 집계 시작일부터 오늘까지: 날짜별 전체 · 월별 누계
   $AD = pv_all_days(); $MT = []; $GT = [];
   foreach ($AD as $mk => $ds) { $MT[$mk] = []; foreach ($ds as $x) { $MT[$mk] = pv_add($MT[$mk], $x); $GT = pv_add($GT, $x); } }
-  $GT += ['uv' => 0, 'nv' => 0, 'pv' => 0, 'dv' => [], 'sc' => [], 'days' => 0];
-  $csvRow = function (string $k, array $x): array { $r = [$k, (int)$x['uv'], (int)$x['nv'], max(0, (int)$x['uv'] - (int)$x['nv']), (int)$x['pv'], (int)($x['dv']['mobile'] ?? 0), (int)($x['dv']['pc'] ?? 0), (int)($x['dv']['tablet'] ?? 0)]; foreach (array_keys(SRC) as $z) $r[] = (int)($x['sc'][$z] ?? 0); return $r; };
+  $GT += ['uv' => 0, 'nv' => 0, 'pv' => 0, 'dv' => [], 'sc' => [], 'ev' => [], 'days' => 0];
+  $csvRow = function (string $k, array $x): array { $r = [$k, (int)$x['uv'], (int)$x['nv'], max(0, (int)$x['uv'] - (int)$x['nv']), (int)$x['pv'], (int)($x['dv']['mobile'] ?? 0), (int)($x['dv']['pc'] ?? 0), (int)($x['dv']['tablet'] ?? 0)]; foreach (array_keys(SRC) as $z) $r[] = (int)($x['sc'][$z] ?? 0); foreach (array_keys(EVN) as $z) $r[] = (int)($x['ev'][$z] ?? 0); return $r; };
   if (in_array($_GET['csv'] ?? '', ['days', 'months'], true)) { $cm = (string)$_GET['csv'];
     header('Content-Type: text/csv; charset=utf-8'); header('Content-Disposition: attachment; filename="ecolever-visits-' . ($cm === 'days' ? 'daily' : 'monthly') . '-' . date('Ymd') . '.csv"'); echo "\xEF\xBB\xBF"; $o = fopen('php://output', 'w');
-    fputcsv($o, array_merge([$cm === 'days' ? '날짜' : '월', '방문자', '신규', '재방문', '페이지 보기', '모바일', 'PC', '태블릿'], array_values(SRC)));
+    fputcsv($o, array_merge([$cm === 'days' ? '날짜' : '월', '방문자', '신규', '재방문', '페이지 보기', '모바일', 'PC', '태블릿'], array_values(SRC), array_values(EVN)));
     foreach ($AD as $mk => $ds) {
       if ($cm === 'days') { foreach ($ds as $k => $x) fputcsv($o, array_map('csv_safe', $csvRow($k, $x))); fputcsv($o, array_map('csv_safe', $csvRow($mk . ' 소계', $MT[$mk]))); }
       else fputcsv($o, array_map('csv_safe', $csvRow($mk, $MT[$mk]))); }
     fputcsv($o, array_map('csv_safe', $csvRow('누적 합계', $GT)));
     exit; }
-  if (isset($_GET['csv'])) { header('Content-Type: text/csv; charset=utf-8'); header('Content-Disposition: attachment; filename="ecolever-visits-' . date('Ymd') . '.csv"'); echo "\xEF\xBB\xBF"; $o = fopen('php://output', 'w');
-    fputcsv($o, array_merge(['날짜', '방문자', '신규', '재방문', '페이지 보기', '모바일', 'PC', '태블릿'], array_values(SRC)));
-    for ($i = 89; $i >= 0; $i--) { $k = date('Y-m-d', strtotime("-$i day")); $x = pv_day($k); $r = [$k, $x['uv'], $x['nv'], max(0, (int)$x['uv'] - (int)$x['nv']), $x['pv'], $x['dv']['mobile'] ?? 0, $x['dv']['pc'] ?? 0, $x['dv']['tablet'] ?? 0]; foreach (array_keys(SRC) as $z) $r[] = $x['sc'][$z] ?? 0; fputcsv($o, array_map('csv_safe', $r)); }
-    exit; }
-  $TT = pv_total(); $s7 = pv_sum(7); $s30 = pv_sum(30); $dvT = (int)array_sum($s30['dv']);
-  $card = fn(string $l, string $v, string $s = ''): string => '<div class="card"><div class="note">' . eco_h($l) . '</div><div class="v">' . eco_h($v) . '</div>' . ($s !== '' ? '<div class="note">' . eco_h($s) . '</div>' : '') . '</div>';
-  $top = function (array $a, string $lab, ?array $names = null): string { arsort($a); $o = ''; foreach (array_slice($a, 0, 12, true) as $k => $v) $o .= '<tr><td>' . eco_h($names[$k] ?? $k) . '</td><td style="text-align:right">' . (int)$v . '</td></tr>'; return '<div class="wrap"><table><tr><th>' . eco_h($lab) . '</th><th>수</th></tr>' . ($o ?: '<tr><td colspan="2">기록 없음</td></tr>') . '</table></div>'; };
-  // 막대: 전체 높이 = 방문자, 진한 부분 = 신규
-  $bar = function (array $v, array $lab, ?array $dark = null): string { $mx = max(1, max($v)); $o = '<div style="display:flex;align-items:flex-end;gap:2px;height:110px;background:#fff;border:1px solid var(--l);border-radius:10px;padding:8px">';
-    foreach ($v as $i => $n) { $h = (int)round($n * 100 / $mx); $d = $dark !== null && $n > 0 ? (int)round(($dark[$i] ?? 0) * 100 / $n) : 0;
-      $o .= '<div title="' . eco_h($lab[$i] . ' ' . $n . ($dark !== null ? ' (신규 ' . ($dark[$i] ?? 0) . ')' : '')) . '" style="flex:1;height:' . $h . '%;min-height:1px;border-radius:3px 3px 0 0;background:linear-gradient(to top,#2f6b3d ' . $d . '%,#9cc5a4 ' . $d . '%)"></div>'; }
-    return $o . '</div>'; };
-  $vr = array_reverse($vals, true); $nr = array_reverse($nvals, true);
-  $top1 = function (array $sc): string { if (!$sc) return '-'; arsort($sc); $k = (string)array_key_first($sc); return (SRC[$k] ?? $k) . ' ' . (int)$sc[$k]; };
+
+  // 문의: 서버에 저장된 홈페이지 문의(data/inquiry.jsonl.php), 날짜별 건수
+  $IQ = []; foreach (eco_rows('inquiry') as $r) { $k = substr((string)($r['at'] ?? ''), 0, 10); if ($k !== '') $IQ[$k] = ($IQ[$k] ?? 0) + 1; }
+  // 견적·주문: 장부(취소 제외). 견적 = 작성일, 주문 = '주문 확정'
+  $QD = []; $OD = []; foreach ($L as $x) { if (($x['stage'] ?? '') === '취소') continue; $k = (string)($x['made'] ?? ''); if ($k === '') continue; $QD[$k] = ($QD[$k] ?? 0) + 1; if (($x['stage'] ?? '') === '주문 확정') $OD[$k] = ($OD[$k] ?? 0) + 1; }
+  $sumRange = function (array $byDay, string $from, string $to): int { $n = 0; foreach ($byDay as $k => $v) if ($k >= $from && $k <= $to) $n += (int)$v; return $n; };
+  $today = date('Y-m-d'); $yday = date('Y-m-d', strtotime('-1 day'));
+  $wk = date('Y-m-d', strtotime('monday this week'));                    // 이번 주 = 월요일부터 오늘까지
+  $from = $GT['days'] > 0 ? (string)array_key_first(reset($AD) ?: []) : $today;
+  $days = (int)$GT['days'];
+  $evSum = function (string $a, string $b, string $e) use ($AD): int { $n = 0; foreach ($AD as $ds) foreach ($ds as $k => $x) if ($k >= $a && $k <= $b) $n += (int)($x['ev'][$e] ?? 0); return $n; };
+  $uvSum = function (string $a, string $b) use ($AD): int { $n = 0; foreach ($AD as $ds) foreach ($ds as $k => $x) if ($k >= $a && $k <= $b) $n += (int)$x['uv']; return $n; };
+  $evOn = false; foreach ($AD as $ds) foreach ($ds as $x) if (!empty($x['ev'])) $evOn = true;
+
+  $tD = pv_day($today); $yD = pv_day($yday); $tU = (int)$tD['uv']; $yU = (int)$yD['uv'];
+  $diff = $tU - $yU; $arrow = $diff > 0 ? '▲ ' . $diff : ($diff < 0 ? '▼ ' . abs($diff) : '어제와 같음');
+  $big = fn(string $label, string $v, string $sub, string $help): string => '<div class="card"><div class="lbl">' . eco_h($label) . '</div><div class="v">' . eco_h($v) . '</div><div class="sub">' . eco_h($sub) . '</div><div class="note">' . eco_h($help) . '</div></div>';
+  $calcW = $evSum($wk, $today, 'calc'); $pdfW = $evSum($wk, $today, 'pdf'); $telW = $evSum($wk, $today, 'tel'); $iqW = $sumRange($IQ, $wk, $today);
+  $evNote = $evOn ? '' : ' · 11/29부터 기록';
+  $cards = '<div class="cards">'
+    . $big('오늘 방문', $tU . '명', '어제 ' . $yU . '명 · ' . $arrow, '오늘 사이트에 들어온 사람 수(같은 기기는 하루 1명)')
+    . $big('이번 주 문의', $iqW . '건', '월요일(' . substr($wk, 5) . ')부터 오늘까지', '홈페이지 문의서로 들어온 견적 문의')
+    . $big('가격 계산 · 가격표', ($calcW + $pdfW) . '명', '가격 계산 ' . $calcW . ' · 가격표 PDF ' . $pdfW . $evNote, '이번 주 가격을 직접 확인한 사람 수')
+    . $big('전화 버튼', $telW . '명', '이번 주' . $evNote, '휴대폰에서 전화 버튼을 누른 사람 수')
+    . '</div>';
+
+  // 흐름(깔때기): 집계 시작일부터 오늘까지(데이터가 30일보다 길면 최근 30일)
+  $fFrom = $days > 30 ? date('Y-m-d', strtotime('-29 day')) : $from; $fLab = $days > 30 ? '최근 30일' : substr($from, 5) . '부터 오늘까지';
+  $st = [
+    ['방문', $uvSum($fFrom, $today), '사이트에 들어온 사람'],
+    ['가격 확인', $evSum($fFrom, $today, 'calc') + $evSum($fFrom, $today, 'pdf'), '가격 계산 · 가격표 PDF' . ($evOn ? '' : ' (11/29부터 기록)')],
+    ['문의 · 전화', $sumRange($IQ, $fFrom, $today) + $evSum($fFrom, $today, 'tel'), '문의서 ' . $sumRange($IQ, $fFrom, $today) . ' · 전화 버튼 ' . $evSum($fFrom, $today, 'tel')],
+    ['견적', $sumRange($QD, $fFrom, $today), '장부에 적은 견적'],
+    ['주문', $sumRange($OD, $fFrom, $today), "장부 '주문 확정'"],
+  ];
+  $mx = max(1, $st[0][1]); $funnel = '<div class="funnel">'; $prev = null;
+  foreach ($st as $i => [$n, $v, $d]) { $w = max(2, (int)round($v * 100 / $mx));
+    $rate = $prev === null ? '' : ($prev > 0 ? ' · 앞 단계의 ' . round($v * 100 / $prev) . '%' : ' · -');
+    $funnel .= '<div class="fs"><div class="fl"><b>' . ($i + 1) . '. ' . eco_h($n) . '</b> <span class="fv">' . (int)$v . '</span><span class="note">' . eco_h($rate) . '</span></div><div class="fb"><i style="width:' . $w . '%"></i></div><div class="note">' . eco_h($d) . '</div></div>';
+    $prev = $v; }
+  $funnel .= '</div>';
+
+  // 최근 14일 막대: 방문 · 문의
+  $bars = '<div class="bars">'; $bv = []; for ($i = 13; $i >= 0; $i--) { $k = date('Y-m-d', strtotime("-$i day")); $bv[$k] = [(int)pv_day($k)['uv'], (int)($IQ[$k] ?? 0)]; }
+  $bm = max(1, max(array_map(fn($a) => $a[0], $bv)));
+  foreach ($bv as $k => [$v, $q]) { $bars .= '<div class="bc" title="' . eco_h($k . ' 방문 ' . $v . ' · 문의 ' . $q) . '"><div class="bn">' . ($v ?: '') . '</div><div class="bw"><i class="b1" style="height:' . (int)round($v * 100 / $bm) . '%"></i><i class="b2" style="height:' . ($q > 0 ? max(6, (int)round($q * 100 / $bm)) : 0) . '%"></i></div><div class="bd">' . eco_h(substr($k, 8)) . '</div></div>'; }
+  $bars .= '</div><p class="note"><span class="dot d1"></span>방문 <span class="dot d2"></span>문의 · 막대 위 숫자 = 방문 · 아래 = 날짜(일)</p>';
+
+  // 들어온 경로(첫 방문 기준, 14일). 11/29부터는 자세한 경로(sd), 그 전 날은 옛 분류(sc)로 셉니다.
+  $SD = ['mail' => '메일(DM)', 'instagram' => '인스타그램', 'youtube' => '유튜브', 'naver' => '검색 · 네이버', 'google' => '검색 · 구글', 'search_etc' => '검색 · 기타', 'direct' => '직접(주소 입력·즐겨찾기·앱 안 링크)', 'gmadang' => '지마당', 'etc' => '기타(블로그·다른 사이트 등)'];
+  $old2sd = ['utm' => 'mail', 'youtube' => 'youtube', 'gmadang' => 'gmadang', 'search' => 'search_etc', 'sns' => 'etc', 'mail' => 'mail', 'site' => 'etc', 'direct' => 'direct'];
+  $src = []; $tp = []; $dv = [];
+  for ($i = 0; $i < 14; $i++) { $x = pv_day(date('Y-m-d', strtotime("-$i day")));
+    if (!empty($x['sd'])) { foreach ($x['sd'] as $a => $b) $src[$a] = ($src[$a] ?? 0) + (int)$b; } else { foreach ($x['sc'] as $a => $b) { $z = $old2sd[$a] ?? 'etc'; $src[$z] = ($src[$z] ?? 0) + (int)$b; } }
+    foreach ($x['p'] as $a => $b) $tp[$a] = ($tp[$a] ?? 0) + (int)$b; foreach ($x['dv'] as $a => $b) $dv[$a] = ($dv[$a] ?? 0) + (int)$b; }
+  $sT = max(1, array_sum($src)); arsort($src); $srcT = '<div class="wrap2"><table><tr><th>들어온 경로</th><th style="text-align:right">사람</th><th style="text-align:right">비율</th></tr>';
+  foreach ($SD as $k => $nm) if (!isset($src[$k])) $src[$k] = 0;
+  foreach ($src as $k => $v) $srcT .= '<tr><td>' . eco_h($SD[$k] ?? $k) . '</td><td style="text-align:right">' . (int)$v . '</td><td style="text-align:right">' . round($v * 100 / $sT) . '%</td></tr>';
+  $srcT .= '</table></div><p class="note">최근 14일, 그날 첫 방문 기준. 메일(DM) = 메일 링크(utm)나 웹메일에서 온 사람. 11/28 이전 날은 검색 엔진을 나누지 못해 \'검색 · 기타\'로 셉니다.</p>';
+  $PN = ['/' => '첫 화면(홈)', '/guide/' => '구매 가이드 목록', '/guide/faq.html' => '자주 묻는 질문'];
+  arsort($tp); $pgT = '<div class="wrap2"><table><tr><th>많이 본 화면</th><th style="text-align:right">보기</th></tr>'; $n = 0;
+  foreach ($tp as $k => $v) { if ($n++ >= 5) break; $pgT .= '<tr><td>' . eco_h($PN[$k] ?? $k) . '</td><td style="text-align:right">' . (int)$v . '</td></tr>'; }
+  $pgT .= ($tp ? '' : '<tr><td colspan="2">기록 없음</td></tr>') . '</table></div>';
+  $dvT = max(1, array_sum($dv));
+  $dvLine = '<p class="note">기기(14일): 모바일 ' . (int)($dv['mobile'] ?? 0) . '명(' . round((int)($dv['mobile'] ?? 0) * 100 / $dvT) . '%) · PC ' . (int)($dv['pc'] ?? 0) . '명 · 태블릿 ' . (int)($dv['tablet'] ?? 0) . '명</p>';
+
+  // 날짜별(최근 14일) — 휴대폰에서는 칸마다 이름이 붙습니다
+  $rows = ''; for ($i = 0; $i < 14; $i++) { $k = date('Y-m-d', strtotime("-$i day")); if ($k < $from) break; $x = pv_day($k); $uv = (int)$x['uv']; $nv = (int)$x['nv'];
+    $c = fn(string $l, $v, bool $b = false): string => '<td data-l="' . $l . '" style="text-align:right">' . ($b ? '<b>' . $v . '</b>' : $v) . '</td>';
+    $rows .= '<tr><td class="dk">' . eco_h(substr($k, 5)) . ($k === $today ? ' (오늘)' : '') . '</td>' . $c('방문', $uv, true) . $c('신규', $nv) . $c('재방문', max(0, $uv - $nv)) . $c('문의', (int)($IQ[$k] ?? 0)) . $c('가격 확인', (int)($x['ev']['calc'] ?? 0) + (int)($x['ev']['pdf'] ?? 0)) . $c('전화', (int)($x['ev']['tel'] ?? 0)) . $c('모바일', (int)($x['dv']['mobile'] ?? 0)) . $c('PC', (int)($x['dv']['pc'] ?? 0)) . '</tr>'; }
+  $daily = '<div class="wrap lab"><table><tr><th>날짜</th><th>방문</th><th>신규</th><th>재방문</th><th>문의</th><th>가격 확인</th><th>전화</th><th>모바일</th><th>PC</th></tr>' . $rows . '</table></div>';
+
+  // 7일·30일: 데이터가 그보다 짧으면 숨깁니다(같은 숫자가 반복되지 않게)
+  $range = '';
+  if ($days >= 7) { $s7 = pv_sum(7); $range .= $big('최근 7일 방문', (int)$s7['uv'] . '명', '신규 ' . (int)$s7['nv'] . ' · 재방문 ' . max(0, (int)$s7['uv'] - (int)$s7['nv']), '같은 사람이 다른 날 오면 따로 셉니다'); }
+  if ($days >= 30) { $s30 = pv_sum(30); $range .= $big('최근 30일 방문', (int)$s30['uv'] . '명', '신규 ' . (int)$s30['nv'] . ' · 재방문 ' . max(0, (int)$s30['uv'] - (int)$s30['nv']), '같은 사람이 다른 날 오면 따로 셉니다'); }
+  $since = '<p class="since">' . eco_h(substr($from, 5)) . '부터 집계 (' . $days . '일째)' . ($days < 7 ? ' · 7일이 지나면 7일·30일 합계가 나타납니다' : '') . '</p>';
+
+  $css = '<style>.cards .lbl{font-weight:700;font-size:14px}.cards .v{font-size:30px}.cards .sub{font-size:13px;font-weight:700;color:#7a4b12;margin:2px 0}.cards{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}'
+    . '.since{background:#fff;border:1px dashed var(--l);border-radius:8px;padding:6px 10px;font-size:13px;color:var(--m)}'
+    . '.funnel{background:#fff;border:1px solid var(--l);border-radius:10px;padding:10px 12px}.fs{margin:0 0 10px}.fl{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px}.fv{font-size:20px;font-weight:800;color:var(--g)}.fb{height:12px;background:#eef3ec;border-radius:6px;overflow:hidden;margin:3px 0}.fb i{display:block;height:100%;background:var(--g);border-radius:6px}'
+    . '.bars{display:flex;gap:3px;align-items:flex-end;height:170px;background:#fff;border:1px solid var(--l);border-radius:10px;padding:8px 6px 4px}.bc{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;min-width:0}.bn{font-size:11px;color:var(--m);height:14px}.bw{flex:1;width:100%;display:flex;gap:1px;align-items:flex-end;justify-content:center}.bw i{display:block;width:45%;min-height:0;border-radius:3px 3px 0 0}.b1{background:#2f6b3d}.b2{background:#e08a3c}.bd{font-size:11px;color:var(--m);margin-top:2px}'
+    . '.dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 3px 0 8px;vertical-align:-1px}.d1{background:#2f6b3d}.d2{background:#e08a3c}'
+    . '.wrap2{overflow-x:auto}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:700px){.two{grid-template-columns:1fr}}'
+    . '@media(max-width:600px){.lab td[data-l]{display:inline-block;width:auto;text-align:left!important;padding:2px 8px 2px 0}.lab td[data-l]::before{content:attr(data-l) " ";color:var(--m);font-size:12px}.lab td.dk{font-weight:700;border-bottom:1px solid var(--l)!important}}</style>';
   $tabsV = '<p class="tabs"><a href="?f=today">오늘</a><a href="?f=inbox">문의함</a><a href="?f=ledger">견적·주문 장부</a><a href="?f=visits" class="on">방문 리포트</a><a href="?f=mail">메일 설정</a><a href="?out=1">나가기</a></p>';
-  page('방문 리포트', '<h1>에코레버 관리</h1>' . $tabsV
-    . '<h2>누적</h2><div class="cards">'
-    . $card('총 방문자(누적)', number_format($TT['uv']) . '명', $TT['from'] !== '' ? $TT['from'] . '부터' : '아직 기록 없음')
-    . $card('신규 방문자(누적)', number_format($TT['nv']) . '명', '재방문 ' . number_format(max(0, $TT['uv'] - $TT['nv'])) . '명')
-    . $card('페이지 보기(누적)', number_format($TT['pv']) . '회', $TT['uv'] > 0 ? '방문자당 ' . round($TT['pv'] / $TT['uv'], 1) . '쪽' : '')
-    . $card('누적 접속 형태', pv_pct((int)($TT['dv']['mobile'] ?? 0), (int)array_sum($TT['dv'])) . ' 모바일', pv_dvline($TT['dv'])) . '</div>'
-    . '<h2>최근</h2><div class="cards">'
-    . $card('최근 7일 방문자', number_format($s7['uv']) . '명', '신규 ' . $s7['nv'] . ' · 재방문 ' . max(0, $s7['uv'] - $s7['nv']) . ' · 페이지 ' . $s7['pv'])
-    . $card('최근 30일 방문자', number_format($s30['uv']) . '명', '신규 ' . $s30['nv'] . ' · 재방문 ' . max(0, $s30['uv'] - $s30['nv']) . ' · 페이지 ' . $s30['pv'])
-    . $card('30일 접속 형태', pv_pct((int)($s30['dv']['mobile'] ?? 0), $dvT) . ' 모바일', pv_dvline($s30['dv']))
-    . $card('30일 들어온 경로 1위', $top1($s30['sc']), pv_scline($s30['sc'])) . '</div>'
-    . '<h2>최근 30일 방문자</h2>' . $bar(array_values($vr), array_keys($vr), array_values($nr)) . '<p class="note">진한 부분 = 신규 · 막대에 마우스를 올리면 숫자 · <a href="?f=visits&csv=1">90일 CSV 내려받기</a></p>'
-    . '<h2>시간대별 첫 방문 (최근 14일)</h2>' . ($hasH ? $bar($hr, array_map(fn($z) => $z . '시', range(0, 23))) . '<p class="note">0시 ~ 23시 · 메일·영상 올릴 시간을 정할 때 봅니다.</p>' : '<p class="note">이번 업데이트 뒤부터 집계합니다.</p>')
-    . '<h2>최근 14일</h2><div class="wrap"><table style="white-space:nowrap"><tr><th rowspan="2">날짜</th><th rowspan="2">방문자</th><th colspan="2">방문 구분</th><th colspan="3">접속 형태(기기)</th><th rowspan="2">페이지 보기</th><th rowspan="2">방문자당</th><th rowspan="2">들어온 경로(첫 방문)</th></tr><tr><th>신규</th><th>재방문</th><th>모바일</th><th>PC</th><th>태블릿</th></tr>' . $rows . '</table></div>'
-    . '<p class="note">방문자 = 같은 기기·같은 날 한 명(IP 저장 안 함). 신규 = 이 기기로 처음 온 사람, 재방문 = 전에 온 적 있는 사람. 기기·경로·시간대는 그날 첫 방문 기준. 검색 로봇과 내부 점검(?qa=1로 한 번 연 브라우저)은 세지 않습니다. 직접 = 주소 입력·즐겨찾기·메일 앱·카톡 앱 안 링크처럼 들어온 곳이 남지 않는 경우.</p>'
-    . (function () use ($AD, $MT, $GT, $td): string {
-        $head = fn(string $c): string => '<tr><th rowspan="2">' . $c . '</th><th rowspan="2">방문자</th><th colspan="2">방문 구분</th><th colspan="3">접속 형태(기기)</th><th rowspan="2">페이지 보기</th><th rowspan="2">방문자당</th><th rowspan="2">들어온 경로(첫 방문)</th></tr><tr><th>신규</th><th>재방문</th><th>모바일</th><th>PC</th><th>태블릿</th></tr>';
-        $line = function (string $lab, array $x, string $st = '') use ($td): string { $uv = (int)$x['uv']; $nv = (int)$x['nv'];
-          return '<tr' . $st . '><td>' . $lab . '</td>' . $td($uv, true) . $td($nv) . $td(max(0, $uv - $nv)) . $td((int)($x['dv']['mobile'] ?? 0)) . $td((int)($x['dv']['pc'] ?? 0)) . $td((int)($x['dv']['tablet'] ?? 0)) . $td((int)$x['pv']) . $td($uv > 0 ? round((int)$x['pv'] / $uv, 1) : 0) . '<td class="note">' . eco_h(pv_scline($x['sc'])) . '</td></tr>'; };
-        $sub = ' style="background:#eef3ec;font-weight:700"';
-        $sel = (string)($_GET['m'] ?? 'all'); if ($sel !== 'all' && !isset($AD[$sel])) $sel = 'all';
-        $nav = '<p class="tabs"><a href="?f=visits&m=all#days"' . ($sel === 'all' ? ' class="on"' : '') . '>전체 기간</a>';
-        foreach (array_reverse(array_keys($AD)) as $mk) $nav .= '<a href="?f=visits&m=' . eco_h($mk) . '#days"' . ($sel === $mk ? ' class="on"' : '') . '>' . eco_h($mk) . '</a>';
-        $nav .= '</p>';
-        $today = date('Y-m-d'); $rows = '';
-        foreach (array_reverse($AD, true) as $mk => $ds) { if ($sel !== 'all' && $sel !== $mk) continue;
-          foreach (array_reverse($ds, true) as $k => $x) $rows .= $line(eco_h($k) . ($k === $today ? ' (오늘)' : ''), $x);
-          $rows .= $line(eco_h($mk) . ' 소계 (' . (int)$MT[$mk]['days'] . '일)', $MT[$mk], $sub); }
-        $mrows = ''; foreach ($AD as $mk => $ds) $mrows .= $line(eco_h($mk) . ' (' . (int)$MT[$mk]['days'] . '일)', $MT[$mk]);
-        $mrows .= $line('누적 합계 (' . (int)$GT['days'] . '일)', $GT, $sub);
-        return '<h2 id="days">날짜별 전체 (집계 시작일부터 오늘까지)</h2>' . $nav
-          . '<div class="wrap"><table style="white-space:nowrap">' . $head('날짜') . $rows . '</table></div>'
-          . '<p class="note">최근 날짜가 위 · 달마다 끝에 소계 줄 · <a href="?f=visits&csv=days">날짜별 전체 CSV</a></p>'
-          . '<h2>월별 누계</h2><div class="wrap"><table style="white-space:nowrap">' . $head('월') . $mrows . '</table></div>'
-          . '<p class="note">달이 쌓이면 줄이 저절로 늘어납니다. 월 방문자 = 그달 날짜별 방문자를 더한 값(같은 사람이 다른 날 오면 따로 셉니다). · <a href="?f=visits&csv=months">월별 CSV</a></p>';
-      })()
-    . '<h2>14일 들어온 경로</h2>' . $top($ts, '경로', SRC) . '<h2>14일 utm(메일·캠페인)</h2>' . $top($tu, 'utm_source/medium/campaign') . '<h2>14일 들어온 사이트</h2>' . $top($tr, '사이트') . '<h2>14일 많이 본 화면</h2>' . $top($tp, '주소'));
+  page('방문 리포트', $css . '<h1>에코레버 관리</h1>' . $tabsV . $since
+    . '<h2>한눈에</h2>' . $cards . ($range !== '' ? '<div class="cards" style="margin-top:8px">' . $range . '</div>' : '')
+    . '<h2>손님이 주문까지 가는 흐름 <span class="note">(' . eco_h($fLab) . ')</span></h2>' . $funnel
+    . '<p class="note">쇼핑몰의 "방문 → 장바구니 → 결제"와 같은 흐름입니다. 가격 확인·전화는 같은 사람이 같은 날 여러 번 눌러도 1번으로 셉니다. 견적·주문은 \'견적·주문 장부\'에 적은 것만 셉니다.</p>'
+    . '<h2>최근 14일 방문 · 문의</h2>' . $bars
+    . '<div class="two"><div><h2>들어온 경로</h2>' . $srcT . '</div><div><h2>많이 본 화면 5개</h2>' . $pgT . $dvLine . '</div></div>'
+    . '<h2>날짜별 (최근 14일)</h2>' . $daily
+    . '<p class="note">방문 = 같은 기기·같은 날 한 명(IP 저장 안 함). 신규 = 이 기기로 처음 온 사람. 검색 로봇은 세지 않습니다. <b>내부 접속 제외:</b> 대표님·총괄 휴대폰과 PC에서 <a href="https://www.ecolever.co.kr/?qa=1" target="_blank" rel="noopener">ecolever.co.kr/?qa=1</a> 을 한 번 열어 두면 그 기기는 숫자에서 빠집니다(기기마다 한 번).</p>'
+    . '<p class="note">내려받기: <a href="?f=visits&csv=days">날짜별 전체 CSV</a> · <a href="?f=visits&csv=months">월별 CSV</a></p>');
 }
 
 // ---- 견적·주문 장부 ----
