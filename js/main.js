@@ -295,3 +295,13 @@ document.addEventListener('click', function(e){
     }
   });
 })();
+
+/* ---- 휴대폰 하단 버튼: 첫 화면 버튼과 겹치지 않게, 첫 화면을 지나면 보임 (11/28) ---- */
+(function(){
+  const bar = document.querySelector('.mobile-cta');
+  const hero = document.querySelector('.hero2');
+  if(!bar || !hero) return;
+  function upd(){ bar.classList.toggle('cta-wait', window.scrollY < hero.offsetTop + hero.offsetHeight - 80); }
+  upd();
+  window.addEventListener('scroll', upd, { passive: true });
+})();
