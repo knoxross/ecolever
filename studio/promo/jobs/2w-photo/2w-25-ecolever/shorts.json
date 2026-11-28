@@ -1,0 +1,114 @@
+{
+  "track": "2w-25-ecolever",
+  "source": "brand-facts.md · brand-facts.md 가격(대표님 11/17)",
+  "look": "natural",
+  "emoji": false,
+  "scenes": [
+    {
+      "text": "에코백 50개만,\n주문돼요?",
+      "image": "../../../assets/ecolever/photo/blog-224328257497-06.jpg",
+      "fit": "cover",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "none",
+      "energy": 2
+    },
+    {
+      "text": "네, 로고 인쇄 없이\n50개부터",
+      "image": "../../../assets/ecolever/photo/blog-224427148917-04.jpg",
+      "fit": "cover",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 1,
+      "sub": "1칼라 기본 ECO · 2칼라 글자 인쇄 없음"
+    },
+    {
+      "text": "로고 인쇄는\n10,000개부터",
+      "image": "../../../assets/ecolever/photo/1color-eco-stock.jpg",
+      "fit": "cover",
+      "motion": "zoomIn",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 2,
+      "sub": "기관·기업 로고 인쇄 주문"
+    },
+    {
+      "text": "50개든 500개든\n같은 장당 가격",
+      "image": "../../../assets/ecolever/photo/blog-224427148917-07.jpg",
+      "fit": "cover",
+      "motion": "zoomOut",
+      "font": "serif",
+      "textBg": true,
+      "fontSize": 64,
+      "textPos": "bottom",
+      "textAnim": "fade",
+      "duration": 3.2,
+      "transition": "fade",
+      "energy": 3,
+      "sub": "1칼라 1,000원 · 2칼라 1,200원(부가세 별도)"
+    }
+  ],
+  "outro": "견적·자료 문의",
+  "outro_sub": "ecolever.co.kr · 02-6368-9989",
+  "card": {
+    "bg": [
+      "#1F2A21",
+      "#1F2A21"
+    ],
+    "bgStyle": "solid",
+    "color": "#EFE9DC"
+  },
+  "logo": {
+    "image": "../../../assets/ecolever/symbol-ecolever-light.png",
+    "pos": "tr",
+    "size": 0.08
+  },
+  "endcard": {
+    "image": "../../../assets/ecolever/qr-instagram.png",
+    "text": "QR · 인스타그램",
+    "size": 0.2
+  },
+  "music": {
+    "style": "acoustic",
+    "meter": "4/4",
+    "bpm": 88,
+    "seed": 2125
+  },
+  "upload": {
+    "title": "Q. 단체 에코백 몇 개부터? A. 50개부터",
+    "hashtags": [
+      "에코백",
+      "단체에코백",
+      "자주묻는질문",
+      "행사굿즈",
+      "에코레버"
+    ],
+    "link": "https://www.ecolever.co.kr/"
+  },
+  "footer": "(주)알앤케이그린월드",
+  "aspect": "9:16",
+  "platform": "shorts",
+  "export": {
+    "quality": 1080,
+    "fps": 30,
+    "vq": "high",
+    "maxSizeMB": 9.5,
+    "name": "2w-25-ecolever-shorts"
+  }
+}
